@@ -1,5 +1,6 @@
 ### STAY CHILL
 
 ### INTEGRANTES
-- Alonso Gómez - GitHub Master
-- Angel Castillo - Designer
+- Alonso Gómez - CM Cloud Master
+- Angel Castillo - DS Designer
+- Konrad Drobnik - • SM Scrum Master
