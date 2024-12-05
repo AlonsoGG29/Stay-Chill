@@ -2,3 +2,4 @@
 
 ### INTEGRANTES
 - Alonso Gómez
+- Angel Castillo
