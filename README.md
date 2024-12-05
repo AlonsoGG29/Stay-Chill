@@ -1,5 +1,5 @@
 ### STAY CHILL
 
 ### INTEGRANTES
-- Alonso Gómez
-- Angel Castillo
+- Alonso Gómez - GitHub Master
+- Angel Castillo - Designer
