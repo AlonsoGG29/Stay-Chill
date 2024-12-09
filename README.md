@@ -1,5 +1,5 @@
 ### STAY CHILL
-![MENÚ DE EVENTOS](CapturaInicio_Entrega4.jpg)
+![MENÚ DE EVENTOS](imagenes/CapturaInicio_Entrega4.jpg)
 
 ### INTEGRANTES
 - Alonso Gómez - CM Cloud Master
