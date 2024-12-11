@@ -2,6 +2,7 @@
 ![INICIO](imagenes/StayChill.jpg)
 
 - Logo sin acabar:
+
 ![PREVIA](imagenes/logo_sinAcabar.jpg)
 
 
