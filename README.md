@@ -1,6 +1,8 @@
 ### STAY CHILL
 ![INICIO](imagenes/StayChill.jpg)
 
+- Logo sin acabar:
+![PREVIA](imagenes/logo_sinAcabar.jpg)
 
 ### INTEGRANTES
 - Alonso Gómez - CM Cloud Master
