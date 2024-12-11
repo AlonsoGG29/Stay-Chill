@@ -1,21 +1,24 @@
-# Stay Chill
+### STAY CHILL
+![INICIO](imagenes/logo.jpg)
 
-## Pantalla del Prototipo:
 
-Concep art del diseño de la aplicacion:
+### INTEGRANTES
+- Alonso Gómez - CM Cloud Master
+- Angel Castillo - DS Designer
+- Konrad Drobnik - SM Scrum Master
 
-<p align="center">
-  <img src="imagenes/CapturaInicio_Entrega4.jpg" alt="MENÚ DE EVENTOS">
-</p>
 
-## Integrantes
-- **Alonso Gómez** - CM Cloud Master
-- **Angel Castillo** - DS Designer
-- **Konrad Drobnik** - SM Scrum Master
+### DESCRIPCIÓN GENERAL
+Stay Chill se trata de una aplicación para móviles, que invita a los usuarios a conocer nuevas personas cerca de ellas.
+La diferencia de otras apps para conocer gente (Tinder, Badoo, etc...) es que aquí las personas se presentan de manera fisica. La gente crea un evento, por ejemplo, ir a echar un partido de baloncesto en las pistas del barrio, y desde la app el resto de usuarios pueden buscar ese u otros eventos y autoinvitarse.
 
-## Descripción General
-**Stay Chill** es una aplicación móvil que invita a los usuarios a conocer nuevas personas cerca de ellos. A diferencia de otras apps para conocer gente (Tinder, Badoo, etc.), aquí las personas se presentan de manera física. 
+La app busca que la gente se conozca como antiguamente, en persona, y no escribiéndose por chat. De esa manera, se crean relaciones o amistades más fuertes y directas.
 
-La gente crea un evento, por ejemplo, ir a jugar un partido de baloncesto en las pistas del barrio, y desde la app el resto de usuarios puede buscar ese u otros eventos y autoinvitarse.
 
-La aplicación busca que la gente se conozca como antiguamente, en persona, y no solo a través de chats. De esta manera, se crean relaciones o amistades más fuertes y directas.
+### LOGIN
+![INICIO](imagenes/iniciar_sesion.jpg)
+
+
+# PALETA DE COLORES
+Nuestra aplicación usa una combinación de colores cálidos, destacando tonos naranjas entre los más claros, y morados entre los más oscuros.
+![COLORES](imagenes/paleta_colores.jpg)
