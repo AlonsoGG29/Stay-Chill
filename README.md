@@ -1,5 +1,5 @@
 ### STAY CHILL
-![INICIO](imagenes/logo.jpg)
+![INICIO](imagenes/StayChill.jpg)
 
 
 ### INTEGRANTES
@@ -16,9 +16,10 @@ La app busca que la gente se conozca como antiguamente, en persona, y no escribi
 
 
 ### LOGIN
-![INICIO](imagenes/iniciar_sesion.jpg)
+![INICIO](imagenes/IniciarSesion.jpg)
 
 
 # PALETA DE COLORES
 Nuestra aplicación usa una combinación de colores cálidos, destacando tonos naranjas entre los más claros, y morados entre los más oscuros.
-![COLORES](imagenes/paleta_colores.jpg)
+
+![COLORES](imagenes/PaletaColores.jpg)
