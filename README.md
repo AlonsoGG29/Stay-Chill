@@ -4,6 +4,7 @@
 - Logo sin acabar:
 ![PREVIA](imagenes/logo_sinAcabar.jpg)
 
+
 ### INTEGRANTES
 - Alonso Gómez - CM Cloud Master
 - Angel Castillo - DS Designer
