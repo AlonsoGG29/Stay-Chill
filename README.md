@@ -20,6 +20,5 @@ La app busca que la gente se conozca como antiguamente, en persona, y no escribi
 
 
 # PALETA DE COLORES
-Nuestra aplicación usa una combinación de colores cálidos, destacando tonos naranjas entre los más claros, y morados entre los más oscuros.
 
-![COLORES](imagenes/PaletaColores.jpg)
+![COLORES](imagenes/Paleta_StayChill.jpg)
