@@ -24,9 +24,19 @@ La paleta de colores fue seleccionada para transmitir confianza, calidez y dinam
 
 ### PÁGINA PRINCIPAL
 
-![INICIO](imagenes/main.jpg)
+![MAIN](imagenes/main.jpg)
 
 
 ### PÁGINA DE EVENTOS
 
 ![EVENTOS](imagenes/eventos.jpg)
+
+
+### PÁGINA DE MENSAJES
+
+![MENSAJES](imagenes/mensajes.jpg)
+
+
+### PÁGINA DE CONFIGURACIÓN
+
+![CONFIGURAR](imagenes/configuracion.jpg)
