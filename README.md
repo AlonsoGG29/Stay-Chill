@@ -1,4 +1,4 @@
-# Stay Chill
+# STAY CHILL
 <p align="center">
   <img src="imagenes/logoStayChill.svg" alt="COLORES" />
 </p>
