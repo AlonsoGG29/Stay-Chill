@@ -1,9 +1,5 @@
 ### STAY CHILL
-![INICIO](imagenes/StayChill.jpg)
-
-- Logo sin acabar:
-
-![PREVIA](imagenes/logo_sinAcabar.jpg)
+![INICIO](imagenes/logoStayChill.svg)
 
 
 ### INTEGRANTES
