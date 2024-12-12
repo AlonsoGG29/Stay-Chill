@@ -22,3 +22,5 @@ La app busca que la gente se conozca como antiguamente, en persona, y no escribi
 # PALETA DE COLORES
 
 ![COLORES](imagenes/Paleta_StayChill.jpg)
+
+La paleta de colores fue seleccionada para transmitir confianza, calidez y dinamismo, reflejando la esencia de conectar personas a través de eventos. Los tonos combinan profesionalismo, cercanía y claridad visual, creando una experiencia atractiva y funcional que invita a la interacción.
