@@ -3,6 +3,8 @@
   <img src="imagenes/logoStayChill.svg" alt="COLORES" />
 </p>
 
+Enlace a Figma: https://www.figma.com/design/KyVoo7Z4Q3HpOeT7HOTeMz/Stay-Chill?node-id=0-1&p=f&t=3dMJvDozEKVYZmZe-0
+
 ## Integrantes del proyecto:
 
 - Alonso Gómez - CM Cloud Master
