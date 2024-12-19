@@ -8,6 +8,7 @@
     android:background="@color/crema2"
     tools:context=".login">
 
+    <!-- Logo -->
     <ImageView
         android:id="@+id/logo_StayChill"
         android:layout_width="150dp"
@@ -15,20 +16,83 @@
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginTop="100dp"
-        android:src="@drawable/staychill">
-    </ImageView>
+        android:layout_marginTop="50dp"
+        android:src="@drawable/staychill" />
 
-    <ImageView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cuadro"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo_StayChill"
-        android:src="@drawable/fondo_app"
+        android:layout_height="0dp"
         android:layout_marginTop="100dp"
-        android:scaleType="fitXY">
-    </ImageView>
+        android:padding="24dp"
+        android:background="@drawable/fondoapp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintTop_toBottomOf="@id/logo_StayChill"
+        app:layout_constraintBottom_toBottomOf="parent">
 
+
+
+    <!-- Campo de email -->
+        <EditText
+            android:id="@+id/email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Correo Electrónico"
+            android:background="@drawable/edit_background"
+            android:drawableEnd="@drawable/email"
+            android:padding="12dp"
+            android:inputType="textEmailAddress"
+            android:fontFamily="@font/lora_bold"
+            android:layout_marginTop="90dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <!-- Campo de contraseña -->
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="Contraseña"
+            android:background="@drawable/edit_background"
+            android:drawableEnd="@drawable/password"
+            android:padding="12dp"
+            android:inputType="textPassword"
+            android:fontFamily="@font/lora_bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/email" />
+
+        <!-- Texto de registro -->
+        <TextView
+            android:id="@+id/register_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="¿No tienes cuenta? Regístrate"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:fontFamily="@font/lora_bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/password" />
+
+        <!-- Botón de entrar -->
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Entrar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/register_text"
+            style="@style/boton_entrar"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
