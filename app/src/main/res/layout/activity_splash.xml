@@ -13,8 +13,9 @@
         android:id="@+id/yu"
         android:layout_width="1322dp"
         android:layout_height="664dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="132dp"
         app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintHorizontal_bias="0.51"
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main"
         app:srcCompat="@drawable/diapositiva" />
