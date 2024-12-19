@@ -15,8 +15,20 @@
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginTop="50dp"
-        android:src="@drawable/logo_staychill">
+        android:layout_marginTop="100dp"
+        android:src="@drawable/staychill">
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/cuadro"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo_StayChill"
+        android:src="@drawable/fondo_app"
+        android:layout_marginTop="100dp"
+        android:scaleType="fitXY">
     </ImageView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
