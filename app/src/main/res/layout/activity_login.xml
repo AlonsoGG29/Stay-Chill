@@ -8,6 +8,15 @@
     android:background="@color/crema2"
     tools:context=".login">
 
+    <ImageView
+        android:id="@+id/volver_login"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="20dp"
+        android:src="@drawable/atras"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <!-- Logo -->
     <ImageView
         android:id="@+id/logo_StayChill"
