@@ -5,6 +5,64 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/crema2"
     tools:context=".splash">
+
+
+    <ImageView
+        android:id="@+id/yu"
+        android:layout_width="1322dp"
+        android:layout_height="664dp"
+        android:layout_marginTop="132dp"
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main"
+        app:srcCompat="@drawable/diapositiva" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="140dp"
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main"
+        app:srcCompat="@drawable/staychill" />
+
+    <ImageView
+        android:id="@+id/cuenta"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="372dp"
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintHorizontal_bias="0.096"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main"
+        app:srcCompat="@drawable/cuenta1" />
+
+    <ImageView
+        android:id="@+id/cuenta2"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="328dp"
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main"
+        app:srcCompat="@drawable/cuenta2" />
+
+    <ImageView
+        android:id="@+id/cuenta3"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="372dp"
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintHorizontal_bias="0.853"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main"
+        app:srcCompat="@drawable/cuenta3" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
