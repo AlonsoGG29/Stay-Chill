@@ -8,28 +8,18 @@
     android:background="@color/crema2"
     tools:context=".splash">
 
+    <!-- Otros ImageView -->
 
     <ImageView
         android:id="@+id/yu"
         android:layout_width="1322dp"
         android:layout_height="664dp"
-        android:layout_marginTop="132dp"
+        android:layout_marginTop="112dp"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintHorizontal_bias="0.51"
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main"
         app:srcCompat="@drawable/diapositiva" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="140dp"
-        app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        app:srcCompat="@drawable/staychill" />
 
     <ImageView
         android:id="@+id/cuenta"
@@ -64,5 +54,18 @@
         app:layout_constraintTop_toTopOf="@id/main"
         app:srcCompat="@drawable/cuenta3" />
 
+    <!-- Reemplazar el ImageView por LottieAnimationView -->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieAnimationView"
+        android:layout_width="550dp"
+        android:layout_height="550dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="false"
+        app:lottie_rawRes="@raw/main_scene" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
