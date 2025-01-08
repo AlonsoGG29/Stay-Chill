@@ -62,7 +62,7 @@
             android:id="@+id/email"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Correo Electrónico"
+            android:hint="@string/correo"
             android:background="@drawable/edit_background"
             android:drawableEnd="@drawable/email"
             android:padding="12dp"
