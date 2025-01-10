@@ -17,24 +17,26 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Logo -->
+
     <ImageView
         android:id="@+id/logo_StayChill"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        app:layout_constraintStart_toStartOf="@id/main"
+        android:layout_marginTop="60dp"
+        android:src="@drawable/img_stay_chill"
         app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/img_stay_chill" />
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main" />
 
     <ImageView
         android:id="@+id/personaschill"
-        android:layout_width="500dp"
-        android:layout_height="500dp"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="80dp"
         android:src="@drawable/img_personas_chill" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -68,7 +70,7 @@
         <!-- Campo de email -->
         <EditText
             android:id="@+id/email"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:hint="@string/correo"
             android:background="@drawable/img_label"
@@ -85,7 +87,7 @@
         <!-- Campo de contraseña -->
         <EditText
             android:id="@+id/password"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:hint="@string/contrasenia"
@@ -101,16 +103,18 @@
         <!-- Texto de registro -->
         <TextView
             android:id="@+id/register_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="@string/tiene_cuenta"
+            android:text="¿No tienes cuenta? Regístrate"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:fontFamily="@font/lora_semibolditalic"
+            android:gravity="center"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/password" />
+
 
         <!-- Botón de entrar -->
         <Button

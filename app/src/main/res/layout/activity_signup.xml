@@ -21,20 +21,19 @@
         android:id="@+id/logo_StayChill"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        app:layout_constraintStart_toStartOf="@id/main"
+        android:src="@drawable/img_stay_chill"
         app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/img_stay_chill" />
+        app:layout_constraintStart_toStartOf="@id/main"
+        tools:layout_editor_absoluteY="20dp" />
 
     <ImageView
         android:id="@+id/personaschill"
-        android:layout_width="500dp"
-        android:layout_height="500dp"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="50dp"
         android:src="@drawable/img_personas_chill" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -68,24 +67,23 @@
         <!-- Campo de nombre -->
         <EditText
             android:id="@+id/nombre"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:hint="@string/nombre"
+            android:layout_marginTop="90dp"
             android:background="@drawable/img_label"
             android:drawableEnd="@drawable/img_usuario"
-            android:padding="12dp"
+            android:hint="@string/nombre"
             android:inputType="text"
+            android:padding="12dp"
             android:textColorHint="@color/gray"
-            android:layout_marginTop="90dp"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Campo de email -->
         <EditText
             android:id="@+id/email"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:hint="Correo Electrónico"
             android:background="@drawable/img_label"
@@ -102,7 +100,7 @@
         <!-- Campo de contraseña -->
         <EditText
             android:id="@+id/password"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:hint="Contraseña"
@@ -119,7 +117,7 @@
         <!-- Campo de repetir contraseña -->
         <EditText
             android:id="@+id/password_repetir"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:hint="@string/contrasenia"
@@ -135,17 +133,19 @@
         <!-- Texto de registro -->
         <TextView
             android:id="@+id/inicio_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="12dp"
             android:text="¿Ya tienes cuenta? Inicia sesión"
             android:textColor="@color/white"
-
-            android:textSize="20dp"
+            android:textSize="16sp"
             android:fontFamily="@font/lora_semibolditalic"
+            android:gravity="center"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/password_repetir" />
+
+
 
         <!-- Botón de entrar -->
         <Button
@@ -154,6 +154,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Entrar"
+            android:textSize="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/inicio_text"

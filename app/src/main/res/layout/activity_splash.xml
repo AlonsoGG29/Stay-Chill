@@ -10,19 +10,19 @@
 
     <!-- Otros ImageView -->
 
+
+    <!-- Reemplazar el ImageView por LottieAnimationView -->
     <ImageView
         android:id="@+id/yu"
-        android:layout_width="1322dp"
-        android:layout_height="664dp"
-        android:layout_marginTop="112dp"
+        android:layout_width="900dp"
+        android:layout_height="504dp"
+        android:layout_marginTop="232dp"
         app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main"
         app:srcCompat="@drawable/img_personas_chill" />
 
-
-    <!-- Reemplazar el ImageView por LottieAnimationView -->
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottieAnimationView"
         android:layout_width="550dp"
