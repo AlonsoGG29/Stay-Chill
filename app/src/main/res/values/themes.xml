@@ -5,5 +5,7 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
-    <style name="Theme.StayChill" parent="Base.Theme.StayChill" />
+    <style name="Theme.StayChill" parent="Base.Theme.StayChill">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>

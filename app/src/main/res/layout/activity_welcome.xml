@@ -5,15 +5,100 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/cream"
     tools:context=".welcome">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!-- Logo -->
+    <ImageView
+        android:id="@+id/logo_StayChill"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/img_stay_chill" />
 
+    <ImageView
+        android:id="@+id/personaschill"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/img_personas_chill"
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cuadro"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="140dp"
+        android:padding="24dp"
+        android:background="@drawable/img_fondo_app"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintTop_toBottomOf="@id/logo_StayChill"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Texto 'Bienvenido' -->
+        <TextView
+            android:id="@+id/bienvenido"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="40sp"
+            android:fontFamily="@font/lora_semibolditalic"
+            android:text="@string/bienvenido"
+            app:layout_constraintStart_toStartOf="@id/cuadro"
+            app:layout_constraintEnd_toEndOf="@id/cuadro"
+            app:layout_constraintTop_toTopOf="@id/cuadro"
+            app:layout_constraintBottom_toBottomOf="@id/entrar_welcome">
+        </TextView>
+
+
+        <!-- Botón de entrar -->
+        <Button
+            android:id="@+id/entrar_welcome"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="@string/entrar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bienvenido"
+            style="@style/boton"/>
+
+
+        <!-- Botón de iniciar sesión -->
+        <Button
+            android:id="@+id/sesion_welcome"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/iniciar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/entrar_welcome"
+            style="@style/boton"/>
+
+
+        <!-- Texto de registro -->
+        <TextView
+            android:id="@+id/registrarse_welcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/no_tiene_cuenta"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/lora_semibolditalic"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sesion_welcome" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
