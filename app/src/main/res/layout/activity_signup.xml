@@ -8,6 +8,11 @@
     android:background="@color/cream"
     tools:context=".signup">
 
+    <ImageView
+        android:id="@+id/volver_sign"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 
     <!-- Logo -->
     <ImageView
@@ -57,7 +62,7 @@
             app:layout_constraintBottom_toTopOf="@id/nombre">
         </TextView>
 
-        <!-- Campo de  nombre -->
+        <!-- Campo de nombre -->
         <EditText
             android:id="@+id/nombre"
             android:layout_width="300dp"
