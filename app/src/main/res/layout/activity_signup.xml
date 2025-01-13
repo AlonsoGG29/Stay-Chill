@@ -57,7 +57,7 @@
             app:layout_constraintBottom_toTopOf="@id/nombre">
         </TextView>
 
-        <!-- Campo de nombre -->
+        <!-- Campo de  nombre -->
         <EditText
             android:id="@+id/nombre"
             android:layout_width="300dp"
