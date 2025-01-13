@@ -8,13 +8,6 @@
     android:background="@color/cream"
     tools:context=".signup">
 
-    <ImageView
-        android:id="@+id/volver_sign"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Logo -->
     <ImageView

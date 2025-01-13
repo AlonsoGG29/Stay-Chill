@@ -61,34 +61,37 @@
 
 
         <!-- Botón de entrar -->
+
+
+        <!-- Botón de iniciar sesión -->
         <Button
             android:id="@+id/entrar_welcome"
             style="@style/boton"
             android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="24dp"
             android:text="@string/entrar"
             android:textSize="16dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bienvenido" />
 
 
-        <!-- Botón de iniciar sesión -->
+        <!-- Texto de registro -->
         <Button
             android:id="@+id/sesion_welcome"
             style="@style/boton"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="@string/iniciar"
             android:textSize="16dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/entrar_welcome" />
 
-
-        <!-- Texto de registro -->
         <TextView
             android:id="@+id/registrarse_welcome"
             android:layout_width="match_parent"
