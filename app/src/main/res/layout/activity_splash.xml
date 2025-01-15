@@ -12,11 +12,12 @@
 
 
     <!-- Reemplazar el ImageView por LottieAnimationView -->
+
     <ImageView
         android:id="@+id/yu"
         android:layout_width="900dp"
         android:layout_height="504dp"
-        android:layout_marginTop="232dp"
+        android:layout_marginTop="340dp"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="@id/main"
@@ -27,9 +28,9 @@
         android:id="@+id/lottieAnimationView"
         android:layout_width="550dp"
         android:layout_height="550dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main"
         app:lottie_autoPlay="true"
