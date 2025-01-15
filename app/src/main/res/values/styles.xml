@@ -9,4 +9,10 @@
         <item name="android:textAllCaps">false</item>
         <item name="fontFamily">@font/lora_semibolditalic</item>
     </style>
+    <shape xmlns:android="http://schemas.android.com/apk/res/android">
+        <corners android:radius="8dp" />
+        <stroke android:width="2dp" android:color="@android:color/darker_gray" />
+        <solid android:color="@android:color/transparent" />
+    </shape>
+
 </resources>

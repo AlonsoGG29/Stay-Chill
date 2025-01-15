@@ -5,17 +5,22 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/cream"
     tools:context=".main">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_view"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="PANTALLA DE MAIN"
-        android:textSize="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:iconifiedByDefault="false"
+        android:background="@drawable/img_buscador"
+        android:hint="@string/correo"
+        android:textColorHint="@color/gray"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/logo_esquina"
+        app:layout_constraintStart_toStartOf="@id/logo_esquina"
+        app:layout_constraintEnd_toEndOf="@id/notif_esquina" />
+
     <ImageView
         android:id="@+id/logo_esquina"
         android:layout_width="45dp"
