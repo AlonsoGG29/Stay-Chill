@@ -14,7 +14,6 @@
         android:layout_height="wrap_content" />
 
     <!-- Logo -->
-
     <ImageView
         android:id="@+id/logo_StayChill"
         android:layout_width="100dp"
@@ -42,19 +41,14 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="100dp"
-        android:padding="24dp"
+        android:padding="20dp"
         android:background="@drawable/img_fondo_app"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintTop_toBottomOf="@id/logo_StayChill"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Texto 'Inicia sesión' -->
-        <!-- Moved down a bit -->
-
-        <!-- Campo de nombre -->
-
-        <!-- Campo de email -->
+        <!-- Texto 'Registrarse' -->
         <TextView
             android:id="@+id/txt_IniciaSesion"
             android:layout_width="wrap_content"
@@ -64,17 +58,19 @@
             android:textColor="@color/white"
             android:textSize="40sp"
             android:textStyle="bold"
+            android:layout_marginBottom="-10dp"
             app:layout_constraintBottom_toTopOf="@id/nombre"
             app:layout_constraintEnd_toEndOf="@id/cuadro"
             app:layout_constraintStart_toStartOf="@id/cuadro"
             app:layout_constraintTop_toTopOf="@id/cuadro"
-            app:layout_constraintVertical_bias="0.486" />
+            app:layout_constraintVertical_bias="0.4" />
 
+        <!-- Campo de nombre -->
         <EditText
             android:id="@+id/nombre"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="114dp"
+            android:layout_marginTop="100dp"
             android:background="@drawable/img_label"
             android:drawableEnd="@drawable/img_usuario"
             android:hint="@string/nombre"
@@ -86,6 +82,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Campo de email -->
         <EditText
             android:id="@+id/email"
             android:layout_width="300dp"
@@ -153,7 +150,7 @@
             android:id="@+id/btn_signup"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="25dp"
             android:text="Entrar"
             android:textSize="17dp"
             app:layout_constraintStart_toStartOf="parent"

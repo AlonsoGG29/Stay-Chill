@@ -16,14 +16,14 @@
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="60dp"
         android:src="@drawable/img_stay_chill" />
 
     <ImageView
         android:id="@+id/personaschill"
         android:layout_width="400dp"
         android:layout_height="400dp"
-        android:layout_marginTop="132dp"
+        android:layout_marginTop="140dp"
         android:src="@drawable/img_personas_chill"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintHorizontal_bias="0.454"
