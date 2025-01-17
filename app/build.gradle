@@ -1,5 +1,8 @@
 plugins {
-    alias(libs.plugins.android.application)
+    id 'com.android.application'
+
+    // Añadir el complemento Gradle de los servicios de Google
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -30,6 +33,9 @@ android {
 }
 
 dependencies {
+    // Importar el Firebase BoM
+    implementation platform('com.google.firebase:firebase-bom:33.7.0')
+    implementation 'com.airbnb.android:lottie:5.2.0'
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
@@ -37,5 +43,9 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
-    implementation 'com.airbnb.android:lottie:5.2.0'
+    // Añadir las dependencias de Firebase que deseas usar
+    implementation 'com.google.firebase:firebase-analytics'
+
+    // Añadir las dependencias para otros productos de Firebase deseados
+    // https://firebase.google.com/docs/android/setup#available-libraries
 }
