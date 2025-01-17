@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "311130848835",
+    "project_id": "stay-chill-aka",
+    "storage_bucket": "stay-chill-aka.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311130848835:android:4156446fd50c2079dcdef6",
+        "android_client_info": {
+          "package_name": "com.aka.staychill"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBL83SymtRIJop9-81eLyihsNX41ChxCqw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
