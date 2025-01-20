@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.aka.staychill">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,20 +15,32 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StayChill"
         tools:targetApi="31">
-
-        <!-- SplashActivity como la actividad principal -->
+        <activity
+            android:name=".ReportarProblema"
+            android:exported="false" />
+        <activity
+            android:name=".Notificaciones"
+            android:exported="false" />
+        <activity
+            android:name=".PrivacidadSeguridad"
+            android:exported="false" />
+        <activity
+            android:name=".Cuenta"
+            android:exported="false" />
+        <activity
+            android:name=".Configuracion"
+            android:exported="false" /> <!-- SplashActivity como la actividad principal -->
         <activity
             android:name=".splash"
             android:exported="true">
+
             <!-- Configuración para que esta actividad sea la de inicio -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-
-        <!-- Otras actividades -->
+        </activity> <!-- Otras actividades -->
         <activity
             android:name=".main"
             android:exported="false" />
@@ -39,8 +53,6 @@
         <activity
             android:name=".welcome"
             android:exported="true" />
-
-
     </application>
 
 </manifest>
