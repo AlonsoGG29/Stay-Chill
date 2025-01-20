@@ -4,6 +4,7 @@
 </p>
 
 Enlace a Figma: https://www.figma.com/design/KyVoo7Z4Q3HpOeT7HOTeMz/Stay-Chill?node-id=0-1&p=f&t=3dMJvDozEKVYZmZe-0
+
 Enlace a Trello : https://trello.com/b/efP3xoTZ/stay-chill
 
 ## Integrantes del proyecto:
