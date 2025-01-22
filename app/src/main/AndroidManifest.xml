@@ -16,6 +16,9 @@
         android:theme="@style/Theme.StayChill"
         tools:targetApi="31">
         <activity
+            android:name=".Main_bn"
+            android:exported="true" />
+        <activity
             android:name=".ReportarProblema"
             android:exported="false" />
         <activity

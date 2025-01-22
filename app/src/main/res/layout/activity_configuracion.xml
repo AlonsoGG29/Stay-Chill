@@ -195,5 +195,50 @@
             android:textSize="16sp"
             android:layout_marginStart="8dp" />
     </LinearLayout>
+    <!-- Línea horizontal después de "Reportar un problema" -->
+    <View
+        android:id="@+id/line4"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/report_problem_section" />
+
+    <!-- Cerrar sesión -->
+    <LinearLayout
+        android:id="@+id/logout_section"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/line4"
+        android:padding="16dp"
+        android:clickable="true"
+        android:focusable="true">
+        <ImageView
+            android:id="@+id/logout_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/cerrarsesion_foreground" />
+        <TextView
+            android:id="@+id/logout_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cerrar sesión"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <!-- Línea horizontal después de "Cerrar sesión" -->
+    <View
+        android:id="@+id/line5"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@android:color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logout_section" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

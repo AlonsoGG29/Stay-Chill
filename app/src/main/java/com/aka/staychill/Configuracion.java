@@ -2,7 +2,6 @@ package com.aka.staychill;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class Configuracion extends AppCompatActivity {
@@ -25,6 +24,10 @@ public class Configuracion extends AppCompatActivity {
 
         findViewById(R.id.report_problem_section).setOnClickListener(v ->
                 startActivity(new Intent(this, ReportarProblema.class))
+        );
+
+        findViewById(R.id.logout_section).setOnClickListener(v ->
+                startActivity(new Intent(this, welcome.class))
         );
     }
 }
