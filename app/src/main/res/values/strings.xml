@@ -3,7 +3,7 @@
     <string name="iniciar">Inicia Sesión</string>
     <string name="correo">Correo Electrónico</string>
     <string name="contrasenia">Contraseña</string>
-    <string name="tiene_cuenta">¿No tienes cuenta? Regístrate</string>
+    <string name="tiene_cuenta">¿Ya tienes cuenta? Inicia sesión</string>
     <string name="entrar">Entrar</string>
     <string name="bienvenido">¡Bienvenido!</string>
     <string name="no_tiene_cuenta">¿No tienes cuenta? Regístrate</string>

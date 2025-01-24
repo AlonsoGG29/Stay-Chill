@@ -22,6 +22,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.aka.staychill.fragments.main;
+
 public class signup extends AppCompatActivity {
 
     Button btn_entrarSignUp;
@@ -35,7 +37,6 @@ public class signup extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
 
         btn_entrarSignUp = findViewById(R.id.btn_signup);
-        back_sign = findViewById(R.id.volver_sign);
         inicio = findViewById(R.id.inicio_text);
 
         // Funcion de boton "Entrar"

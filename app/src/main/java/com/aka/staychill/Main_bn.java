@@ -70,7 +70,7 @@ public class Main_bn extends AppCompatActivity {
         badge.setVisible(true);
         badge.setNumber(2);
 
-        badge = bottomNavigationView.getOrCreateBadge(R.id.perfil);
+        badge = bottomNavigationView.getOrCreateBadge(R.id.mensaje);
         badge.setVisible(true);
 
         badge = bottomNavigationView.getOrCreateBadge(R.id.opciones);
@@ -84,7 +84,7 @@ public class Main_bn extends AppCompatActivity {
             position = 0; // Página 1
         } else if (item.getItemId() == R.id.eventos) {
             position = 1; // Página 2
-        } else if (item.getItemId() == R.id.perfil) {
+        } else if (item.getItemId() == R.id.mensaje) {
             position = 2; // Página 3
         } else if (item.getItemId() == R.id.opciones) {
             position = 3; // Página 4

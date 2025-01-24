@@ -21,6 +21,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.aka.staychill.fragments.main;
+
 public class welcome extends AppCompatActivity {
 
     Button btn_enter, btn_login;

@@ -22,6 +22,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.aka.staychill.fragments.configuracion;
+
 public class login extends AppCompatActivity {
 
     Button btnEntrar;
@@ -35,14 +37,13 @@ public class login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         btnEntrar = findViewById(R.id.btn_login);
-        back_login = findViewById(R.id.volver_login);
         register = findViewById(R.id.register_text);
 
         // Función del botón de Entrar
         btnEntrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(login.this, Configuracion.class);
+                Intent intent = new Intent(login.this, configuracion.class);
                 startActivity(intent);
             }
         });

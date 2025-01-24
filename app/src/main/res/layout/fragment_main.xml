@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cream"
-    tools:context=".main">
+    android:background="@color/white"
+   >
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search_view"
@@ -18,28 +17,10 @@
         android:textColorHint="@color/black"
         app:layout_constraintWidth_percent="0.75"
         android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/logo_esquina"
-        app:layout_constraintStart_toStartOf="@id/logo_esquina"
-        app:layout_constraintEnd_toEndOf="@id/notif_esquina" />
-
-    <ImageView
-        android:id="@+id/logo_esquina"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        app:layout_constraintStart_toStartOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        android:src="@drawable/img_stay_chill"
-        android:layout_margin="20dp">
-    </ImageView>
-    <ImageView
-        android:id="@+id/notif_esquina"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
         app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        android:src="@drawable/img_notificacion"
-        android:layout_margin="20dp">
-    </ImageView>
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
