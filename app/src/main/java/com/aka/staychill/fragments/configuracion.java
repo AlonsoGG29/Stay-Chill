@@ -10,11 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.aka.staychill.Cuenta;
-import com.aka.staychill.Notificaciones;
-import com.aka.staychill.PrivacidadSeguridad;
+
 import com.aka.staychill.R;
-import com.aka.staychill.ReportarProblema;
+
 import com.aka.staychill.welcome;
 
 public class configuracion extends Fragment {
@@ -27,19 +25,19 @@ public class configuracion extends Fragment {
 
         // Configura los listeners de los botones
         rootView.findViewById(R.id.account_section).setOnClickListener(v ->
-                startActivity(new Intent(getActivity(), Cuenta.class))
+                startActivity(new Intent(getActivity(), cuenta.class))
         );
 
         rootView.findViewById(R.id.privacy_security_section).setOnClickListener(v ->
-                startActivity(new Intent(getActivity(), PrivacidadSeguridad.class))
+                startActivity(new Intent(getActivity(), privacidad.class))
         );
 
         rootView.findViewById(R.id.notifications_section).setOnClickListener(v ->
-                startActivity(new Intent(getActivity(), Notificaciones.class))
+                startActivity(new Intent(getActivity(), notificaciones.class))
         );
 
         rootView.findViewById(R.id.report_problem_section).setOnClickListener(v ->
-                startActivity(new Intent(getActivity(), ReportarProblema.class))
+                startActivity(new Intent(getActivity(), reportar.class))
         );
 
         rootView.findViewById(R.id.logout_section).setOnClickListener(v ->

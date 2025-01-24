@@ -11,4 +11,7 @@
     <string name="nombre">Nombre</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="reportar">Reportar un problema</string>
+    <string name="cerrar">Cerrar sesión</string>
+    <string name="seguridad">Privacidad y Seguridad</string>
 </resources>

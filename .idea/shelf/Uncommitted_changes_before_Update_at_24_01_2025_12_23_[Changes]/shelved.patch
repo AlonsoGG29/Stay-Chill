@@ -1,0 +1,17 @@
+Index: app/src/main/res/drawable-anydpi/atras.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><vector xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:width=\"24dp\"\r\n    android:height=\"24dp\"\r\n    android:viewportWidth=\"24\"\r\n    android:viewportHeight=\"24\"\r\n    android:tint=\"@color/gris5\"\r\n    android:alpha=\"0.8\"\r\n    android:autoMirrored=\"true\">\r\n  <path\r\n      android:fillColor=\"@android:color/white\"\r\n      android:pathData=\"M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z\"/>\r\n</vector>\r\n
+===================================================================
+diff --git a/app/src/main/res/drawable-anydpi/atras.xml b/app/src/main/res/drawable-anydpi/atras.xml
+--- a/app/src/main/res/drawable-anydpi/atras.xml	
++++ b/app/src/main/res/drawable-anydpi/atras.xml	
+@@ -3,7 +3,7 @@
+     android:height="24dp"
+     android:viewportWidth="24"
+     android:viewportHeight="24"
+-    android:tint="@color/gris5"
++    android:tint="@color/gray"
+     android:alpha="0.8"
+     android:autoMirrored="true">
+   <path

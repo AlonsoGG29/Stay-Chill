@@ -27,6 +27,7 @@
         android:id="@+id/profile"
         android:layout_width="150dp"
         android:layout_height="150dp"
+        android:src="@drawable/perfil"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/textProfile"
@@ -95,7 +96,7 @@
             android:id="@+id/privacy_security_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/img_contrasenia" />
+            android:src="@drawable/img_seguridad" />
         <TextView
             android:id="@+id/privacy_security_text"
             android:layout_width="wrap_content"
@@ -167,12 +168,12 @@
             android:id="@+id/report_problem_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/img_home" />
+            android:src="@drawable/img_reportar" />
         <TextView
             android:id="@+id/report_problem_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reportar un problema"
+            android:text="@string/reportar"
             android:textSize="16sp"
             android:layout_marginStart="8dp" />
     </LinearLayout>
@@ -198,16 +199,18 @@
         android:padding="16dp"
         android:clickable="true"
         android:focusable="true">
+
         <ImageView
             android:id="@+id/logout_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/cerrarsesion_foreground" />
+            android:src="@drawable/img_cerrar" />
+
         <TextView
             android:id="@+id/logout_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cerrar sesión"
+            android:text="@string/cerrar"
             android:textSize="16sp"
             android:layout_marginStart="8dp" />
     </LinearLayout>
