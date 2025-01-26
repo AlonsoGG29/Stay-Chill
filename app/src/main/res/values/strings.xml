@@ -14,4 +14,10 @@
     <string name="reportar">Reportar un problema</string>
     <string name="cerrar">Cerrar sesión</string>
     <string name="seguridad">Privacidad y Seguridad</string>
+    <string name="chill">chill</string>
+    <string name="logo">logo</string>
+    <string name="cuenta">Cuenta</string>
+    <string name="privacidad">Privacidad y Seguridad</string>
+    <string name="notificaciones">Notificaciones</string>
+    <string name="configuracion">Configuracion</string>
 </resources>

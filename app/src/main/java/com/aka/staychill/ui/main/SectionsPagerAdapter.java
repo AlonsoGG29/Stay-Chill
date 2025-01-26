@@ -4,10 +4,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import com.aka.staychill.fragments.eventos;
-import com.aka.staychill.fragments.main;
-import com.aka.staychill.fragments.configuracion;
-import com.aka.staychill.fragments.mensaje;
+import com.aka.staychill.fragments.Eventos;
+import com.aka.staychill.fragments.Main;
+import com.aka.staychill.fragments.Configuracion;
+import com.aka.staychill.fragments.Mensaje;
 
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -20,13 +20,13 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         if (position == 0) {
-            return new main();
+            return new Main();
         } else if (position == 1) {
-            return new eventos();
+            return new Eventos();
         } else if (position == 2) {
-            return new mensaje();
+            return new Mensaje();
         } else if (position == 3) {
-            return new configuracion();
+            return new Configuracion();
         }
         else {
             throw new IllegalArgumentException("Invalid position: " + position);

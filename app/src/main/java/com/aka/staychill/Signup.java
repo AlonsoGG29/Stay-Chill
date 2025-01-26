@@ -13,21 +13,19 @@ import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.aka.staychill.fragments.main;
-
-public class signup extends AppCompatActivity {
+public class Signup extends AppCompatActivity {
 
     Button btn_entrarSignUp;
-    ImageView back_sign;
+
     TextView inicio;
 
     @Override
@@ -40,22 +38,11 @@ public class signup extends AppCompatActivity {
         inicio = findViewById(R.id.inicio_text);
 
         // Funcion de boton "Entrar"
-        btn_entrarSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(signup.this, main.class);
-                startActivity(intent);
-            }
+        btn_entrarSignUp.setOnClickListener(view -> {
+            Intent intent = new Intent(Signup.this,  Main_bn.class);
+            startActivity(intent);
         });
 
-        // Funcion de flecha
-        back_sign.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Finaliza esta actividad para volver a la anterior
-                finish();
-            }
-        });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -64,7 +51,6 @@ public class signup extends AppCompatActivity {
         });
 
         // Estilizar y hacer clicable "Inicia sesión"
-        TextView textView = findViewById(R.id.inicio_text);
         String text = "¿Ya tienes cuenta? Inicia sesión";
 
         // Encuentra la parte "Inicia sesión"
@@ -81,14 +67,14 @@ public class signup extends AppCompatActivity {
         // Hacer que "Inicia sesión" sea clicable
         spannableString.setSpan(new ClickableSpan() {
             @Override
-            public void onClick(View widget) {
-                // Navegar a la actividad login
-                Intent intent = new Intent(signup.this, login.class);
+            public void onClick(@NonNull View widget) {
+                // Navegar a la actividad Login
+                Intent intent = new Intent(Signup.this, Login.class);
                 startActivity(intent);
             }
 
             @Override
-            public void updateDrawState(TextPaint ds) {
+            public void updateDrawState(@NonNull TextPaint ds) {
                 super.updateDrawState(ds);
                 ds.setUnderlineText(true); // Subrayar
                 ds.setColor(Color.WHITE);  // Color blanco (opcional)
@@ -97,9 +83,9 @@ public class signup extends AppCompatActivity {
         }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         // Aplica el texto formateado al TextView
-        textView.setText(spannableString);
+        inicio.setText(spannableString);
 
         // Necesario para habilitar clics en el texto
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        inicio.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }

@@ -14,7 +14,7 @@ import com.aka.staychill.R;
 import org.jetbrains.annotations.Nullable;
 
 
-public class mensaje extends Fragment {
+public class Mensaje extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

@@ -11,11 +11,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 
+import com.aka.staychill.Conf_cuenta;
+import com.aka.staychill.Conf_notificaciones;
+import com.aka.staychill.Conf_privacidad;
+import com.aka.staychill.Conf_reportar;
 import com.aka.staychill.R;
 
-import com.aka.staychill.welcome;
+import com.aka.staychill.Welcome;
 
-public class configuracion extends Fragment {
+public class Configuracion extends Fragment {
 
     @Nullable
     @Override
@@ -24,24 +28,24 @@ public class configuracion extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_configuracion, container, false);
 
         // Configura los listeners de los botones
-        rootView.findViewById(R.id.account_section).setOnClickListener(v ->
-                startActivity(new Intent(getActivity(), cuenta.class))
+        rootView.findViewById(R.id.conf_icon_cuenta).setOnClickListener(v ->
+                startActivity(new Intent(getActivity(), Conf_cuenta.class))
         );
 
-        rootView.findViewById(R.id.privacy_security_section).setOnClickListener(v ->
-                startActivity(new Intent(getActivity(), privacidad.class))
+        rootView.findViewById(R.id.conf_privacidad).setOnClickListener(v ->
+                startActivity(new Intent(getActivity(), Conf_privacidad.class))
         );
 
-        rootView.findViewById(R.id.notifications_section).setOnClickListener(v ->
-                startActivity(new Intent(getActivity(), notificaciones.class))
+        rootView.findViewById(R.id.conf_notificaciones).setOnClickListener(v ->
+                startActivity(new Intent(getActivity(), Conf_notificaciones.class))
         );
 
         rootView.findViewById(R.id.report_problem_section).setOnClickListener(v ->
-                startActivity(new Intent(getActivity(), reportar.class))
+                startActivity(new Intent(getActivity(), Conf_reportar.class))
         );
 
         rootView.findViewById(R.id.logout_section).setOnClickListener(v ->
-                startActivity(new Intent(getActivity(), welcome.class))
+                startActivity(new Intent(getActivity(), Welcome.class))
         );
 
         return rootView;

@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/config"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,10 +11,10 @@
 
     <!-- Titulo "Nombre" en la parte superior -->
     <TextView
-        android:id="@+id/textProfile"
+        android:id="@+id/nombrePerfil"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nombre"
+        android:text="@string/nombre"
         android:textSize="30sp"
         android:textColor="@color/black"
         android:textStyle="bold"
@@ -24,133 +25,133 @@
 
     <!-- Imagen de perfil -->
     <ImageView
-        android:id="@+id/profile"
+        android:id="@+id/fotoPerfil"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:src="@drawable/perfil"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textProfile"
+        app:layout_constraintStart_toStartOf="@+id/config"
+        app:layout_constraintEnd_toEndOf="@+id/config"
+        app:layout_constraintTop_toBottomOf="@id/nombrePerfil"
         android:layout_marginTop="20dp" />
 
     <!-- Línea horizontal debajo de la imagen del perfil -->
     <View
-        android:id="@+id/profile_line"
+        android:id="@+id/linea1"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginTop="30dp"
         android:background="@android:color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile" />
+        app:layout_constraintTop_toBottomOf="@id/fotoPerfil" />
 
     <!-- Cuenta -->
     <LinearLayout
-        android:id="@+id/account_section"
+        android:id="@+id/conf_cuenta"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_line"
+        app:layout_constraintTop_toBottomOf="@id/linea1"
         android:padding="16dp"
         android:clickable="true"
         android:focusable="true">
         <ImageView
-            android:id="@+id/account_icon"
+            android:id="@+id/conf_icon_cuenta"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/img_usuario" />
         <TextView
-            android:id="@+id/account_text"
+            android:id="@+id/conf_text_cuenta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cuenta"
+            android:text="@string/cuenta"
             android:textSize="16sp"
             android:layout_marginStart="8dp" />
     </LinearLayout>
 
     <!-- Línea horizontal después de "Cuenta" -->
     <View
-        android:id="@+id/line1"
+        android:id="@+id/linea2"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="@android:color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/account_section" />
+        app:layout_constraintTop_toBottomOf="@id/conf_cuenta" />
 
     <!-- Privacidad y Seguridad -->
     <LinearLayout
-        android:id="@+id/privacy_security_section"
+        android:id="@+id/conf_privacidad"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/line1"
+        app:layout_constraintTop_toBottomOf="@id/linea2"
         android:padding="16dp"
         android:clickable="true"
         android:focusable="true">
         <ImageView
-            android:id="@+id/privacy_security_icon"
+            android:id="@+id/conf_icon_privacidad"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/img_seguridad" />
         <TextView
-            android:id="@+id/privacy_security_text"
+            android:id="@+id/conf_text_privacidad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Privacidad y Seguridad"
+            android:text="@string/privacidad"
             android:textSize="16sp"
             android:layout_marginStart="8dp" />
     </LinearLayout>
 
     <!-- Línea horizontal después de "Privacidad y Seguridad" -->
     <View
-        android:id="@+id/line2"
+        android:id="@+id/linea3"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="@android:color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/privacy_security_section" />
+        app:layout_constraintTop_toBottomOf="@id/conf_privacidad" />
 
     <!-- Notificaciones -->
     <LinearLayout
-        android:id="@+id/notifications_section"
+        android:id="@+id/conf_notificaciones"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/line2"
+        app:layout_constraintTop_toBottomOf="@id/linea3"
         android:padding="16dp"
         android:clickable="true"
         android:focusable="true">
         <ImageView
-            android:id="@+id/notifications_icon"
+            android:id="@+id/conf_icon_notificaciones"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/img_notificacion2" />
         <TextView
-            android:id="@+id/notifications_text"
+            android:id="@+id/conf_text_notificaciones"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Notificaciones"
+            android:text="@string/notificaciones"
             android:textSize="16sp"
             android:layout_marginStart="8dp" />
     </LinearLayout>
 
     <!-- Línea horizontal después de "Notificaciones" -->
     <View
-        android:id="@+id/line3"
+        android:id="@+id/linea4"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="@android:color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/notifications_section" />
+        app:layout_constraintTop_toBottomOf="@id/conf_notificaciones" />
 
     <!-- Reportar un problema -->
     <LinearLayout
@@ -160,7 +161,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/line3"
+        app:layout_constraintTop_toBottomOf="@id/linea4"
         android:padding="16dp"
         android:clickable="true"
         android:focusable="true">

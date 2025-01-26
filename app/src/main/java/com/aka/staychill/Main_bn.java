@@ -2,7 +2,6 @@ package com.aka.staychill;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +14,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class Main_bn extends AppCompatActivity {
 
     private MenuItem prevMenuItem;
-    private SectionsPagerAdapter sectionsPagerAdapter;
 
 
     @Override
@@ -24,7 +22,7 @@ public class Main_bn extends AppCompatActivity {
         setContentView(R.layout.activity_main_bn);
 
         // Solo pasamos getSupportFragmentManager() al adaptador
-        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);

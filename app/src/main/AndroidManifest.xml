@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.aka.staychill">
+    package="com.aka.staychill" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -14,28 +14,25 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.StayChill"
-        tools:targetApi="31">
+        tools:targetApi="31" >
+        <activity
+            android:name=".Conf_reportar"
+            android:exported="false" />
+        <activity
+            android:name=".Conf_notificaciones"
+            android:exported="false" />
+        <activity
+            android:name=".Conf_privacidad"
+            android:exported="false" />
+        <activity
+            android:name=".Conf_cuenta"
+            android:exported="false" />
         <activity
             android:name=".Main_bn"
-            android:exported="true" />
+            android:exported="true" /> <!-- SplashActivity como la actividad principal -->
         <activity
-            android:name=".ReportarProblema"
-            android:exported="false" />
-        <activity
-            android:name=".Notificaciones"
-            android:exported="false" />
-        <activity
-            android:name=".PrivacidadSeguridad"
-            android:exported="false" />
-        <activity
-            android:name=".Cuenta"
-            android:exported="false" />
-        <activity
-            android:name=".Configuracion"
-            android:exported="false" /> <!-- SplashActivity como la actividad principal -->
-        <activity
-            android:name=".splash"
-            android:exported="true">
+            android:name=".Splash"
+            android:exported="true" >
 
             <!-- Configuración para que esta actividad sea la de inicio -->
             <intent-filter>
@@ -45,16 +42,13 @@
             </intent-filter>
         </activity> <!-- Otras actividades -->
         <activity
-            android:name=".main"
+            android:name=".Signup"
             android:exported="false" />
         <activity
-            android:name=".signup"
-            android:exported="false" />
-        <activity
-            android:name=".login"
+            android:name=".Login"
             android:exported="true" />
         <activity
-            android:name=".welcome"
+            android:name=".Welcome"
             android:exported="true" />
     </application>
 

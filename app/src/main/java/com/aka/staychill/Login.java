@@ -16,55 +16,32 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.aka.staychill.fragments.main;
+public class Login extends AppCompatActivity {
 
-public class welcome extends AppCompatActivity {
-
-    Button btn_enter, btn_login;
-    TextView registrarse;
+    Button btnEntrar;
+    TextView register;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_welcome);
+        setContentView(R.layout.activity_login);
 
-        btn_enter = findViewById(R.id.entrar_welcome);
-        btn_login = findViewById(R.id.sesion_welcome);
-        registrarse = findViewById(R.id.registrarse_welcome);
+        btnEntrar = findViewById(R.id.btn_login);
+        register = findViewById(R.id.register_text);
 
-        //Funcion de boton de entrar
-        btn_enter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(welcome.this, main.class);
-                startActivity(intent);
-            }
-        });
-
-        //Funcion de boton de iniciar sesion
-        btn_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(welcome.this, login.class);
-                startActivity(intent);
-            }
-        });
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        // Función del botón de Entrar
+        btnEntrar.setOnClickListener(view -> {
+            Intent intent = new Intent(Login.this, Main_bn.class);
+            startActivity(intent);
         });
 
         // Estilizar y hacer clicable "Regístrate"
-        TextView textView = findViewById(R.id.registrarse_welcome);
-        String text = getString(R.string.no_tiene_cuenta); // Obtén el texto del recurso
+
+        String text = "¿No tienes cuenta? Regístrate";
 
         // Encuentra la parte "Regístrate"
         int start = text.indexOf("Regístrate");
@@ -80,14 +57,14 @@ public class welcome extends AppCompatActivity {
         // Hacer que "Regístrate" sea clicable
         spannableString.setSpan(new ClickableSpan() {
             @Override
-            public void onClick(View widget) {
-                // Navegar a la actividad signup
-                Intent intent = new Intent(welcome.this, signup.class);
+            public void onClick(@NonNull View widget) {
+                // Navegar a la actividad Signup
+                Intent intent = new Intent(Login.this, Signup.class);
                 startActivity(intent);
             }
 
             @Override
-            public void updateDrawState(TextPaint ds) {
+            public void updateDrawState(@NonNull TextPaint ds) {
                 super.updateDrawState(ds);
                 ds.setUnderlineText(true); // Subrayar
                 ds.setColor(Color.WHITE);  // Color blanco (opcional)
@@ -96,9 +73,9 @@ public class welcome extends AppCompatActivity {
         }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         // Aplica el texto formateado al TextView
-        textView.setText(spannableString);
+        register.setText(spannableString);
 
         // Necesario para habilitar clics en el texto
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        register.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }
