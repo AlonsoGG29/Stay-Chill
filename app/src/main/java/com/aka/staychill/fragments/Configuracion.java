@@ -28,7 +28,7 @@ public class Configuracion extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_configuracion, container, false);
 
         // Configura los listeners de los botones
-        rootView.findViewById(R.id.conf_icon_cuenta).setOnClickListener(v ->
+        rootView.findViewById(R.id.conf_cuenta).setOnClickListener(v ->
                 startActivity(new Intent(getActivity(), Conf_cuenta.class))
         );
 
@@ -40,11 +40,11 @@ public class Configuracion extends Fragment {
                 startActivity(new Intent(getActivity(), Conf_notificaciones.class))
         );
 
-        rootView.findViewById(R.id.report_problem_section).setOnClickListener(v ->
+        rootView.findViewById(R.id.conf_reportar).setOnClickListener(v ->
                 startActivity(new Intent(getActivity(), Conf_reportar.class))
         );
 
-        rootView.findViewById(R.id.logout_section).setOnClickListener(v ->
+        rootView.findViewById(R.id.conf_cerrar).setOnClickListener(v ->
                 startActivity(new Intent(getActivity(), Welcome.class))
         );
 

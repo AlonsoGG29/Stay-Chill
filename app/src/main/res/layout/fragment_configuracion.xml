@@ -155,7 +155,7 @@
 
     <!-- Reportar un problema -->
     <LinearLayout
-        android:id="@+id/report_problem_section"
+        android:id="@+id/conf_reportar"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -166,12 +166,12 @@
         android:clickable="true"
         android:focusable="true">
         <ImageView
-            android:id="@+id/report_problem_icon"
+            android:id="@+id/conf_icon_reportar"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/img_reportar" />
         <TextView
-            android:id="@+id/report_problem_text"
+            android:id="@+id/conf_text_reportar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/reportar"
@@ -180,35 +180,35 @@
     </LinearLayout>
     <!-- Línea horizontal después de "Reportar un problema" -->
     <View
-        android:id="@+id/line4"
+        android:id="@+id/linea5"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="@android:color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/report_problem_section" />
+        app:layout_constraintTop_toBottomOf="@id/conf_reportar" />
 
     <!-- Cerrar sesión -->
     <LinearLayout
-        android:id="@+id/logout_section"
+        android:id="@+id/conf_cerrar"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/line4"
+        app:layout_constraintTop_toBottomOf="@id/linea5"
         android:padding="16dp"
         android:clickable="true"
         android:focusable="true">
 
         <ImageView
-            android:id="@+id/logout_icon"
+            android:id="@+id/conf_icon_cerrar"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/img_cerrar" />
 
         <TextView
-            android:id="@+id/logout_text"
+            android:id="@+id/conf_text_cerrar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cerrar"
@@ -218,12 +218,12 @@
 
     <!-- Línea horizontal después de "Cerrar sesión" -->
     <View
-        android:id="@+id/line5"
+        android:id="@+id/linea6"
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="@android:color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logout_section" />
+        app:layout_constraintTop_toBottomOf="@id/conf_cerrar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
