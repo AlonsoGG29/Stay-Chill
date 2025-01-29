@@ -1,8 +1,5 @@
 plugins {
-    id 'com.android.application'
-
-    // Añadir el complemento Gradle de los servicios de Google
-    id 'com.google.gms.google-services'
+    alias(libs.plugins.android.application)
 }
 
 android {
@@ -25,7 +22,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -33,9 +29,6 @@ android {
 }
 
 dependencies {
-    // Importar el Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:33.7.0')
-    implementation 'com.airbnb.android:lottie:5.2.0'
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
@@ -43,9 +36,12 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
-    // Añadir las dependencias de Firebase que deseas usar
-    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.airbnb.android:lottie:5.2.0'
 
-    // Añadir las dependencias para otros productos de Firebase deseados
-    // https://firebase.google.com/docs/android/setup#available-libraries
+    // Dependencias de Glide
+    implementation 'com.github.bumptech.glide:glide:4.16.0' // Solo una versión de Glide
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+
+    implementation "androidx.recyclerview:recyclerview:1.3.1"
+    implementation "com.google.android.material:material:1.9.0"
 }

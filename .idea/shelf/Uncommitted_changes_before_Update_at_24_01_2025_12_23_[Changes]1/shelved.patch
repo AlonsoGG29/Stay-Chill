@@ -1,0 +1,449 @@
+Index: app/src/main/res/drawable/img_contrasenia.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><vector xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:width=\"21dp\"\r\n    android:height=\"19dp\"\r\n    android:viewportWidth=\"18\"\r\n    android:viewportHeight=\"19\">\r\n  <path\r\n      android:pathData=\"M12.42,1.476H5.335C2.866,1.476 1.319,3.402 1.319,6.127V13.481C1.319,16.207 2.859,18.133 5.335,18.133H12.419C14.896,18.133 16.438,16.207 16.438,13.481V6.127C16.438,3.402 14.896,1.476 12.42,1.476Z\"\r\n      android:strokeLineJoin=\"round\"\r\n      android:strokeWidth=\"1.5\"\r\n      android:fillColor=\"#00000000\"\r\n      android:fillType=\"evenOdd\"\r\n      android:strokeColor=\"#000000\"\r\n      android:strokeLineCap=\"round\"/>\r\n  <path\r\n      android:pathData=\"M7.807,9.804C7.807,10.726 7.129,11.472 6.293,11.472C5.457,11.472 4.78,10.726 4.78,9.804C4.78,8.883 5.457,8.137 6.293,8.137H6.296C7.13,8.138 7.807,8.884 7.807,9.804Z\"\r\n      android:strokeLineJoin=\"round\"\r\n      android:strokeWidth=\"1.5\"\r\n      android:fillColor=\"#00000000\"\r\n      android:fillType=\"evenOdd\"\r\n      android:strokeColor=\"#000000\"\r\n      android:strokeLineCap=\"round\"/>\r\n  <path\r\n      android:pathData=\"M7.809,9.804H12.973V11.472\"\r\n      android:strokeLineJoin=\"round\"\r\n      android:strokeWidth=\"1.5\"\r\n      android:fillColor=\"#00000000\"\r\n      android:strokeColor=\"#000000\"\r\n      android:strokeLineCap=\"round\"/>\r\n  <path\r\n      android:pathData=\"M10.661,11.472V9.804\"\r\n      android:strokeLineJoin=\"round\"\r\n      android:strokeWidth=\"1.5\"\r\n      android:fillColor=\"#00000000\"\r\n      android:strokeColor=\"#000000\"\r\n      android:strokeLineCap=\"round\"/>\r\n</vector>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/img_contrasenia.xml b/app/src/main/res/drawable/img_contrasenia.xml
+--- a/app/src/main/res/drawable/img_contrasenia.xml	
++++ b/app/src/main/res/drawable/img_contrasenia.xml	
+@@ -1,6 +1,6 @@
+ <vector xmlns:android="http://schemas.android.com/apk/res/android"
+-    android:width="21dp"
+-    android:height="19dp"
++    android:width="29dp"
++    android:height="29dp"
+     android:viewportWidth="18"
+     android:viewportHeight="19">
+   <path
+Index: app/src/main/java/com/aka/staychill/signup.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.aka.staychill;\r\n\r\nimport android.content.Intent;\r\nimport android.graphics.Color;\r\nimport android.graphics.Typeface;\r\nimport android.os.Bundle;\r\nimport android.text.SpannableString;\r\nimport android.text.Spanned;\r\nimport android.text.TextPaint;\r\nimport android.text.method.LinkMovementMethod;\r\nimport android.text.style.ClickableSpan;\r\nimport android.text.style.StyleSpan;\r\nimport android.text.style.UnderlineSpan;\r\nimport android.view.View;\r\nimport android.widget.Button;\r\nimport android.widget.ImageView;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.activity.EdgeToEdge;\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.core.graphics.Insets;\r\nimport androidx.core.view.ViewCompat;\r\nimport androidx.core.view.WindowInsetsCompat;\r\n\r\npublic class signup extends AppCompatActivity {\r\n\r\n    Button btn_entrarSignUp;\r\n    ImageView back_sign;\r\n    TextView inicio;\r\n\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        EdgeToEdge.enable(this);\r\n        setContentView(R.layout.activity_signup);\r\n\r\n        btn_entrarSignUp = findViewById(R.id.btn_signup);\r\n        back_sign = findViewById(R.id.volver_sign);\r\n        inicio = findViewById(R.id.inicio_text);\r\n\r\n        // Funcion de boton \"Entrar\"\r\n        btn_entrarSignUp.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View view) {\r\n                Intent intent = new Intent(signup.this, main.class);\r\n                startActivity(intent);\r\n            }\r\n        });\r\n\r\n        // Funcion de flecha\r\n        back_sign.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                // Finaliza esta actividad para volver a la anterior\r\n                finish();\r\n            }\r\n        });\r\n\r\n        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {\r\n            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());\r\n            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);\r\n            return insets;\r\n        });\r\n\r\n        // Estilizar y hacer clicable \"Inicia sesión\"\r\n        TextView textView = findViewById(R.id.inicio_text);\r\n        String text = \"¿Ya tienes cuenta? Inicia sesión\";\r\n\r\n        // Encuentra la parte \"Inicia sesión\"\r\n        int start = text.indexOf(\"Inicia sesión\");\r\n        int end = start + \"Inicia sesión\".length();\r\n\r\n        SpannableString spannableString = new SpannableString(text);\r\n\r\n        // Aplicar cursiva, negrita y subrayado\r\n        spannableString.setSpan(new StyleSpan(Typeface.ITALIC), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);\r\n        spannableString.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);\r\n        spannableString.setSpan(new UnderlineSpan(), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);\r\n\r\n        // Hacer que \"Inicia sesión\" sea clicable\r\n        spannableString.setSpan(new ClickableSpan() {\r\n            @Override\r\n            public void onClick(View widget) {\r\n                // Navegar a la actividad login\r\n                Intent intent = new Intent(signup.this, login.class);\r\n                startActivity(intent);\r\n            }\r\n\r\n            @Override\r\n            public void updateDrawState(TextPaint ds) {\r\n                super.updateDrawState(ds);\r\n                ds.setUnderlineText(true); // Subrayar\r\n                ds.setColor(Color.WHITE);  // Color blanco (opcional)\r\n                ds.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD_ITALIC)); // Negrita y cursiva\r\n            }\r\n        }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);\r\n\r\n        // Aplica el texto formateado al TextView\r\n        textView.setText(spannableString);\r\n\r\n        // Necesario para habilitar clics en el texto\r\n        textView.setMovementMethod(LinkMovementMethod.getInstance());\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/aka/staychill/signup.java b/app/src/main/java/com/aka/staychill/signup.java
+--- a/app/src/main/java/com/aka/staychill/signup.java	
++++ b/app/src/main/java/com/aka/staychill/signup.java	
+@@ -35,7 +35,6 @@
+         setContentView(R.layout.activity_signup);
+ 
+         btn_entrarSignUp = findViewById(R.id.btn_signup);
+-        back_sign = findViewById(R.id.volver_sign);
+         inicio = findViewById(R.id.inicio_text);
+ 
+         // Funcion de boton "Entrar"
+Index: app/src/main/res/drawable/img_stay_chill.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><vector xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:width=\"69.213dp\"\r\n    android:height=\"66.508dp\"\r\n    android:viewportWidth=\"69.213\"\r\n    android:viewportHeight=\"66.508\">\r\n  <path\r\n      android:pathData=\"M34.017,0.273A6.378,6.183 0,0 0,28.089 4.176C22.444,5.492 17.516,8.197 13.306,12.295 8.339,17.13 5.372,22.877 4.401,29.533A6.378,6.183 0,0 0,0.221 35.333,6.378 6.183,0 0,0 4.632,41.211c1.021,5.578 3.379,10.512 7.076,14.802 6.091,7.02 14.408,10.53 24.952,10.53 5.545,0 10.558,-1.038 15.037,-3.114 1.588,-0.741 3.08,-1.591 4.482,-2.546a6.378,6.183 0,0 0,1.926 0.29,6.378 6.183,0 0,0 6.378,-6.183 6.378,6.183 0,0 0,-6.378 -6.183,6.378 6.183,0 0,0 -6.378,6.183 6.378,6.183 0,0 0,0.205 1.54c-4.368,2.877 -9.335,4.317 -14.903,4.317 -7.676,0 -14.04,-2.458 -19.093,-7.375 -3.863,-3.779 -6.24,-8.278 -7.134,-13.494a6.378,6.183 0,0 0,2.176 -4.646,6.378 6.183,0 0,0 -2.246,-4.71c0.484,-3.116 1.492,-6.003 3.025,-8.658 2.267,-3.906 5.45,-7.006 9.547,-9.301 1.824,-1.034 3.719,-1.836 5.684,-2.409a6.378,6.183 0,0 0,5.03 2.383,6.378 6.183,0 0,0 5.644,-3.311c3.246,0.316 6.276,1.155 9.087,2.518 3.017,1.43 5.676,3.419 7.98,5.964a6.378,6.183 0,0 0,-0.415 2.186,6.378 6.183,0 0,0 6.378,6.183 6.378,6.183 0,0 0,6.378 -6.183,6.378 6.183,0 0,0 -6.378,-6.183 6.378,6.183 0,0 0,-1.3 0.133C58.761,10.881 55.572,8.431 51.821,6.6 48.094,4.759 43.996,3.676 39.531,3.349A6.378,6.183 0,0 0,34.017 0.273ZM41.505,17.306c-3.215,0.006 -5.981,1.189 -8.3,3.549 -2.302,2.344 -3.45,5.139 -3.444,8.388 0.005,2.693 0.776,5.384 2.312,8.074 0.962,1.698 1.444,2.8 1.445,3.305 0.001,0.774 -0.3,1.422 -0.905,1.945 -0.588,0.506 -1.328,0.76 -2.22,0.762 -0.757,0.001 -1.625,-0.309 -2.602,-0.93l0.018,9.972c1.617,0.754 3.25,1.13 4.899,1.127 3.433,-0.006 6.335,-1.173 8.704,-3.5 2.386,-2.327 3.575,-5.164 3.569,-8.514 -0.004,-2.289 -0.715,-4.661 -2.133,-7.115l-0.785,-1.362c-0.608,-1.059 -0.912,-1.934 -0.914,-2.624 -0.001,-0.808 0.275,-1.499 0.829,-2.072 0.554,-0.573 1.218,-0.861 1.993,-0.862 0.404,-0.001 0.977,0.125 1.718,0.376l-0.018,-9.821c-1.364,-0.469 -2.753,-0.702 -4.167,-0.699zM25.696,44.438c-0.017,0.01 -0.034,0.019 -0.051,0.029 -0.048,0.029 -0.091,0.07 -0.131,0.118 0.062,-0.03 0.124,-0.062 0.187,-0.09 -0.001,-0.019 -0.004,-0.039 -0.004,-0.058z\"\r\n      android:strokeWidth=\"1.898\"\r\n      android:fillColor=\"@color/rojo4\"\r\n      android:strokeColor=\"#00000000\"/>\r\n</vector>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/img_stay_chill.xml b/app/src/main/res/drawable/img_stay_chill.xml
+--- a/app/src/main/res/drawable/img_stay_chill.xml	
++++ b/app/src/main/res/drawable/img_stay_chill.xml	
+@@ -6,6 +6,6 @@
+   <path
+       android:pathData="M34.017,0.273A6.378,6.183 0,0 0,28.089 4.176C22.444,5.492 17.516,8.197 13.306,12.295 8.339,17.13 5.372,22.877 4.401,29.533A6.378,6.183 0,0 0,0.221 35.333,6.378 6.183,0 0,0 4.632,41.211c1.021,5.578 3.379,10.512 7.076,14.802 6.091,7.02 14.408,10.53 24.952,10.53 5.545,0 10.558,-1.038 15.037,-3.114 1.588,-0.741 3.08,-1.591 4.482,-2.546a6.378,6.183 0,0 0,1.926 0.29,6.378 6.183,0 0,0 6.378,-6.183 6.378,6.183 0,0 0,-6.378 -6.183,6.378 6.183,0 0,0 -6.378,6.183 6.378,6.183 0,0 0,0.205 1.54c-4.368,2.877 -9.335,4.317 -14.903,4.317 -7.676,0 -14.04,-2.458 -19.093,-7.375 -3.863,-3.779 -6.24,-8.278 -7.134,-13.494a6.378,6.183 0,0 0,2.176 -4.646,6.378 6.183,0 0,0 -2.246,-4.71c0.484,-3.116 1.492,-6.003 3.025,-8.658 2.267,-3.906 5.45,-7.006 9.547,-9.301 1.824,-1.034 3.719,-1.836 5.684,-2.409a6.378,6.183 0,0 0,5.03 2.383,6.378 6.183,0 0,0 5.644,-3.311c3.246,0.316 6.276,1.155 9.087,2.518 3.017,1.43 5.676,3.419 7.98,5.964a6.378,6.183 0,0 0,-0.415 2.186,6.378 6.183,0 0,0 6.378,6.183 6.378,6.183 0,0 0,6.378 -6.183,6.378 6.183,0 0,0 -6.378,-6.183 6.378,6.183 0,0 0,-1.3 0.133C58.761,10.881 55.572,8.431 51.821,6.6 48.094,4.759 43.996,3.676 39.531,3.349A6.378,6.183 0,0 0,34.017 0.273ZM41.505,17.306c-3.215,0.006 -5.981,1.189 -8.3,3.549 -2.302,2.344 -3.45,5.139 -3.444,8.388 0.005,2.693 0.776,5.384 2.312,8.074 0.962,1.698 1.444,2.8 1.445,3.305 0.001,0.774 -0.3,1.422 -0.905,1.945 -0.588,0.506 -1.328,0.76 -2.22,0.762 -0.757,0.001 -1.625,-0.309 -2.602,-0.93l0.018,9.972c1.617,0.754 3.25,1.13 4.899,1.127 3.433,-0.006 6.335,-1.173 8.704,-3.5 2.386,-2.327 3.575,-5.164 3.569,-8.514 -0.004,-2.289 -0.715,-4.661 -2.133,-7.115l-0.785,-1.362c-0.608,-1.059 -0.912,-1.934 -0.914,-2.624 -0.001,-0.808 0.275,-1.499 0.829,-2.072 0.554,-0.573 1.218,-0.861 1.993,-0.862 0.404,-0.001 0.977,0.125 1.718,0.376l-0.018,-9.821c-1.364,-0.469 -2.753,-0.702 -4.167,-0.699zM25.696,44.438c-0.017,0.01 -0.034,0.019 -0.051,0.029 -0.048,0.029 -0.091,0.07 -0.131,0.118 0.062,-0.03 0.124,-0.062 0.187,-0.09 -0.001,-0.019 -0.004,-0.039 -0.004,-0.058z"
+       android:strokeWidth="1.898"
+-      android:fillColor="@color/rojo4"
++      android:fillColor="@color/red"
+       android:strokeColor="#00000000"/>
+ </vector>
+Index: app/src/main/res/menu/menu_bab.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/menu/menu_bab.xml b/app/src/main/res/menu/menu_bab.xml
+new file mode 100644
+--- /dev/null	
++++ b/app/src/main/res/menu/menu_bab.xml	
+@@ -0,0 +1,25 @@
++<?xml version="1.0" encoding="utf-8"?>
++<menu xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto">
++    <item
++        android:id="@+id/home"
++        android:title="Right"
++        android:icon="@drawable/img_home"
++        app:showAsAction="always" />
++    <item
++        android:id="@+id/calendario"
++        android:title="Right"
++        android:icon="@drawable/img_calendario"
++        app:showAsAction="always" />
++    <item
++        android:id="@+id/mensaje"
++        android:title="Right"
++        android:icon="@drawable/img_mensaje"
++        app:showAsAction="always" />
++    <item
++        android:id="@+id/usuario"
++        android:title="Right"
++        android:icon="@drawable/img_usuario"
++        app:showAsAction="always" />
++
++</menu>
+\ No newline at end of file
+Index: app/src/main/res/layout/eventos.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/eventos.xml b/app/src/main/res/layout/eventos.xml
+new file mode 100644
+--- /dev/null	
++++ b/app/src/main/res/layout/eventos.xml	
+@@ -0,0 +1,29 @@
++<?xml version="1.0" encoding="utf-8"?>
++<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    android:layout_width="match_parent"
++    android:layout_height="wrap_content"
++    android:orientation="vertical"
++    android:padding="16dp">
++
++    <TextView
++        android:id="@+id/title"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="@string/no_tiene_cuenta"
++        android:textSize="18sp"
++        android:textStyle="bold" />
++
++    <TextView
++        android:id="@+id/description"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:text="@string/no_tiene_cuenta"
++        android:textSize="16sp" />
++
++    <ImageView
++        android:id="@+id/map"
++        android:src="@drawable/img_home"
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++         />
++</LinearLayout>
+Index: app/src/main/res/drawable/rounded_background.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<shape xmlns:android=\"http://schemas.android.com/apk/res/android\">\r\n    <solid android:color=\"@color/marron3\" />\r\n    <corners android:radius=\"30dp\" />\r\n</shape>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/rounded_background.xml b/app/src/main/res/drawable/rounded_background.xml
+--- a/app/src/main/res/drawable/rounded_background.xml	
++++ b/app/src/main/res/drawable/rounded_background.xml	
+@@ -1,5 +1,5 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <shape xmlns:android="http://schemas.android.com/apk/res/android">
+-    <solid android:color="@color/marron3" />
++    <solid android:color="@color/lightbrown" />
+     <corners android:radius="30dp" />
+ </shape>
+\ No newline at end of file
+Index: app/src/main/res/drawable/img_correo.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><vector xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:width=\"21dp\"\r\n    android:height=\"19dp\"\r\n    android:viewportWidth=\"19\"\r\n    android:viewportHeight=\"19\">\r\n  <path\r\n      android:pathData=\"M14.702,6.969L11.071,10.222C10.385,10.822 9.419,10.822 8.733,10.222L5.071,6.969\"\r\n      android:strokeLineJoin=\"round\"\r\n      android:strokeWidth=\"1.5\"\r\n      android:fillColor=\"#00000000\"\r\n      android:strokeColor=\"#000000\"\r\n      android:strokeLineCap=\"round\"/>\r\n  <path\r\n      android:pathData=\"M13.89,17.908C16.375,17.915 18.051,15.665 18.051,12.9V6.716C18.051,3.951 16.375,1.701 13.89,1.701H5.866C3.381,1.701 1.706,3.951 1.706,6.716V12.9C1.706,15.665 3.381,17.915 5.866,17.908H13.89Z\"\r\n      android:strokeLineJoin=\"round\"\r\n      android:strokeWidth=\"1.5\"\r\n      android:fillColor=\"#00000000\"\r\n      android:fillType=\"evenOdd\"\r\n      android:strokeColor=\"#000000\"\r\n      android:strokeLineCap=\"round\"/>\r\n</vector>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/img_correo.xml b/app/src/main/res/drawable/img_correo.xml
+--- a/app/src/main/res/drawable/img_correo.xml	
++++ b/app/src/main/res/drawable/img_correo.xml	
+@@ -1,6 +1,6 @@
+ <vector xmlns:android="http://schemas.android.com/apk/res/android"
+-    android:width="21dp"
+-    android:height="19dp"
++    android:width="29dp"
++    android:height="29dp"
+     android:viewportWidth="19"
+     android:viewportHeight="19">
+   <path
+Index: app/src/main/res/layout/activity_login.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:id=\"@+id/main\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"@color/cream\"\r\n    tools:context=\".login\">\r\n\r\n    <ImageView\r\n        android:id=\"@+id/volver_login\"\r\n        android:layout_width=\"50dp\"\r\n        android:layout_height=\"50dp\"\r\n        android:layout_margin=\"20dp\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintTop_toTopOf=\"parent\" />\r\n\r\n    <!-- Logo -->\r\n\r\n    <ImageView\r\n        android:id=\"@+id/logo_StayChill\"\r\n        android:layout_width=\"100dp\"\r\n        android:layout_height=\"100dp\"\r\n        android:layout_marginTop=\"80dp\"\r\n        android:src=\"@drawable/img_stay_chill\"\r\n        app:layout_constraintEnd_toEndOf=\"@id/main\"\r\n        app:layout_constraintHorizontal_bias=\"0.498\"\r\n        app:layout_constraintStart_toStartOf=\"@id/main\"\r\n        app:layout_constraintTop_toTopOf=\"@id/main\" />\r\n\r\n    <ImageView\r\n        android:id=\"@+id/personaschill\"\r\n        android:layout_width=\"400dp\"\r\n        android:layout_height=\"400dp\"\r\n        android:layout_marginTop=\"100dp\"\r\n        android:src=\"@drawable/img_personas_chill\"\r\n        app:layout_constraintEnd_toEndOf=\"@id/main\"\r\n        app:layout_constraintHorizontal_bias=\"0.454\"\r\n        app:layout_constraintStart_toStartOf=\"@id/main\"\r\n        app:layout_constraintTop_toTopOf=\"@id/main\" />\r\n\r\n    <androidx.constraintlayout.widget.ConstraintLayout\r\n        android:id=\"@+id/cuadro\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"0dp\"\r\n        android:layout_marginTop=\"130dp\"\r\n        android:padding=\"24dp\"\r\n        android:background=\"@drawable/img_fondo_app\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"@id/main\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/logo_StayChill\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\">\r\n\r\n        <!-- Texto 'Inicia sesión' -->\r\n        <TextView\r\n            android:id=\"@+id/txt_IniciaSesion\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:textColor=\"@color/white\"\r\n            android:textSize=\"40sp\"\r\n            android:fontFamily=\"@font/lora_semibolditalic\"\r\n            android:text=\"@string/iniciar\"\r\n            app:layout_constraintStart_toStartOf=\"@id/cuadro\"\r\n            app:layout_constraintEnd_toEndOf=\"@id/cuadro\"\r\n            app:layout_constraintTop_toTopOf=\"@id/cuadro\"\r\n            app:layout_constraintBottom_toTopOf=\"@id/email\">\r\n        </TextView>\r\n\r\n\r\n        <!-- Campo de email -->\r\n        <EditText\r\n            android:id=\"@+id/email\"\r\n            android:layout_width=\"300dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:hint=\"@string/correo\"\r\n            android:background=\"@drawable/img_label\"\r\n            android:drawableEnd=\"@drawable/img_correo\"\r\n            android:padding=\"12dp\"\r\n            android:inputType=\"textEmailAddress\"\r\n            android:textColorHint=\"@color/gray\"\r\n            android:layout_marginTop=\"100dp\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintTop_toTopOf=\"parent\"\r\n            />\r\n\r\n        <!-- Campo de contraseña -->\r\n        <EditText\r\n            android:id=\"@+id/password\"\r\n            android:layout_width=\"300dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginTop=\"10dp\"\r\n            android:hint=\"@string/contrasenia\"\r\n            android:textColorHint=\"@color/gray\"\r\n            android:background=\"@drawable/img_label\"\r\n            android:drawableEnd=\"@drawable/img_contrasenia\"\r\n            android:padding=\"12dp\"\r\n            android:inputType=\"textPassword\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintTop_toBottomOf=\"@id/email\" />\r\n\r\n        <!-- Texto de registro -->\r\n        <TextView\r\n            android:id=\"@+id/register_text\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginTop=\"20dp\"\r\n            android:text=\"¿No tienes cuenta? Regístrate\"\r\n            android:textColor=\"@color/white\"\r\n            android:textSize=\"16sp\"\r\n            android:fontFamily=\"@font/lora_semibolditalic\"\r\n            android:gravity=\"center\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintTop_toBottomOf=\"@id/password\" />\r\n\r\n\r\n        <!-- Botón de entrar -->\r\n        <Button\r\n            android:id=\"@+id/btn_login\"\r\n            android:layout_width=\"150dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginTop=\"16dp\"\r\n            android:text=\"@string/entrar\"\r\n            app:cornerRadius=\"8dp\"\r\n            android:textSize=\"17dp\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintTop_toBottomOf=\"@id/register_text\"\r\n            style=\"@style/boton\"/>\r\n\r\n\r\n    </androidx.constraintlayout.widget.ConstraintLayout>\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_login.xml b/app/src/main/res/layout/activity_login.xml
+--- a/app/src/main/res/layout/activity_login.xml	
++++ b/app/src/main/res/layout/activity_login.xml	
+@@ -107,7 +107,7 @@
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginTop="20dp"
+-            android:text="¿No tienes cuenta? Regístrate"
++            android:text="@string/no_tiene_cuenta"
+             android:textColor="@color/white"
+             android:textSize="16sp"
+             android:fontFamily="@font/lora_semibolditalic"
+@@ -125,7 +125,7 @@
+             android:layout_marginTop="16dp"
+             android:text="@string/entrar"
+             app:cornerRadius="8dp"
+-            android:textSize="17dp"
++            android:textSize="17sp"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintEnd_toEndOf="parent"
+             app:layout_constraintTop_toBottomOf="@id/register_text"
+Index: app/src/main/res/layout/activity_signup.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:id=\"@+id/main\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"@color/cream\"\r\n    tools:context=\".signup\">\r\n\r\n    <ImageView\r\n        android:id=\"@+id/volver_sign\"\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\" />\r\n\r\n    <!-- Logo -->\r\n    <ImageView\r\n        android:id=\"@+id/logo_StayChill\"\r\n        android:layout_width=\"100dp\"\r\n        android:layout_height=\"100dp\"\r\n        android:layout_marginTop=\"44dp\"\r\n        android:src=\"@drawable/img_stay_chill\"\r\n        app:layout_constraintEnd_toEndOf=\"@id/main\"\r\n        app:layout_constraintHorizontal_bias=\"0.498\"\r\n        app:layout_constraintStart_toStartOf=\"@id/main\"\r\n        app:layout_constraintTop_toTopOf=\"@id/main\" />\r\n\r\n    <ImageView\r\n        android:id=\"@+id/personaschill\"\r\n        android:layout_width=\"400dp\"\r\n        android:layout_height=\"400dp\"\r\n        android:layout_marginTop=\"52dp\"\r\n        android:src=\"@drawable/img_personas_chill\"\r\n        app:layout_constraintEnd_toEndOf=\"@id/main\"\r\n        app:layout_constraintHorizontal_bias=\"0.454\"\r\n        app:layout_constraintStart_toStartOf=\"@id/main\"\r\n        app:layout_constraintTop_toTopOf=\"@id/main\" />\r\n\r\n    <androidx.constraintlayout.widget.ConstraintLayout\r\n        android:id=\"@+id/cuadro\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"0dp\"\r\n        android:layout_marginTop=\"100dp\"\r\n        android:padding=\"20dp\"\r\n        android:background=\"@drawable/img_fondo_app\"\r\n        app:layout_constraintStart_toStartOf=\"parent\"\r\n        app:layout_constraintEnd_toEndOf=\"@id/main\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/logo_StayChill\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\">\r\n\r\n        <!-- Texto 'Registrarse' -->\r\n        <TextView\r\n            android:id=\"@+id/txt_IniciaSesion\"\r\n            android:layout_width=\"wrap_content\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:fontFamily=\"@font/lora_semibolditalic\"\r\n            android:text=\"@string/registrarse\"\r\n            android:textColor=\"@color/white\"\r\n            android:textSize=\"40sp\"\r\n            android:textStyle=\"bold\"\r\n            android:layout_marginBottom=\"-10dp\"\r\n            app:layout_constraintBottom_toTopOf=\"@id/nombre\"\r\n            app:layout_constraintEnd_toEndOf=\"@id/cuadro\"\r\n            app:layout_constraintStart_toStartOf=\"@id/cuadro\"\r\n            app:layout_constraintTop_toTopOf=\"@id/cuadro\"\r\n            app:layout_constraintVertical_bias=\"0.4\" />\r\n\r\n        <!-- Campo de nombre -->\r\n        <EditText\r\n            android:id=\"@+id/nombre\"\r\n            android:layout_width=\"300dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginTop=\"100dp\"\r\n            android:background=\"@drawable/img_label\"\r\n            android:drawableEnd=\"@drawable/img_usuario\"\r\n            android:hint=\"@string/nombre\"\r\n            android:inputType=\"text\"\r\n            android:padding=\"12dp\"\r\n            android:textColorHint=\"@color/gray\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintHorizontal_bias=\"0.492\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintTop_toTopOf=\"parent\" />\r\n\r\n        <!-- Campo de email -->\r\n        <EditText\r\n            android:id=\"@+id/email\"\r\n            android:layout_width=\"300dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:hint=\"Correo Electrónico\"\r\n            android:background=\"@drawable/img_label\"\r\n            android:drawableEnd=\"@drawable/img_correo\"\r\n            android:padding=\"12dp\"\r\n            android:inputType=\"textEmailAddress\"\r\n            android:textColorHint=\"@color/gray\"\r\n            android:layout_marginTop=\"10dp\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintTop_toBottomOf=\"@id/nombre\" />\r\n\r\n        <!-- Campo de contraseña -->\r\n        <EditText\r\n            android:id=\"@+id/password\"\r\n            android:layout_width=\"300dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginTop=\"10dp\"\r\n            android:hint=\"Contraseña\"\r\n            android:background=\"@drawable/img_label\"\r\n            android:drawableEnd=\"@drawable/img_contrasenia\"\r\n            android:padding=\"12dp\"\r\n            android:inputType=\"textPassword\"\r\n            android:textColorHint=\"@color/gray\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintTop_toBottomOf=\"@id/email\" />\r\n\r\n        <!-- Campo de repetir contraseña -->\r\n        <EditText\r\n            android:id=\"@+id/password_repetir\"\r\n            android:layout_width=\"300dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginTop=\"10dp\"\r\n            android:hint=\"@string/contrasenia\"\r\n            android:background=\"@drawable/img_label\"\r\n            android:drawableEnd=\"@drawable/img_contrasenia\"\r\n            android:padding=\"12dp\"\r\n            android:inputType=\"textPassword\"\r\n            android:textColorHint=\"@color/gray\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintTop_toBottomOf=\"@id/password\" />\r\n\r\n        <!-- Texto de registro -->\r\n        <TextView\r\n            android:id=\"@+id/inicio_text\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginTop=\"12dp\"\r\n            android:text=\"¿Ya tienes cuenta? Inicia sesión\"\r\n            android:textColor=\"@color/white\"\r\n            android:textSize=\"16sp\"\r\n            android:fontFamily=\"@font/lora_semibolditalic\"\r\n            android:gravity=\"center\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintTop_toBottomOf=\"@id/password_repetir\" />\r\n\r\n        <!-- Botón de entrar -->\r\n        <Button\r\n            android:id=\"@+id/btn_signup\"\r\n            android:layout_width=\"150dp\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginTop=\"25dp\"\r\n            android:text=\"Entrar\"\r\n            android:textSize=\"17dp\"\r\n            app:layout_constraintStart_toStartOf=\"parent\"\r\n            app:layout_constraintEnd_toEndOf=\"parent\"\r\n            app:layout_constraintTop_toBottomOf=\"@id/inicio_text\"\r\n            style=\"@style/boton\" />\r\n\r\n    </androidx.constraintlayout.widget.ConstraintLayout>\r\n</androidx.constraintlayout.widget.ConstraintLayout>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_signup.xml b/app/src/main/res/layout/activity_signup.xml
+--- a/app/src/main/res/layout/activity_signup.xml	
++++ b/app/src/main/res/layout/activity_signup.xml	
+@@ -8,10 +8,6 @@
+     android:background="@color/cream"
+     tools:context=".signup">
+ 
+-    <ImageView
+-        android:id="@+id/volver_sign"
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content" />
+ 
+     <!-- Logo -->
+     <ImageView
+@@ -136,7 +132,7 @@
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginTop="12dp"
+-            android:text="¿Ya tienes cuenta? Inicia sesión"
++            android:text="@string/tiene_cuenta"
+             android:textColor="@color/white"
+             android:textSize="16sp"
+             android:fontFamily="@font/lora_semibolditalic"
+Index: app/src/main/res/layout/activity_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:id=\"@+id/main\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"@color/cream\"\r\n    tools:context=\".main\">\r\n\r\n    <androidx.appcompat.widget.SearchView\r\n        android:id=\"@+id/search_view\"\r\n        android:layout_width=\"0dp\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:iconifiedByDefault=\"false\"\r\n        android:background=\"@drawable/img_buscador\"\r\n        android:hint=\"@string/correo\"\r\n        android:textColorHint=\"@color/gray\"\r\n        android:layout_marginTop=\"10dp\"\r\n        app:layout_constraintTop_toBottomOf=\"@id/logo_esquina\"\r\n        app:layout_constraintStart_toStartOf=\"@id/logo_esquina\"\r\n        app:layout_constraintEnd_toEndOf=\"@id/notif_esquina\" />\r\n\r\n    <ImageView\r\n        android:id=\"@+id/logo_esquina\"\r\n        android:layout_width=\"45dp\"\r\n        android:layout_height=\"45dp\"\r\n        app:layout_constraintStart_toStartOf=\"@id/main\"\r\n        app:layout_constraintTop_toTopOf=\"@id/main\"\r\n        android:src=\"@drawable/img_stay_chill\"\r\n        android:layout_margin=\"20dp\">\r\n    </ImageView>\r\n    <ImageView\r\n        android:id=\"@+id/notif_esquina\"\r\n        android:layout_width=\"40dp\"\r\n        android:layout_height=\"40dp\"\r\n        app:layout_constraintEnd_toEndOf=\"@id/main\"\r\n        app:layout_constraintTop_toTopOf=\"@id/main\"\r\n        android:src=\"@drawable/img_notificacion\"\r\n        android:layout_margin=\"20dp\">\r\n    </ImageView>\r\n\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/layout/activity_main.xml b/app/src/main/res/layout/activity_main.xml
+--- a/app/src/main/res/layout/activity_main.xml	
++++ b/app/src/main/res/layout/activity_main.xml	
+@@ -5,7 +5,7 @@
+     android:id="@+id/main"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+-    android:background="@color/cream"
++    android:background="@color/white"
+     tools:context=".main">
+ 
+     <androidx.appcompat.widget.SearchView
+@@ -40,5 +40,14 @@
+         android:layout_margin="20dp">
+     </ImageView>
+ 
++    <androidx.recyclerview.widget.RecyclerView
++        android:layout_width="0dp"
++        android:layout_height="wrap_content"
++        app:layout_constraintStart_toStartOf="@id/logo_esquina"
++        app:layout_constraintEnd_toEndOf="@id/notif_esquina"
++        app:layout_constraintTop_toBottomOf="@id/search_view"
++        tools:layout_editor_absoluteX="1dp"
++        tools:layout_editor_absoluteY="124dp" />
++
+ 
+ </androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
+Index: app/src/main/res/drawable/img_usuario.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><vector xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:width=\"17dp\"\r\n    android:height=\"20dp\"\r\n    android:viewportWidth=\"14\"\r\n    android:viewportHeight=\"20\">\r\n  <path\r\n      android:pathData=\"M6.987,13.067C3.764,13.067 1.012,13.603 1.012,15.75C1.012,17.897 3.747,18.452 6.987,18.452C10.21,18.452 12.962,17.915 12.962,15.769C12.962,13.623 10.228,13.067 6.987,13.067Z\"\r\n      android:strokeLineJoin=\"round\"\r\n      android:strokeWidth=\"1.5\"\r\n      android:fillColor=\"#00000000\"\r\n      android:fillType=\"evenOdd\"\r\n      android:strokeColor=\"#000000\"\r\n      android:strokeLineCap=\"round\"/>\r\n  <path\r\n      android:pathData=\"M6.987,10.005C9.102,10.005 10.817,8.119 10.817,5.792C10.817,3.466 9.102,1.58 6.987,1.58C4.872,1.58 3.157,3.466 3.157,5.792C3.15,8.111 4.853,9.998 6.96,10.005H6.987Z\"\r\n      android:strokeLineJoin=\"round\"\r\n      android:strokeWidth=\"1.42857\"\r\n      android:fillColor=\"#00000000\"\r\n      android:fillType=\"evenOdd\"\r\n      android:strokeColor=\"#000000\"\r\n      android:strokeLineCap=\"round\"/>\r\n</vector>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/img_usuario.xml b/app/src/main/res/drawable/img_usuario.xml
+--- a/app/src/main/res/drawable/img_usuario.xml	
++++ b/app/src/main/res/drawable/img_usuario.xml	
+@@ -1,22 +1,9 @@
+ <vector xmlns:android="http://schemas.android.com/apk/res/android"
+-    android:width="17dp"
+-    android:height="20dp"
+-    android:viewportWidth="14"
+-    android:viewportHeight="20">
++    android:width="32dp"
++    android:height="32dp"
++    android:viewportWidth="32"
++    android:viewportHeight="32">
+   <path
+-      android:pathData="M6.987,13.067C3.764,13.067 1.012,13.603 1.012,15.75C1.012,17.897 3.747,18.452 6.987,18.452C10.21,18.452 12.962,17.915 12.962,15.769C12.962,13.623 10.228,13.067 6.987,13.067Z"
+-      android:strokeLineJoin="round"
+-      android:strokeWidth="1.5"
+-      android:fillColor="#00000000"
+-      android:fillType="evenOdd"
+-      android:strokeColor="#000000"
+-      android:strokeLineCap="round"/>
+-  <path
+-      android:pathData="M6.987,10.005C9.102,10.005 10.817,8.119 10.817,5.792C10.817,3.466 9.102,1.58 6.987,1.58C4.872,1.58 3.157,3.466 3.157,5.792C3.15,8.111 4.853,9.998 6.96,10.005H6.987Z"
+-      android:strokeLineJoin="round"
+-      android:strokeWidth="1.42857"
+-      android:fillColor="#00000000"
+-      android:fillType="evenOdd"
+-      android:strokeColor="#000000"
+-      android:strokeLineCap="round"/>
++      android:pathData="M13.222,13.071C16.662,13.071 19.448,10.265 19.448,6.829C19.448,3.446 16.662,0.757 13.222,0.757C9.797,0.757 6.983,3.485 6.997,6.855C7.012,10.278 9.783,13.071 13.222,13.071ZM13.222,10.776C11.261,10.776 9.598,9.058 9.598,6.855C9.584,4.705 11.247,3.052 13.222,3.052C15.212,3.052 16.847,4.678 16.847,6.829C16.847,9.032 15.198,10.776 13.222,10.776ZM4.354,25.267H22.077C24.536,25.267 25.715,24.546 25.715,22.998C25.715,19.392 20.84,14.592 13.222,14.592C5.604,14.592 0.715,19.392 0.715,22.998C0.715,24.546 1.895,25.267 4.354,25.267ZM3.913,22.972C3.572,22.972 3.444,22.867 3.444,22.631C3.444,20.625 6.955,16.887 13.222,16.887C19.476,16.887 22.986,20.625 22.986,22.631C22.986,22.867 22.859,22.972 22.517,22.972H3.913Z"
++      android:fillColor="#000000"/>
+ </vector>
+Index: app/src/main/res/drawable/img_mensaje.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/img_mensaje.xml b/app/src/main/res/drawable/img_mensaje.xml
+new file mode 100644
+--- /dev/null	
++++ b/app/src/main/res/drawable/img_mensaje.xml	
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="29dp"
++    android:height="29dp"
++    android:viewportWidth="29"
++    android:viewportHeight="29">
++  <path
++      android:pathData="M8.274,29C9.021,29 9.571,28.615 10.474,27.777L14.965,23.626H22.847C26.787,23.626 29,21.235 29,17.153V6.473C29,2.391 26.787,0 22.847,0H6.154C2.226,0 0,2.391 0,6.473V17.153C0,21.248 2.291,23.626 6.062,23.626H6.599V26.993C6.599,28.217 7.214,29 8.274,29ZM8.929,25.921V22.004C8.929,21.193 8.589,20.877 7.856,20.877H6.245C3.784,20.877 2.605,19.572 2.605,17.07V6.556C2.605,4.055 3.784,2.749 6.245,2.749H22.768C25.216,2.749 26.395,4.055 26.395,6.556V17.07C26.395,19.572 25.216,20.877 22.768,20.877H14.821C14.022,20.877 13.629,21.015 13.08,21.619L8.929,25.921ZM7.842,8.219H21.027C21.472,8.219 21.838,7.834 21.838,7.353C21.838,6.886 21.472,6.501 21.027,6.501H7.842C7.397,6.501 7.044,6.886 7.044,7.353C7.044,7.834 7.397,8.219 7.842,8.219ZM7.842,12.59H21.027C21.472,12.59 21.838,12.191 21.838,11.71C21.838,11.256 21.472,10.858 21.027,10.858H7.842C7.397,10.858 7.044,11.256 7.044,11.71C7.044,12.191 7.397,12.59 7.842,12.59ZM7.842,16.946H16.431C16.889,16.946 17.243,16.562 17.243,16.094C17.243,15.613 16.889,15.228 16.431,15.228H7.842C7.397,15.228 7.044,15.613 7.044,16.094C7.044,16.562 7.397,16.946 7.842,16.946Z"
++      android:fillColor="#000000"/>
++</vector>
+Index: .idea/deploymentTargetSelector.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/deploymentTargetSelector.xml b/.idea/deploymentTargetSelector.xml
+new file mode 100644
+--- /dev/null	
++++ b/.idea/deploymentTargetSelector.xml	
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="deploymentTargetSelector">
++    <selectionStates>
++      <SelectionState runConfigName="app">
++        <option name="selectionMode" value="DROPDOWN" />
++      </SelectionState>
++    </selectionStates>
++  </component>
++</project>
+\ No newline at end of file
+Index: app/src/main/res/values/style.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <style name=\"boton_entrar\">\r\n        <item name=\"android:backgroundTint\">@color/rojo4</item>\r\n        <item name=\"android:padding\">12dp</item>\r\n        <item name=\"android:fontFamily\">@font/lora_bold</item>\r\n        <item name=\"android:textColor\">@color/white</item>\r\n    </style>\r\n</resources>\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/style.xml b/app/src/main/res/values/style.xml
+--- a/app/src/main/res/values/style.xml	
++++ b/app/src/main/res/values/style.xml	
+@@ -1,6 +1,6 @@
+ <resources>
+     <style name="boton_entrar">
+-        <item name="android:backgroundTint">@color/rojo4</item>
++        <item name="android:backgroundTint">@color/red</item>
+         <item name="android:padding">12dp</item>
+         <item name="android:fontFamily">@font/lora_bold</item>
+         <item name="android:textColor">@color/white</item>
+Index: app/src/main/res/drawable/img_home.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/img_home.xml b/app/src/main/res/drawable/img_home.xml
+new file mode 100644
+--- /dev/null	
++++ b/app/src/main/res/drawable/img_home.xml	
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="32dp"
++    android:height="32dp"
++    android:viewportWidth="32"
++    android:viewportHeight="32">
++  <path
++      android:pathData="M0.644,12.878C0.644,13.531 1.146,14.096 1.95,14.096C2.339,14.096 2.691,13.883 3.005,13.632L15.46,3.173C15.812,2.871 16.213,2.871 16.565,3.173L29.008,13.632C29.309,13.883 29.661,14.096 30.05,14.096C30.791,14.096 31.356,13.632 31.356,12.903C31.356,12.477 31.192,12.137 30.866,11.861L27.338,8.898V3.675C27.338,3.11 26.974,2.758 26.409,2.758H24.676C24.124,2.758 23.747,3.11 23.747,3.675V5.872L17.795,0.875C16.703,-0.042 15.322,-0.042 14.23,0.875L1.146,11.861C0.807,12.137 0.644,12.514 0.644,12.878ZM4.725,24.166C4.725,25.974 5.855,27.066 7.726,27.066H24.287C26.145,27.066 27.288,25.974 27.288,24.166V14.624L16.778,5.822C16.289,5.395 15.699,5.408 15.222,5.822L4.725,14.624V24.166ZM19.302,24.706H12.71V16.67C12.71,16.08 13.1,15.703 13.69,15.703H18.335C18.926,15.703 19.302,16.08 19.302,16.67V24.706Z"
++      android:fillColor="#000000"/>
++</vector>
+Index: app/src/main/res/drawable/img_calendario.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/img_calendario.xml b/app/src/main/res/drawable/img_calendario.xml
+new file mode 100644
+--- /dev/null	
++++ b/app/src/main/res/drawable/img_calendario.xml	
+@@ -0,0 +1,9 @@
++<vector xmlns:android="http://schemas.android.com/apk/res/android"
++    android:width="32dp"
++    android:height="32dp"
++    android:viewportWidth="32"
++    android:viewportHeight="32">
++  <path
++      android:pathData="M0,21.888C0,24.815 1.295,26.347 3.771,26.347H15.725C15.301,25.527 15.003,24.597 14.865,23.625H3.759C2.808,23.625 2.281,23.037 2.281,21.834V9.251C2.281,8.047 2.808,7.459 3.759,7.459H19.564C20.516,7.459 21.043,8.047 21.043,9.251V12.916C21.444,12.834 21.822,12.793 22.201,12.793C22.579,12.793 22.957,12.834 23.335,12.902V5.243C23.335,2.316 22.04,0.784 19.553,0.784H3.771C1.295,0.784 0,2.302 0,5.243V21.888ZM5.719,12.369H17.628C18.04,12.369 18.35,11.986 18.35,11.48C18.35,11.001 18.04,10.632 17.628,10.632H5.719C5.295,10.632 4.986,11.001 4.986,11.48C4.986,11.986 5.295,12.369 5.719,12.369ZM5.719,16.404H16.183C16.584,15.747 17.043,15.173 17.582,14.667H5.719C5.295,14.667 4.986,15.064 4.986,15.556C4.986,16.035 5.295,16.404 5.719,16.404ZM22.201,28.837C25.41,28.837 28.115,25.636 28.115,21.779C28.115,17.922 25.444,14.735 22.201,14.735C18.969,14.735 16.298,17.922 16.298,21.779C16.298,25.65 18.969,28.837 22.201,28.837ZM18.453,21.779C18.453,21.218 18.774,20.849 19.243,20.849H21.41V18.264C21.41,17.703 21.731,17.32 22.201,17.32C22.682,17.32 22.991,17.703 22.991,18.264V20.849H25.158C25.628,20.849 25.948,21.218 25.948,21.779C25.948,22.354 25.628,22.723 25.158,22.723H22.991V25.322C22.991,25.882 22.682,26.251 22.201,26.251C21.731,26.251 21.41,25.882 21.41,25.322V22.723H19.243C18.774,22.723 18.464,22.354 18.453,21.779ZM5.719,20.439H13.238C13.65,20.439 13.96,20.069 13.96,19.591C13.96,19.098 13.65,18.715 13.238,18.715H5.719C5.295,18.715 4.986,19.098 4.986,19.591C4.986,20.069 5.295,20.439 5.719,20.439Z"
++      android:fillColor="#000000"/>
++</vector>
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <string name=\"app_name\">Stay Chill</string>\r\n    <string name=\"iniciar\">Inicia Sesión</string>\r\n    <string name=\"correo\">Correo Electrónico</string>\r\n    <string name=\"contrasenia\">Contraseña</string>\r\n    <string name=\"tiene_cuenta\">¿No tienes cuenta? Regístrate</string>\r\n    <string name=\"entrar\">Entrar</string>\r\n    <string name=\"bienvenido\">¡Bienvenido!</string>\r\n    <string name=\"no_tiene_cuenta\">¿No tienes cuenta? Regístrate</string>\r\n    <string name=\"registrarse\">Registrarse</string>\r\n    <string name=\"nombre\">Nombre</string>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+--- a/app/src/main/res/values/strings.xml	
++++ b/app/src/main/res/values/strings.xml	
+@@ -3,7 +3,7 @@
+     <string name="iniciar">Inicia Sesión</string>
+     <string name="correo">Correo Electrónico</string>
+     <string name="contrasenia">Contraseña</string>
+-    <string name="tiene_cuenta">¿No tienes cuenta? Regístrate</string>
++    <string name="tiene_cuenta">¿Ya tienes cuenta? Inicia sesión</string>
+     <string name="entrar">Entrar</string>
+     <string name="bienvenido">¡Bienvenido!</string>
+     <string name="no_tiene_cuenta">¿No tienes cuenta? Regístrate</string>
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"GradleSettings\">\r\n    <option name=\"linkedExternalProjectsSettings\">\r\n      <GradleProjectSettings>\r\n        <option name=\"externalProjectPath\" value=\"$PROJECT_DIR$\" />\r\n        <option name=\"gradleJvm\" value=\"#GRADLE_LOCAL_JAVA_HOME\" />\r\n        <option name=\"modules\">\r\n          <set>\r\n            <option value=\"$PROJECT_DIR$\" />\r\n            <option value=\"$PROJECT_DIR$/app\" />\r\n          </set>\r\n        </option>\r\n        <option name=\"resolveExternalAnnotations\" value=\"false\" />\r\n      </GradleProjectSettings>\r\n    </option>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/gradle.xml b/.idea/gradle.xml
+--- a/.idea/gradle.xml	
++++ b/.idea/gradle.xml	
+@@ -1,5 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
++  <component name="GradleMigrationSettings" migrationVersion="1" />
+   <component name="GradleSettings">
+     <option name="linkedExternalProjectsSettings">
+       <GradleProjectSettings>
+Index: app/src/main/res/drawable/notificacion.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><vector xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    android:width=\"1080dp\"\r\n    android:height=\"1080dp\"\r\n    android:viewportWidth=\"1080\"\r\n    android:viewportHeight=\"1080\">\r\n  <path\r\n      android:pathData=\"M0,0h1080v1080h-1080z\"\r\n      android:strokeLineJoin=\"miter\"\r\n      android:strokeWidth=\"1\"\r\n      android:fillColor=\"#FFFFFF\"\r\n      android:fillType=\"nonZero\"\r\n      android:strokeColor=\"#00000000\"\r\n      android:strokeLineCap=\"butt\"/>\r\n  <path\r\n      android:pathData=\"M540,0C326.9,0 180,132.2 180,324C180,350.2 180,430.4 180,432C180,449.4 170.3,461.2 136.9,486C133.1,488.8 117.2,501.1 112.5,504.6C36.6,561.1 -0.8,614 0,702C0.8,791 81.4,863 180,864L370.6,864C370.6,864 360,897 360,918C360,1007.5 440.6,1080 540,1080C639.4,1080 720,1007.5 720,918C720,897 709.9,864 709.9,864L900,864C998.4,864.3 1080.1,791.4 1080,702C1079.9,614.6 1042.4,560.8 967.5,504.6C962.6,500.8 945.2,488.9 941.2,486C908.6,461.5 900,449.2 900,432C900,364.5 900,324 900,324C900,132.2 753.1,0 540,0ZM540,108C686.9,108 780,191.8 780,324C780,324 780,364.5 780,432C780,489.3 806.9,525.5 864.4,568.7C868.9,572.1 888.2,585.7 892.5,588.9C942.8,626.7 959.9,652.2 960,702C960.1,731.4 932.1,756.1 900,756C888.7,755.9 714,755.9 540,756C366,756.1 192.8,756.1 180,756C146.5,755.6 120.3,732 120,702C119.6,652.3 136.7,626.7 187.5,588.9C191.7,585.8 209.4,571.9 213.8,568.7C272.2,525.3 300,489.9 300,432C300,430.4 300,350.2 300,324C300,191.8 393.1,108 540,108ZM540,864C573.1,864 600,888.2 600,918C600,947.8 573.1,972 540,972C506.9,972 480,947.8 480,918C480,888.2 506.9,864 540,864Z\"\r\n      android:strokeLineJoin=\"miter\"\r\n      android:strokeWidth=\"30\"\r\n      android:fillColor=\"#A62E2E\"\r\n      android:fillType=\"nonZero\"\r\n      android:strokeColor=\"#00000000\"\r\n      android:strokeLineCap=\"butt\"/>\r\n</vector>\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/drawable/notificacion.xml b/app/src/main/res/drawable/notificacion.xml
+--- a/app/src/main/res/drawable/notificacion.xml	
++++ b/app/src/main/res/drawable/notificacion.xml	
+@@ -7,7 +7,6 @@
+       android:pathData="M0,0h1080v1080h-1080z"
+       android:strokeLineJoin="miter"
+       android:strokeWidth="1"
+-      android:fillColor="#FFFFFF"
+       android:fillType="nonZero"
+       android:strokeColor="#00000000"
+       android:strokeLineCap="butt"/>

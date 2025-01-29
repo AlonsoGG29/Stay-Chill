@@ -5,91 +5,104 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/crema2"
-    tools:context=".welcome">
+    android:background="@color/cream"
+    tools:context=".Welcome">
 
     <!-- Logo -->
     <ImageView
         android:id="@+id/logo_StayChill"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:contentDescription="@string/logo"
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginTop="50dp"
-        android:src="@drawable/staychill" />
+        android:layout_marginTop="60dp"
+        android:src="@drawable/img_stay_chill" />
+
+    <ImageView
+        android:id="@+id/personaschill"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_marginTop="140dp"
+        android:contentDescription="@string/chill"
+        android:src="@drawable/img_personas_chill"
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cuadro"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="190dp"
+        android:background="@drawable/img_fondo_app"
         android:padding="24dp"
-        android:background="@drawable/fondoapp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintTop_toBottomOf="@id/logo_StayChill"
-        app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Texto 'Bienvenido' -->
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintStart_toStartOf="@+id/main"
+        app:layout_constraintBottom_toBottomOf="@+id/main"
+        app:layout_constraintTop_toBottomOf="@id/logo_StayChill"
+        >
+
+
+        <!-- Botón de entrar -->
+
         <TextView
             android:id="@+id/bienvenido"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="44dp"
+            android:fontFamily="@font/lora_semibolditalic"
+            android:text="@string/bienvenido"
             android:textColor="@color/white"
-            android:textStyle="bold"
             android:textSize="40sp"
-            android:fontFamily="@font/lora_bold"
-            android:text="¡BIENVENIDO!"
-            app:layout_constraintStart_toStartOf="@id/cuadro"
             app:layout_constraintEnd_toEndOf="@id/cuadro"
-            app:layout_constraintTop_toTopOf="@id/cuadro"
-            app:layout_constraintBottom_toTopOf="@id/entrar_welcome">
-        </TextView>
+            app:layout_constraintStart_toStartOf="@id/cuadro"
+            app:layout_constraintTop_toTopOf="@id/cuadro" />
 
-
-        <!-- Botón de entrar -->
         <Button
             android:id="@+id/entrar_welcome"
-            android:layout_width="150dp"
+            style="@style/boton"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Entrar"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="24dp"
+            android:text="@string/entrar"
+            android:textSize="17sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bienvenido"
-            style="@style/boton_entrar"/>
-
+            tools:ignore="SpUsage" />
 
         <!-- Botón de iniciar sesión -->
         <Button
             android:id="@+id/sesion_welcome"
-            android:layout_width="150dp"
+            style="@style/boton"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Iniciar sesión"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="8dp"
+            android:text="@string/iniciar"
+            android:textSize="17sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/entrar_welcome"
-            style="@style/boton_entrar"/>
-
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/entrar_welcome" />
 
         <!-- Texto de registro -->
         <TextView
             android:id="@+id/registrarse_welcome"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="¿No tienes cuenta? Regístrate"
+            android:layout_marginTop="95dp"
+            android:fontFamily="@font/lora_semibolditalic"
+            android:text="@string/no_tiene_cuenta"
             android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:fontFamily="@font/lora_bold"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="15sp"
+            android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/sesion_welcome" />
-
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

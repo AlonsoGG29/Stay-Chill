@@ -7,11 +7,13 @@ Enlace a Figma: https://www.figma.com/design/KyVoo7Z4Q3HpOeT7HOTeMz/Stay-Chill?n
 
 Enlace a Trello : https://trello.com/b/efP3xoTZ/stay-chill
 
+
 ## Integrantes del proyecto:
 
 - Alonso Gómez - CM Cloud Master
 - Angel Castillo - DS Designer
 - Konrad Drobnik - SM Scrum Master
+
 
 ## Descripción de la app:
 
@@ -19,6 +21,7 @@ Stay Chill se trata de una aplicación para móviles, que invita a los usuarios 
 La diferencia de otras apps para conocer gente (Tinder, Badoo, etc...) es que aquí las personas se presentan de manera física. La gente crea un evento, por ejemplo, ir a echar un partido de baloncesto en las pistas del barrio, y desde la app el resto de usuarios pueden buscar ese u otros eventos y autoinvitarse.
 
 La app busca que la gente se conozca como antiguamente, en persona, y no escribiéndose por chat. De esa manera, se crean relaciones o amistades más fuertes y directas.
+
 
 ## Paleta de colores:
 
@@ -28,30 +31,66 @@ La app busca que la gente se conozca como antiguamente, en persona, y no escribi
 
 La paleta de colores fue seleccionada para transmitir confianza, calidez y dinamismo, reflejando la esencia de conectar personas a través de eventos. Los tonos combinan profesionalismo, cercanía y claridad visual, creando una experiencia atractiva y funcional que invita a la interacción.
 
+
 ## Pantallas.
 
-Prototipos de las pantallas que tendrá la app.
+Primera versión de las futuras pantallas que tendrá la app.
+
+
+### Splash:
+
+<p align="center">
+  <img src="imagenes/pantalla_1_splash.jpg" alt="MAIN" />
+</p>
+
+
+### Login:
+
+<p align="center">
+  <img src="imagenes/pantalla_2_login.jpg" alt="MAIN" />
+</p>
+
+
+### Register:
+
+<p align="center">
+  <img src="imagenes/pantalla_3_register.jpg" alt="MAIN" />
+</p>
+
 
 ### Página principal:
 
 <p align="center">
-  <img src="imagenes/main.jpg" alt="MAIN" />
+  <img src="imagenes/pantalla_4_main.jpg" alt="MAIN" />
 </p>
 
-### Página de eventos:
+- Busqueda en el menú principal
+<p align="center">
+  <img src="imagenes/pantalla_4b_busqueda.jpg" alt="MAIN" />
+</p>
+
+- Barra de navegación
+<p align="center">
+  <img src="imagenes/pantalla_4c_navigationmenu.jpg" alt="MAIN" />
+</p>
+
+
+### Página de eventos (aún en desarrollo):
 
 <p align="center">
   <img src="imagenes/eventos.jpg" alt="EVENTOS" />
 </p>
 
-### Página de mensajes:
+
+### Página de mensajes (aun en desarrollo):
 
 <p align="center">
   <img src="imagenes/mensajes.jpg" alt="MENSAJES" />
 </p>
 
+
 ### Página de configuración:
 
 <p align="center">
-  <img src="imagenes/configuracion.jpg" alt="CONFIGURAR" />
+  <img src="imagenes/pantalla_5_fragmentopciones.jpg" alt="CONFIGURAR" />
 </p>

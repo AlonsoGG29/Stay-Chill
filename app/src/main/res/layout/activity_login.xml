@@ -5,60 +5,56 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/crema2"
-    tools:context=".login">
+    android:background="@color/cream"
+    tools:context=".Login">
 
-    <ImageView
-        android:id="@+id/volver_login"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="20dp"
-        android:src="@drawable/atras"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
 
     <!-- Logo -->
+
     <ImageView
         android:id="@+id/logo_StayChill"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        app:layout_constraintStart_toStartOf="@id/main"
+        android:layout_marginTop="80dp"
+        android:src="@drawable/img_stay_chill"
         app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/staychill" />
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main" />
 
     <ImageView
         android:id="@+id/personaschill"
-        android:layout_width="500dp"
-        android:layout_height="500dp"
-        app:layout_constraintStart_toStartOf="@id/main"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/img_personas_chill"
         app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/chill" />
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cuadro"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="130dp"
         android:padding="24dp"
-        android:background="@drawable/fondoapp"
+        android:background="@drawable/img_fondo_app"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintTop_toBottomOf="@id/logo_StayChill"
         app:layout_constraintBottom_toBottomOf="parent">
 
-    <!-- Texto 'Inicia sesión' -->
+        <!-- Texto 'Inicia sesión' -->
         <TextView
             android:id="@+id/txt_IniciaSesion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:textSize="40dp"
+            android:textSize="40sp"
             android:fontFamily="@font/lora_semibolditalic"
-            android:text="Inicia Sesión"
+            android:text="@string/iniciar"
             app:layout_constraintStart_toStartOf="@id/cuadro"
             app:layout_constraintEnd_toEndOf="@id/cuadro"
             app:layout_constraintTop_toTopOf="@id/cuadro"
@@ -66,18 +62,18 @@
         </TextView>
 
 
-    <!-- Campo de email -->
+        <!-- Campo de email -->
         <EditText
             android:id="@+id/email"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:hint="@string/correo"
-            android:background="@drawable/edit_background"
-            android:drawableEnd="@drawable/email"
+            android:background="@drawable/img_label"
+            android:drawableEnd="@drawable/img_correo"
             android:padding="12dp"
             android:inputType="textEmailAddress"
-            android:textColorHint="@color/gris5"
-            android:layout_marginTop="90dp"
+            android:textColorHint="@color/gray"
+            android:layout_marginTop="100dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -86,13 +82,13 @@
         <!-- Campo de contraseña -->
         <EditText
             android:id="@+id/password"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="Contraseña"
-            android:textColorHint="@color/gris5"
-            android:background="@drawable/edit_background"
-            android:drawableEnd="@drawable/password"
+            android:hint="@string/contrasenia"
+            android:textColorHint="@color/gray"
+            android:background="@drawable/img_label"
+            android:drawableEnd="@drawable/img_contrasenia"
             android:padding="12dp"
             android:inputType="textPassword"
             app:layout_constraintStart_toStartOf="parent"
@@ -102,16 +98,18 @@
         <!-- Texto de registro -->
         <TextView
             android:id="@+id/register_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="¿No tienes cuenta? Regístrate"
+            android:text="@string/no_tiene_cuenta"
             android:textColor="@color/white"
-            android:textSize="20dp"
+            android:textSize="16sp"
             android:fontFamily="@font/lora_semibolditalic"
+            android:gravity="center"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/password" />
+
 
         <!-- Botón de entrar -->
         <Button
@@ -119,12 +117,13 @@
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Entrar"
+            android:text="@string/entrar"
             app:cornerRadius="8dp"
+            android:textSize="17sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/register_text"
-            style="@style/boton_entrar"/>
+            style="@style/boton"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

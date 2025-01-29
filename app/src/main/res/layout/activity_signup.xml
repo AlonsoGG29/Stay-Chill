@@ -5,120 +5,123 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/crema2"
-    tools:context=".signup">
+    android:background="@color/cream"
+    tools:context=".Signup">
 
-    <ImageView
-        android:id="@+id/volver_sign"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="20dp"
-        android:src="@drawable/atras"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Logo -->
     <ImageView
         android:id="@+id/logo_StayChill"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        app:layout_constraintStart_toStartOf="@id/main"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="44dp"
+        android:src="@drawable/img_stay_chill"
         app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        android:layout_marginTop="50dp"
-        android:src="@drawable/staychill" />
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main" />
+
+    <ImageView
+        android:id="@+id/personaschill"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_marginTop="52dp"
+        android:src="@drawable/img_personas_chill"
+        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="@id/main"
+        app:layout_constraintTop_toTopOf="@id/main" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cuadro"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="30dp"
-        android:padding="24dp"
-        android:background="@drawable/fondoapp"
+        android:layout_marginTop="100dp"
+        android:padding="20dp"
+        android:background="@drawable/img_fondo_app"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintTop_toBottomOf="@id/logo_StayChill"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Texto 'Inicia sesión' -->
+        <!-- Texto 'Registrarse' -->
         <TextView
             android:id="@+id/txt_IniciaSesion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/lora_semibolditalic"
+            android:text="@string/registrarse"
             android:textColor="@color/white"
+            android:textSize="40sp"
             android:textStyle="bold"
-            android:textSize="40dp"
-            android:fontFamily="@font/lora_bold"
-            android:text="Registro"
-            app:layout_constraintStart_toStartOf="@id/cuadro"
+            android:layout_marginBottom="-10dp"
+            app:layout_constraintBottom_toTopOf="@id/nombre"
             app:layout_constraintEnd_toEndOf="@id/cuadro"
+            app:layout_constraintStart_toStartOf="@id/cuadro"
             app:layout_constraintTop_toTopOf="@id/cuadro"
-            app:layout_constraintBottom_toTopOf="@id/nombre">
-        </TextView>
+            app:layout_constraintVertical_bias="0.4" />
 
         <!-- Campo de nombre -->
         <EditText
             android:id="@+id/nombre"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:hint="Nombre"
-            android:background="@drawable/edit_background"
-            android:drawableEnd="@drawable/email"
-            android:padding="12dp"
+            android:layout_marginTop="100dp"
+            android:background="@drawable/img_label"
+            android:drawableEnd="@drawable/img_usuario"
+            android:hint="@string/nombre"
             android:inputType="text"
-            android:fontFamily="@font/lora_bold"
-            android:layout_marginTop="90dp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:padding="12dp"
+            android:textColorHint="@color/gray"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintHorizontal_bias="0.492"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Campo de email -->
         <EditText
             android:id="@+id/email"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:hint="Correo Electrónico"
-            android:background="@drawable/edit_background"
-            android:drawableEnd="@drawable/email"
+            android:background="@drawable/img_label"
+            android:drawableEnd="@drawable/img_correo"
             android:padding="12dp"
             android:inputType="textEmailAddress"
-            android:fontFamily="@font/lora_bold"
+            android:textColorHint="@color/gray"
             android:layout_marginTop="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/nombre"
-            />
+            app:layout_constraintTop_toBottomOf="@id/nombre" />
 
         <!-- Campo de contraseña -->
         <EditText
             android:id="@+id/password"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:hint="Contraseña"
-            android:background="@drawable/edit_background"
-            android:drawableEnd="@drawable/password"
+            android:background="@drawable/img_label"
+            android:drawableEnd="@drawable/img_contrasenia"
             android:padding="12dp"
             android:inputType="textPassword"
-            android:fontFamily="@font/lora_bold"
+            android:textColorHint="@color/gray"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/email" />
 
-
         <!-- Campo de repetir contraseña -->
         <EditText
             android:id="@+id/password_repetir"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="Contraseña"
-            android:background="@drawable/edit_background"
-            android:drawableEnd="@drawable/password"
+            android:hint="@string/contrasenia"
+            android:background="@drawable/img_label"
+            android:drawableEnd="@drawable/img_contrasenia"
             android:padding="12dp"
             android:inputType="textPassword"
-            android:fontFamily="@font/lora_bold"
+            android:textColorHint="@color/gray"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/password" />
@@ -126,14 +129,14 @@
         <!-- Texto de registro -->
         <TextView
             android:id="@+id/inicio_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="¿Ya tienes cuenta? Inicia sesión"
+            android:layout_marginTop="12dp"
+            android:text="@string/tiene_cuenta"
             android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:fontFamily="@font/lora_bold"
+            android:textSize="16sp"
+            android:fontFamily="@font/lora_semibolditalic"
+            android:gravity="center"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/password_repetir" />
@@ -143,13 +146,13 @@
             android:id="@+id/btn_signup"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="25dp"
             android:text="Entrar"
+            android:textSize="17dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/inicio_text"
-            style="@style/boton_entrar"/>
-
+            style="@style/boton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

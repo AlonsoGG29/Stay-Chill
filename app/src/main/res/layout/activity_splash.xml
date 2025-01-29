@@ -5,65 +5,35 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/crema2"
-    tools:context=".splash">
+    android:background="@color/cream"
+    tools:context=".Splash">
 
-    <!-- Otros ImageView -->
-
+    <!-- Imagen ajustada con un espacio extra desde el borde inferior -->
     <ImageView
         android:id="@+id/yu"
-        android:layout_width="1322dp"
-        android:layout_height="664dp"
-        android:layout_marginTop="112dp"
-        app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintHorizontal_bias="0.51"
-        app:layout_constraintStart_toStartOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        app:srcCompat="@drawable/diapositiva" />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-45dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="1"
+        app:srcCompat="@drawable/img_personas_chill" />
 
-    <ImageView
-        android:id="@+id/cuenta"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="372dp"
-        app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintHorizontal_bias="0.096"
-        app:layout_constraintStart_toStartOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        app:srcCompat="@drawable/cuenta1" />
-
-    <ImageView
-        android:id="@+id/cuenta2"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="328dp"
-        app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        app:srcCompat="@drawable/cuenta2" />
-
-    <ImageView
-        android:id="@+id/cuenta3"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="372dp"
-        app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintHorizontal_bias="0.853"
-        app:layout_constraintStart_toStartOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
-        app:srcCompat="@drawable/cuenta3" />
-
-    <!-- Reemplazar el ImageView por LottieAnimationView -->
+    <!-- LottieAnimationView con tamaño ajustado y bajado -->
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottieAnimationView"
-        android:layout_width="550dp"
-        android:layout_height="550dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintHorizontal_bias="0.505"
-        app:layout_constraintStart_toStartOf="@id/main"
-        app:layout_constraintTop_toTopOf="@id/main"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintBottom_toTopOf="@id/yu"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintWidth_percent="1.2"
         app:lottie_autoPlay="true"
         app:lottie_loop="false"
         app:lottie_rawRes="@raw/main_scene" />
