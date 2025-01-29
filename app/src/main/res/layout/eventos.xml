@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/texto1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_tiene_cuenta"
@@ -14,14 +14,14 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/description"
+        android:id="@+id/texto2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/no_tiene_cuenta"
         android:textSize="16sp" />
 
     <ImageView
-        android:id="@+id/map"
+        android:id="@+id/imagen"
         android:src="@drawable/img_home"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -20,4 +20,5 @@
     <string name="privacidad">Privacidad y Seguridad</string>
     <string name="notificaciones">Notificaciones</string>
     <string name="configuracion">Configuracion</string>
+    <string name="buscar">Buscar</string>
 </resources>
