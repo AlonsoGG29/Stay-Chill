@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    tools:context=".EventoClick">
+
+    <!-- Imagen superior -->
+    <ImageView
+        android:id="@+id/imagen"
+        android:layout_width="650dp"
+        android:layout_height="400dp"
+        android:src="@drawable/prueba"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toTopOf="@id/guiaLinea2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.41"
+        app:layout_constraintVertical_bias="0.205"/>
+
+    <!-- Guía al 40% de la altura -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guiaLinea2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.4"/>
+
+    <!-- Tarjeta de información -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/fondo_evento"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guiaLinea2"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Contenedor de texto dentro de la tarjeta -->
+        <LinearLayout
+            android:id="@+id/textContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="100dp">
+
+            <!-- Título -->
+            <TextView
+                android:id="@+id/titleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¡Encuentro cinéfilo!"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <!-- Información del usuario -->
+            <TextView
+                android:id="@+id/userInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:text="Paco García - Madrid, España"
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <!-- Sección de iconos -->
+            <LinearLayout
+                android:id="@+id/infoLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="8dp">
+
+                <!-- Participantes -->
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/img_contrasenia" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="4dp"
+                    android:text="25"
+                    android:textColor="@android:color/black" />
+
+                <!-- Likes -->
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:paddingStart="16dp"
+                    android:src="@drawable/img_buscador" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="4dp"
+                    android:text="500"
+                    android:textColor="@android:color/black" />
+
+                <!-- Fecha -->
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:paddingStart="16dp"
+                    android:src="@drawable/img_reportar" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="4dp"
+                    android:text="15 Dic 2024"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <!-- Descripción -->
+            <TextView
+                android:id="@+id/descriptionText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:text="Si te gusta el cine tanto como a mí, te invito a encontrarnos para hablar del buen cine."
+                android:textColor="@android:color/black"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btnVamos"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:backgroundTint="@color/black"
+                android:drawableStart="@drawable/img_reportar"
+                android:elevation="12dp"
+                android:paddingHorizontal="24dp"
+                android:text="VAMOS"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Imagen de perfil -->
+    <ImageView
+        android:id="@+id/profileImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="24dp"
+        android:src="@drawable/perfil"
+        android:background="@drawable/circle_shape"
+        android:elevation="12dp"
+        app:layout_constraintBottom_toTopOf="@id/fondo_evento"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guiaLinea2"
+        app:layout_constraintVertical_bias="0.48"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
