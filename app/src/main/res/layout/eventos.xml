@@ -2,37 +2,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="16dp">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/borde_rojo">
 
-    <ImageView
-        android:id="@+id/imagen"
-        android:src="@drawable/img_home"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        />
-
+    <!-- Sección del icono y el texto alineados horizontalmente -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
+        <!-- Icono a la izquierda -->
+        <ImageView
+            android:id="@+id/imagen"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/img_home"
+            android:layout_marginEnd="10dp"/>
+
+        <!-- Texto a la derecha del icono -->
         <TextView
             android:id="@+id/texto1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_tiene_cuenta"
             android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/texto2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/no_tiene_cuenta"
-            android:textSize="16sp" />
+            android:textStyle="bold"/>
     </LinearLayout>
 
-
+    <!-- Imagen debajo del icono y texto -->
+    <ImageView
+        android:id="@+id/img_evento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/santiago_bernabeu"
+        android:adjustViewBounds="true"
+        android:layout_marginTop="10dp"/>
 </LinearLayout>
