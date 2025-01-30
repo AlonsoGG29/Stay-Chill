@@ -24,12 +24,12 @@ public class EventoAdaptador extends RecyclerView.Adapter<EventoAdaptador.MyView
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public ImageView imageView;
         public TextView textView;
-        public TextView textViewSecondary;
+        public ImageView imageView2;
         public MyViewHolder(View v) {
             super(v);
             imageView = v.findViewById(R.id.imagen);
             textView = v.findViewById(R.id.texto1);
-            textViewSecondary = v.findViewById(R.id.texto2);
+            imageView2 = v.findViewById(R.id.img_evento);
         }
     }
 
@@ -55,7 +55,10 @@ public class EventoAdaptador extends RecyclerView.Adapter<EventoAdaptador.MyView
                 .into(holder.imageView);
 
         holder.textView.setText(currentItem.getText());
-        holder.textViewSecondary.setText(currentItem.getSecondaryText());
+        Glide.with(holder.imageView2.getContext())
+                .load(currentItem.getImageUrl2())
+                .fitCenter()
+                .into(holder.imageView2);
     }
 
     @Override

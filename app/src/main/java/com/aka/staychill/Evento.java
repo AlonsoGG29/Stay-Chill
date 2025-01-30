@@ -6,12 +6,12 @@ public class Evento {
 
     private String imageUrl;
     private String text;
-    private String secondaryText;
+    private String imageUrl2;
 
-    public Evento(String imageUrl, String text, String secondaryText) {
+    public Evento(String imageUrl, String text, String imageUrl2) {
         this.imageUrl = imageUrl;
         this.text = text;
-        this.secondaryText = secondaryText;
+        this.imageUrl2 = imageUrl2;
     }
 
     public String getImageUrl() {
@@ -22,7 +22,7 @@ public class Evento {
         return text;
     }
 
-    public String getSecondaryText() {
-        return secondaryText;
+    public String getImageUrl2() {
+        return imageUrl2;
     }
 }

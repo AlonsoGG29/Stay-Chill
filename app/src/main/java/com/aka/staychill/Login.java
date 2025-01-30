@@ -1,7 +1,6 @@
 package com.aka.staychill;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -10,51 +9,51 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
-import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class Login extends AppCompatActivity {
 
-    Button btnEntrar;
-    TextView register;
+    private Button btnEntrar;
+    private TextView register;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        FirebaseApp.initializeApp(this); // Inicializar Firebase
         setContentView(R.layout.activity_login);
+
+        auth = FirebaseAuth.getInstance();
 
         btnEntrar = findViewById(R.id.btn_login);
         register = findViewById(R.id.register_text);
 
         // Función del botón de Entrar
         btnEntrar.setOnClickListener(view -> {
-            Intent intent = new Intent(Login.this, Main_bn.class);
-            startActivity(intent);
+            String email = ((TextView) findViewById(R.id.email)).getText().toString();
+            String contrasenia = ((TextView) findViewById(R.id.password)).getText().toString();
+
+            if (email.isEmpty() || contrasenia.isEmpty()) {
+                Toast.makeText(Login.this, "Por favor, rellena todos los campos", Toast.LENGTH_SHORT).show();
+            } else {
+                signIn(email, contrasenia);
+            }
         });
 
-        // Estilizar y hacer clicable "Regístrate"
-
         String text = "¿No tienes cuenta? Regístrate";
-
-        // Encuentra la parte "Regístrate"
-        int start = text.indexOf("Regístrate");
-        int end = start + "Regístrate".length();
-
         SpannableString spannableString = new SpannableString(text);
 
-        // Aplicar cursiva, negrita y subrayado
-        spannableString.setSpan(new StyleSpan(Typeface.ITALIC), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannableString.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannableString.setSpan(new UnderlineSpan(), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        // Hacer que "Regístrate" sea clicable
+        // Hacer que "Regístrate" sea clicable y en negrita
         spannableString.setSpan(new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
@@ -66,16 +65,31 @@ public class Login extends AppCompatActivity {
             @Override
             public void updateDrawState(@NonNull TextPaint ds) {
                 super.updateDrawState(ds);
-                ds.setUnderlineText(true); // Subrayar
-                ds.setColor(Color.WHITE);  // Color blanco (opcional)
-                ds.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD_ITALIC)); // Negrita y cursiva
+                ds.setFakeBoldText(true); // Aplicar negrita al texto
+                ds.setColor(getResources().getColor(android.R.color.white)); // Cambiar el color a negro
             }
-        }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }, text.indexOf("Regístrate"), text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        // Aplica el texto formateado al TextView
+        // Aplicar negrita a "Regístrate"
+        spannableString.setSpan(new StyleSpan(Typeface.BOLD), text.indexOf("Regístrate"), text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
         register.setText(spannableString);
-
-        // Necesario para habilitar clics en el texto
         register.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    private void signIn(String email, String contrasenia) {
+        auth.signInWithEmailAndPassword(email, contrasenia)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Si se loguea con éxito
+                        FirebaseUser usuario = auth.getCurrentUser();
+                        Toast.makeText(this, "Iniciada la sesión correctamente", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Login.this, Main_bn.class);
+                        startActivity(intent);
+                    } else {
+                        // Si falla
+                        Toast.makeText(this, "Email o contraseña errónea", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
