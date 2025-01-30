@@ -1,6 +1,6 @@
 # STAY CHILL
 <p align="center">
-  <img src="imagenes/logoStayChill.svg" alt="COLORES" />
+  <img src="imagenes/StayChill.svg" alt="COLORES" />
 </p>
 
 Enlace a Figma: https://www.figma.com/design/KyVoo7Z4Q3HpOeT7HOTeMz/Stay-Chill?node-id=0-1&p=f&t=3dMJvDozEKVYZmZe-0
