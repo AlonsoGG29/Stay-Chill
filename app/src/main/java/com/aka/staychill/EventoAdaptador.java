@@ -1,5 +1,7 @@
 package com.aka.staychill;
 
+import static com.bumptech.glide.load.resource.bitmap.TransformationUtils.circleCrop;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +51,9 @@ public class EventoAdaptador extends RecyclerView.Adapter<EventoAdaptador.MyView
         Evento currentItem = eventoList.get(position);
         Glide.with(holder.imageView.getContext())
                 .load(currentItem.getImageUrl())
+                .circleCrop()
                 .into(holder.imageView);
+
         holder.textView.setText(currentItem.getText());
         holder.textViewSecondary.setText(currentItem.getSecondaryText());
     }

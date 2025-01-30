@@ -37,9 +37,9 @@ public class Main extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         itemList = new ArrayList<>();
-        itemList.add(new Evento("https://m.media-amazon.com/images/I/61In3cwYPDL.jpg", "Luffy Gear 4", "300 €"));
-        itemList.add(new Evento("https://wonderlandcomics.es/9633/figuarts-zero-monkey-d-luffy-second-gear-one-piece.jpg", "Luffy Gear 2", "200 €"));
-        itemList.add(new Evento("https://cdn.wallapop.com/images/10420/hv/e1/__/c10420p1080647914/i5307034083.jpg?pictureSize=W640", "Luffy Gear 3", "250 €"));
+        itemList.add(new Evento("https://i.pinimg.com/736x/15/79/6d/15796d466bf8be86af9c6a9219d87b0d.jpg", "Usuario 1", "Evento 1"));
+        itemList.add(new Evento("https://imagenes.20minutos.es/files/image_1920_1080/uploads/imagenes/2024/06/24/homelander-antony-starr-en-the-boys.jpeg", "Usuario 2", "Evento 2"));
+        itemList.add(new Evento("https://upload.wikimedia.org/wikipedia/commons/f/f1/Dwayne_Johnson_2%2C_2013.jpg", "Usuario 3", "Evento 3"));
 
         mAdapter = new EventoAdaptador(itemList);
         recyclerView.setAdapter(mAdapter);
