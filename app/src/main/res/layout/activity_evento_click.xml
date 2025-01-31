@@ -44,6 +44,7 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.4" />
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cuadro"
         android:layout_width="0dp"
@@ -56,17 +57,18 @@
         app:layout_constraintTop_toBottomOf="@id/guiaLinea3"
         app:layout_constraintVertical_bias="0.0">
 
-        <!-- Texto del evento -->
+        <!-- Título del evento -->
 
+        <!-- Nombre del organizador -->
         <TextView
             android:id="@+id/tituloEvento"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="84dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="72dp"
             android:text="¡Encuentro cinéfilo!"
             android:textColor="@color/black"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -75,67 +77,148 @@
             android:id="@+id/nombreOrganizador"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:text="Paco García"
             android:textColor="@color/black"
-            android:textSize="18sp"
-            app:layout_constraintTop_toBottomOf="@id/tituloEvento"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="16dp"/>
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/tituloEvento"
+            app:layout_constraintTop_toBottomOf="@id/tituloEvento" />
 
+        <!-- Ubicación -->
         <TextView
             android:id="@+id/ubicacionEvento"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:text="Madrid, España"
             android:textColor="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/nombreOrganizador"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="16dp"/>
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/nombreOrganizador"
+            app:layout_constraintTop_toBottomOf="@id/nombreOrganizador" />
 
-        <TextView
-            android:id="@+id/fechaEvento"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/detallesEvento"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="15 Dic 2024"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@id/ubicacionEvento"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="16dp"/>
-
-        <TextView
-            android:id="@+id/descripcionEvento"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Si te gusta el cine tanto como a mí, te invito a encontrarnos para una reunión para hablar del buen cine."
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/fechaEvento"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ubicacionEvento">
+
+            <!-- LinearLayout contenedor para las imágenes y textos -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <!-- FrameLayout para el primer conjunto de imagen y texto -->
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="-36dp"
+                    >
+                    <!-- Imagen de fondo 3 -->
+
+                    <!-- Texto sobre la imagen -->
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:contentDescription="vistas"
+                        android:src="@drawable/img_label_user" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:layout_gravity="end"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="40dp" />
+                </FrameLayout>
+
+
+                <!-- FrameLayout para el segundo conjunto de imagen y texto -->
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="-36dp"
+
+                    >
+                    <!-- Imagen de fondo 3 -->
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:src="@drawable/img_label_fecha"
+                        android:contentDescription="vistas" />
+
+                    <!-- Texto sobre la imagen -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="15 Dic 2024"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:layout_gravity="end"
+                        android:layout_marginRight="7dp"
+                        android:layout_marginTop="40dp" />
+                </FrameLayout>
+
+
+                <!-- FrameLayout para el tercer conjunto de imagen y texto -->
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-36dp"
+                    >
+                    <!-- Imagen de fondo 3 -->
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:src="@drawable/img_label_vistas"
+                        android:contentDescription="vistas" />
+
+                    <!-- Texto sobre la imagen -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="500"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/black"
+                        android:layout_gravity="end"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="40dp" />
+                </FrameLayout>
+
+            </LinearLayout>
+
+            
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
         android:id="@+id/perfilFoto"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginStart="16dp"
         android:src="@drawable/perfil"
         app:layout_constraintStart_toStartOf="@+id/main"
-        app:layout_constraintTop_toTopOf="@+id/guiaLinea4"
-        />
+        app:layout_constraintTop_toTopOf="@+id/guiaLinea4" />
+
     <ImageView
         android:id="@+id/btn_vamos"
         android:layout_width="125dp"
         android:layout_height="150dp"
-        android:layout_marginEnd="35dp"
+        android:layout_marginEnd="55dp"
         app:layout_constraintEnd_toEndOf="@+id/main"
         android:src="@drawable/img_button_vamos"
         app:layout_constraintTop_toTopOf="@+id/guiaLinea4"
