@@ -1,7 +1,15 @@
 <!-- res/drawable/circle_shape.xml -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
+    <!-- Color de fondo -->
     <solid android:color="@android:color/white" />
+
+    <!-- Definir borde (stroke) -->
+    <stroke
+        android:color="@color/orange"
+        android:width="1dp" />
+
+    <!-- Tamaño del ovalo -->
     <size
         android:width="100dp"
         android:height="100dp" />
