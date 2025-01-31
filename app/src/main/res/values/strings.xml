@@ -21,4 +21,5 @@
     <string name="notificaciones">Notificaciones</string>
     <string name="configuracion">Configuracion</string>
     <string name="buscar">Buscar</string>
+    <string name="email">Correo Electrónico</string>
 </resources>
