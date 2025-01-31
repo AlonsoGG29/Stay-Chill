@@ -59,7 +59,7 @@
             app:layout_constraintEnd_toEndOf="@id/cuadro"
             app:layout_constraintStart_toStartOf="@id/cuadro"
             app:layout_constraintTop_toTopOf="@id/cuadro"
-            app:layout_constraintVertical_bias="0.4" />
+             />
 
         <!-- Campo de nombre -->
         <EditText
@@ -74,7 +74,6 @@
             android:padding="12dp"
             android:textColorHint="@color/gray"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.492"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -100,7 +99,7 @@
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="Contraseña"
+            android:hint="@string/contrasenia"
             android:background="@drawable/img_label"
             android:drawableEnd="@drawable/img_contrasenia"
             android:padding="12dp"
@@ -146,9 +145,9 @@
             android:id="@+id/btn_signup"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:text="Entrar"
-            android:textSize="17dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/entrar"
+            android:textSize="17sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/inicio_text"

@@ -8,6 +8,13 @@
     android:background="@color/cream"
     tools:context=".Welcome">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guiaLinea1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.48" />
+
     <!-- Logo -->
     <ImageView
         android:id="@+id/logo_StayChill"
@@ -28,7 +35,6 @@
         android:contentDescription="@string/chill"
         android:src="@drawable/img_personas_chill"
         app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintHorizontal_bias="0.454"
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main" />
 
@@ -36,16 +42,13 @@
         android:id="@+id/cuadro"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="190dp"
         android:background="@drawable/img_fondo_app"
         android:padding="24dp"
-
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintStart_toStartOf="@+id/main"
         app:layout_constraintBottom_toBottomOf="@+id/main"
-        app:layout_constraintTop_toBottomOf="@id/logo_StayChill"
+        app:layout_constraintTop_toTopOf="@id/guiaLinea1"
         >
-
 
         <!-- Botón de entrar -->
 
@@ -70,11 +73,10 @@
             android:layout_marginTop="24dp"
             android:text="@string/entrar"
             android:textSize="17sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/cuadro"
+            app:layout_constraintStart_toStartOf="@id/cuadro"
             app:layout_constraintTop_toBottomOf="@id/bienvenido"
-            tools:ignore="SpUsage" />
+             />
 
         <!-- Botón de iniciar sesión -->
         <Button
@@ -82,27 +84,26 @@
             style="@style/boton"
             android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:text="@string/iniciar"
             android:textSize="17sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/cuadro"
+            app:layout_constraintStart_toStartOf="@id/cuadro"
             app:layout_constraintTop_toBottomOf="@id/entrar_welcome" />
 
         <!-- Texto de registro -->
         <TextView
             android:id="@+id/registrarse_welcome"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="95dp"
+            android:layout_marginTop="75dp"
             android:fontFamily="@font/lora_semibolditalic"
             android:text="@string/no_tiene_cuenta"
             android:textColor="@color/white"
             android:textSize="15sp"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/sesion_welcome" />
+            app:layout_constraintEnd_toEndOf="@+id/cuadro"
+            app:layout_constraintStart_toStartOf="@+id/cuadro"
+            app:layout_constraintTop_toBottomOf="@id/sesion_welcome"
+           />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

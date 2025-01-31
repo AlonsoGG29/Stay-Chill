@@ -8,7 +8,12 @@
     android:background="@color/cream"
     tools:context=".Login">
 
-
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guiaLinea3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.42" />
 
     <!-- Logo -->
 
@@ -19,7 +24,6 @@
         android:layout_marginTop="80dp"
         android:src="@drawable/img_stay_chill"
         app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main" />
 
@@ -30,7 +34,6 @@
         android:layout_marginTop="100dp"
         android:src="@drawable/img_personas_chill"
         app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintHorizontal_bias="0.454"
         app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintTop_toTopOf="@id/main" />
 
@@ -38,13 +41,12 @@
         android:id="@+id/cuadro"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="130dp"
         android:padding="24dp"
         android:background="@drawable/img_fondo_app"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/main"
         app:layout_constraintEnd_toEndOf="@id/main"
-        app:layout_constraintTop_toBottomOf="@id/logo_StayChill"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toTopOf="@id/guiaLinea3"
+        app:layout_constraintBottom_toBottomOf="@id/main">
 
         <!-- Texto 'Inicia sesión' -->
         <TextView
