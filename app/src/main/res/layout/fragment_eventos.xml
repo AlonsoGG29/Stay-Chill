@@ -11,7 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -20,7 +19,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="15"
-            android:textSize="50dp">
+            android:textSize="50dp"
+            android:textColor="@color/black">
         </TextView>
 
         <LinearLayout
@@ -35,16 +35,17 @@
                 android:layout_height="wrap_content"
                 android:text="Miercoles"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/texto2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Dic 2024"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textColor="@color/black" />
         </LinearLayout>
-
     </LinearLayout>
 
     <TableLayout
@@ -59,109 +60,136 @@
         <!-- Fila con los días de la semana -->
         <TableRow>
             <TextView
+                android:id="@+id/dia0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="D"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/dia1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="L"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/dia2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="M"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/dia3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="X"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/dia4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="J"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/dia5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="V"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/dia6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="S"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
         </TableRow>
 
         <!-- Fila con los números de la semana -->
         <TableRow>
             <TextView
+                android:id="@+id/numero0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="21"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/numero1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="22"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/numero2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="23"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/numero3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="24"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/numero4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="25"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/numero5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="26"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/numero6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="27"
                 android:textSize="16sp"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/black" />
         </TableRow>
 
     </TableLayout>
-
 
     <!-- Contenedor de eventos -->
     <LinearLayout
@@ -185,7 +213,8 @@
                 android:layout_height="wrap_content"
                 android:text="Mis eventos"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/txtOtrosEventos"
@@ -193,9 +222,9 @@
                 android:layout_height="wrap_content"
                 android:text="Otros eventos"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@color/black" />
         </LinearLayout>
-
 
         <TextView
             android:id="@+id/txtSinEventos"
@@ -205,7 +234,8 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="20dp"
+            android:textColor="@color/black" />
 
         <ImageView
             android:id="@+id/btnAgregarEvento"

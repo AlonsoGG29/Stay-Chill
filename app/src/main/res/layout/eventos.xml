@@ -9,7 +9,7 @@
     android:layout_marginRight="2dp"
     android:layout_marginLeft="2dp"
     android:id="@+id/eventos"
-    android:background="@drawable/borde_rojo">
+    android:background="@drawable/img_borde_rojo">
 
 
     <!-- Sección del icono y el texto alineados horizontalmente -->
@@ -36,6 +36,7 @@
             android:id="@+id/texto1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:text="@string/no_tiene_cuenta"
             android:textSize="18sp"
             android:textStyle="bold"/>
