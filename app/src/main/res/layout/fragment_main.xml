@@ -15,14 +15,14 @@
         android:iconifiedByDefault="false"
         android:background="@drawable/img_buscador"
         android:hint="@string/buscar"
-        android:textColorHint="@color/black"
         android:clickable="true"
         android:focusable="true"
-        app:layout_constraintWidth_percent="0.75"
-
+        android:theme="@style/buscadorEstilo"
         app:layout_constraintEnd_toEndOf="@id/main"
         app:layout_constraintStart_toStartOf="@id/main"
+        app:searchIcon="@drawable/img_lupa_buscador"
         app:layout_constraintTop_toTopOf="@id/main"/>
+
 
     <LinearLayout
         android:layout_width="match_parent"
