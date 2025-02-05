@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/fr_eventos"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp">
 
@@ -47,9 +48,8 @@
                 android:textColor="@color/black" />
         </LinearLayout>
     </LinearLayout>
-
     <TableLayout
-        android:id="@+id/table_semana"
+        android:id="@+id/tabla_semana"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:stretchColumns="*"
@@ -122,7 +122,6 @@
                 android:gravity="center"
                 android:textColor="@color/black" />
         </TableRow>
-
         <!-- Fila con los números de la semana -->
         <TableRow>
             <TextView
@@ -190,60 +189,13 @@
         </TableRow>
 
     </TableLayout>
-
-    <!-- Contenedor de eventos -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/table_semana"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal">
-
-            <TextView
-                android:id="@+id/txtMisEventos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mis eventos"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black" />
-
-            <TextView
-                android:id="@+id/txtOtrosEventos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Otros eventos"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/txtSinEventos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="No tienes ningún evento creado."
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
-            android:textColor="@color/black" />
-
-        <ImageView
-            android:id="@+id/btnAgregarEvento"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/img_calendario"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp" />
-    </LinearLayout>
-
+    <fragment
+        android:id="@+id/fragmentContainer"
+        android:name="com.aka.staychill.fragments.DistintosEventos"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/tabla_semana"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
