@@ -1,20 +1,200 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Conf_cuenta">
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:gravity="center_horizontal"
+    android:padding="16dp"> <!-- Añadí un padding general para que haya más espacio -->
 
-    <TextView
-        android:id="@+id/textView"
+    <!-- Encabezado con botón de retroceso y título -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/atrasflecha_foreground"
+            android:scaleType="centerInside"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/txtTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Editar cuenta"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+    <!-- Imagen de perfil centrada, justo debajo del título -->
+
+    <!-- Campos: Nombre, Correo, Contraseña, Fecha de Nacimiento, País -->
+
+    <!-- Botón de Guardar -->
+    <ImageView
+        android:id="@+id/fotoPerfil"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="0dp"
+        android:src="@drawable/perfil" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:orientation="vertical">
+        <!-- Campo: Nombre -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/labelNombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nombre"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/inputNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/input_background"
+                android:hint="Ej: Juan Pérez"
+                android:padding="10dp" />
+        </LinearLayout>
+
+        <!-- Campo: Correo Electrónico -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/labelCorreoElectronico"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Correo Electrónico"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/inputCorreoElectronico"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/input_background"
+                android:hint="ej: correo@dominio.com"
+                android:padding="10dp" />
+        </LinearLayout>
+
+        <!-- Campo: Contraseña -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/labelContraseña"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Contraseña"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/inputContraseña"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/input_background"
+                android:hint="**********"
+                android:inputType="textPassword"
+                android:padding="10dp" />
+        </LinearLayout>
+
+        <!-- Campo: Fecha de Nacimiento -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/labelFechaNacimiento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fecha de Nacimiento"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/inputFechaNacimiento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/input_background"
+                android:hint="DD/MM/AAAA"
+                android:inputType="date"
+                android:padding="10dp" />
+        </LinearLayout>
+
+        <!-- Campo: País -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/labelPais"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="País"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/inputPais"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/input_background"
+                android:dropDownWidth="match_parent"
+                android:padding="12dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/botoncuenta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/configuracion"
-        android:textSize="40sp"
-        app:layout_constraintTop_toTopOf="@+id/main"
-        app:layout_constraintStart_toStartOf="@+id/main"
-        app:layout_constraintEnd_toEndOf="@+id/main"
-        />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:text="Guardar"
+        android:layout_marginTop="20dp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/boton_cuenta">
+
+</LinearLayout>
