@@ -4,9 +4,9 @@ public class Evento {
 
     //Clase que se comunica con MiAdaptador y le pasa la información
 
-    private String imageUrl;
-    private String text;
-    private String imageUrl2;
+    private final String imageUrl;
+    private final String text;
+    private final String imageUrl2;
 
     public Evento(String imageUrl, String text, String imageUrl2) {
         this.imageUrl = imageUrl;

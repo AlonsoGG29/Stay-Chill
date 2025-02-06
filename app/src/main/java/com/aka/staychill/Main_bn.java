@@ -15,25 +15,27 @@ public class Main_bn extends AppCompatActivity {
 
     private MenuItem prevMenuItem;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_bn);
 
-        // Solo pasamos getSupportFragmentManager() al adaptador
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        ViewPager viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(sectionsPagerAdapter);
+        // Configurar el adaptador para ViewPager
+        configurarAdaptadorViewPager();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        setupBadges(bottomNavigationView);
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            handleNavigationSelection(item, viewPager);
-            return true;
-        });
+        // Configurar badges
+        configurarBadges(bottomNavigationView);
+
+        // Configurar listener de selección de navegación
+        configurarSeleccionNavegacion(bottomNavigationView);
+    }
+
+    private void configurarAdaptadorViewPager() {
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(sectionsPagerAdapter);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -45,10 +47,11 @@ public class Main_bn extends AppCompatActivity {
                 if (prevMenuItem != null) {
                     prevMenuItem.setChecked(false);
                 }
+                BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
                 MenuItem selectedItem = bottomNavigationView.getMenu().getItem(position);
                 selectedItem.setChecked(true);
                 prevMenuItem = selectedItem;
-                removeBadge(bottomNavigationView, selectedItem.getItemId());
+                eliminarBadge(bottomNavigationView, selectedItem.getItemId());
             }
 
             @Override
@@ -57,8 +60,7 @@ public class Main_bn extends AppCompatActivity {
         });
     }
 
-
-    private void setupBadges(BottomNavigationView bottomNavigationView) {
+    private void configurarBadges(BottomNavigationView bottomNavigationView) {
         // Configura los badges para cada elemento
         BadgeDrawable badge = bottomNavigationView.getOrCreateBadge(R.id.home);
         badge.setVisible(true);
@@ -75,7 +77,16 @@ public class Main_bn extends AppCompatActivity {
         badge.setVisible(false); // Oculto inicialmente
     }
 
-    private void handleNavigationSelection(@NonNull MenuItem item, ViewPager viewPager) {
+    private void configurarSeleccionNavegacion(BottomNavigationView bottomNavigationView) {
+        // Configurar listener de selección de navegación
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            manejarSeleccionNavegacion(item);
+            return true;
+        });
+
+    }
+
+    private void manejarSeleccionNavegacion(@NonNull MenuItem item) {
         int position = -1;
 
         if (item.getItemId() == R.id.home) {
@@ -89,27 +100,18 @@ public class Main_bn extends AppCompatActivity {
         }
 
         if (position != -1) {
+            ViewPager viewPager = findViewById(R.id.view_pager);
             viewPager.setCurrentItem(position);
             item.setChecked(true);
 
             BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
             if (bottomNavigationView != null) {
-                removeBadge(bottomNavigationView, item.getItemId());
+                eliminarBadge(bottomNavigationView, item.getItemId());
             }
-        }
-
-
-        item.setChecked(true);
-        viewPager.setCurrentItem(position);
-
-        // Verifica que el objeto bottomNavigationView esté inicializado
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        if (bottomNavigationView != null) {
-            removeBadge(bottomNavigationView, item.getItemId());
         }
     }
 
-    private void removeBadge(BottomNavigationView bottomNavigationView, int itemId) {
+    private void eliminarBadge(BottomNavigationView bottomNavigationView, int itemId) {
         BadgeDrawable badge = bottomNavigationView.getBadge(itemId);
         if (badge != null) {
             badge.setVisible(false);

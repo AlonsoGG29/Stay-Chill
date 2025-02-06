@@ -22,10 +22,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class Welcome extends AppCompatActivity {
 
-    Button btn_enter, btn_login;
-    TextView registrarse;
+    private Button btnEntrar, btnIniciarSesion;
+    private TextView registrarse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,65 +36,78 @@ public class Welcome extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_welcome);
 
-        btn_enter = findViewById(R.id.entrar_welcome);
-        btn_login = findViewById(R.id.sesion_welcome);
-        registrarse = findViewById(R.id.registrarse_welcome);
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = auth.getCurrentUser();
 
-        //Funcion de boton de entrar
-        btn_enter.setOnClickListener(view -> {
-            Intent intent = new Intent(Welcome.this, Main_bn.class);
-            startActivity(intent);
-        });
+        // Verificar si el usuario ya está autenticado
+        if (currentUser != null) {
+            // Si el usuario está autenticado, navega directamente a la actividad principal
+            startActivity(new Intent(Welcome.this, Main_bn.class));
+            finish();
+        } else {
+            // Configurar la vista y listeners si el usuario no está autenticado
+            btnEntrar = findViewById(R.id.entrar_welcome);
+            btnIniciarSesion = findViewById(R.id.sesion_welcome);
+            registrarse = findViewById(R.id.registrarse_welcome);
 
-        //Funcion de boton de iniciar sesion
-        btn_login.setOnClickListener(view -> {
-            Intent intent = new Intent(Welcome.this, Login.class);
-            startActivity(intent);
-        });
+            // Configurar listeners de botones
+            configurarListenersBotones();
 
+            // Aplicar insets de ventana
+            aplicarInsetsVentana();
+
+            // Estilizar y hacer clicable "Regístrate"
+            estilizarYHacerClicable();
+        }
+    }
+
+    private void configurarListenersBotones() {
+        // Navegar a la actividad Main_bn
+        btnEntrar.setOnClickListener(view -> startActivity(new Intent(Welcome.this, Main_bn.class)));
+
+        // Navegar a la actividad Login
+        btnIniciarSesion.setOnClickListener(view -> startActivity(new Intent(Welcome.this, Login.class)));
+    }
+
+    private void aplicarInsetsVentana() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
 
-        // Estilizar y hacer clicable "Regístrate"
+    private void estilizarYHacerClicable() {
+        String texto = getString(R.string.no_tiene_cuenta);
 
-        String text = getString(R.string.no_tiene_cuenta); // Obtén el texto del recurso
+        // Encontrar "Regístrate" en el texto
+        int inicio = texto.indexOf("Regístrate");
+        int fin = inicio + "Regístrate".length();
 
-        // Encuentra la parte "Regístrate"
-        int start = text.indexOf("Regístrate");
-        int end = start + "Regístrate".length();
+        SpannableString spannableString = new SpannableString(texto);
 
-        SpannableString spannableString = new SpannableString(text);
+        // Aplicar estilos
+        spannableString.setSpan(new StyleSpan(Typeface.ITALIC), inicio, fin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(new StyleSpan(Typeface.BOLD), inicio, fin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(new UnderlineSpan(), inicio, fin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        // Aplicar cursiva, negrita y subrayado
-        spannableString.setSpan(new StyleSpan(Typeface.ITALIC), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannableString.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannableString.setSpan(new UnderlineSpan(), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        // Hacer que "Regístrate" sea clicable
+        // Hacer "Regístrate" clicable
         spannableString.setSpan(new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
-                // Navegar a la actividad Signup
-                Intent intent = new Intent(Welcome.this, Signup.class);
-                startActivity(intent);
+                startActivity(new Intent(Welcome.this, Signup.class));
             }
 
             @Override
             public void updateDrawState(@NonNull TextPaint ds) {
                 super.updateDrawState(ds);
-                ds.setUnderlineText(true); // Subrayar
-                ds.setColor(Color.WHITE);  // Color blanco (opcional)
-                ds.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD_ITALIC)); // Negrita y cursiva
+                ds.setUnderlineText(true);
+                ds.setColor(Color.WHITE);
+                ds.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD_ITALIC));
             }
-        }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }, inicio, fin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        // Aplica el texto formateado al TextView
         registrarse.setText(spannableString);
-
-        // Necesario para habilitar clics en el texto
         registrarse.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/activity_conf_cuenta"
     android:orientation="vertical"
     android:background="@android:color/white"
     android:gravity="center_horizontal"
@@ -11,7 +13,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="dp">
+        android:padding="10dp">
 
         <ImageView
             android:id="@+id/btnBack"
@@ -73,6 +75,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/input_background"
                 android:hint="Ej: Juan Pérez"
+                android:minHeight="48dp"
                 android:padding="10dp" />
         </LinearLayout>
 
@@ -100,6 +103,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/input_background"
                 android:hint="ej: correo@dominio.com"
+                android:minHeight="48dp"
                 android:padding="10dp" />
         </LinearLayout>
 
@@ -128,7 +132,8 @@
                 android:background="@drawable/input_background"
                 android:hint="**********"
                 android:inputType="textPassword"
-                android:padding="10dp" />
+                android:padding="10dp"
+                tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
 
         <!-- Campo: Fecha de Nacimiento -->
@@ -156,6 +161,7 @@
                 android:background="@drawable/input_background"
                 android:hint="DD/MM/AAAA"
                 android:inputType="date"
+                android:minHeight="48dp"
                 android:padding="10dp" />
         </LinearLayout>
 
@@ -183,6 +189,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/input_background"
                 android:dropDownWidth="match_parent"
+                android:minHeight="48dp"
                 android:padding="12dp" />
         </LinearLayout>
 
@@ -192,9 +199,10 @@
         android:id="@+id/botoncuenta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Guardar"
         android:layout_marginTop="20dp"
-        android:textColor="@android:color/white"
-        android:background="@drawable/boton_cuenta">
+        android:background="@drawable/boton_cuenta"
+        android:minHeight="48dp"
+        android:text="Guardar"
+        android:textColor="@android:color/white"/>
 
 </LinearLayout>

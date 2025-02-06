@@ -14,16 +14,21 @@ public class Splash extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         // Inicializar la animación Lottie
+        inicializarAnimacionLottie();
+
+        // Iniciar actividad después de la duración de la animación
+        iniciarActividadPrincipal();
+    }
+
+    private void inicializarAnimacionLottie() {
         LottieAnimationView lottieAnimationView = findViewById(R.id.lottieAnimationView);
+        lottieAnimationView.playAnimation();  // Arranca la animación
+    }
 
-        // Aquí, puedes agregar un Listener o simplemente hacer que la animación se ejecute
-        lottieAnimationView.playAnimation();  // Esto arranca la animación
-
-        // Usamos un Handler para iniciar la actividad después de la duración de la animación
+    private void iniciarActividadPrincipal() {
         new Handler().postDelayed(() -> {
-            // Después de la animación (3 segundos o lo que definas), pasa a la actividad principal
             startActivity(new Intent(Splash.this, Welcome.class));
-            finish(); // Para cerrar la actividad Splash
-        }, 4000); // Esto indica que el cambio de actividad ocurrirá después de 3 segundos
+            finish(); // Cierra la actividad Splash
+        }, 4000); // Cambio de actividad después de 4 segundos
     }
 }
