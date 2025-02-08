@@ -13,9 +13,9 @@
         android:layout_height="wrap_content"
         android:text="@string/reportar"
         android:textSize="40sp"
-        app:layout_constraintTop_toTopOf="@+id/main"
-        app:layout_constraintStart_toStartOf="@+id/main"
-        app:layout_constraintEnd_toEndOf="@+id/main"
+        app:layout_constraintTop_toTopOf="@+id/fr_main"
+        app:layout_constraintStart_toStartOf="@+id/fr_main"
+        app:layout_constraintEnd_toEndOf="@+id/fr_main"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

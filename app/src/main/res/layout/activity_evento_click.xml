@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/fr_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
@@ -18,9 +18,9 @@
         android:scaleType="fitCenter"
         android:adjustViewBounds="true"
         app:layout_constraintBottom_toBottomOf="@id/guiaLinea2"
-        app:layout_constraintEnd_toEndOf="@+id/main"
-        app:layout_constraintStart_toStartOf="@+id/main"
-        app:layout_constraintTop_toTopOf="@+id/main"
+        app:layout_constraintEnd_toEndOf="@+id/fr_main"
+        app:layout_constraintStart_toStartOf="@+id/fr_main"
+        app:layout_constraintTop_toTopOf="@+id/fr_main"
         />
 
     <androidx.constraintlayout.widget.Guideline
@@ -50,8 +50,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/img_fondo_evento"
-        app:layout_constraintBottom_toBottomOf="@id/main"
-        app:layout_constraintEnd_toEndOf="@id/main"
+        app:layout_constraintBottom_toBottomOf="@id/fr_main"
+        app:layout_constraintEnd_toEndOf="@id/fr_main"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/guiaLinea3"
@@ -223,7 +223,7 @@
         android:layout_height="140dp"
         android:layout_marginStart="16dp"
         android:src="@drawable/perfil"
-        app:layout_constraintStart_toStartOf="@+id/main"
+        app:layout_constraintStart_toStartOf="@+id/fr_main"
         app:layout_constraintTop_toTopOf="@+id/guiaLinea4" />
 
     <ImageView
@@ -231,7 +231,7 @@
         android:layout_width="125dp"
         android:layout_height="150dp"
         android:layout_marginEnd="55dp"
-        app:layout_constraintEnd_toEndOf="@+id/main"
+        app:layout_constraintEnd_toEndOf="@+id/fr_main"
         android:src="@drawable/img_button_vamos"
         app:layout_constraintTop_toTopOf="@+id/guiaLinea4"
         />

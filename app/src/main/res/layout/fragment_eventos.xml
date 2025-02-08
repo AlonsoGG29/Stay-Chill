@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/fr_eventos"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="16dp">
+    android:padding="16dp"
+    tools:context=".EventosActivity">
 
     <!-- Fecha y navegación del calendario -->
+    <ImageView
+        android:id="@+id/barra"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/tabla_semana"
+        app:layout_constraintStart_toStartOf="@+id/tabla_semana"
+        app:layout_constraintEnd_toEndOf="@+id/tabla_semana"
+        app:srcCompat="@drawable/img_barra_negra" />
+
     <LinearLayout
         android:id="@+id/layout_fecha"
         android:layout_width="wrap_content"
@@ -19,10 +31,10 @@
             android:id="@+id/diaSemana"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="15"
-            android:textSize="50dp"
-            android:textColor="@color/black">
-        </TextView>
+            android:text="@string/_0"
+            android:textSize="50sp"
+            android:textColor="@color/black"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,7 +46,7 @@
                 android:id="@+id/texto1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Miercoles"
+                android:text="@string/miercoles"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/black" />
@@ -43,16 +55,18 @@
                 android:id="@+id/texto2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dic 2024"
+                android:text="@string/fecha"
                 android:textSize="16sp"
                 android:textColor="@color/black" />
         </LinearLayout>
     </LinearLayout>
+
     <TableLayout
         android:id="@+id/tabla_semana"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:stretchColumns="*"
+        android:layout_margin="0dp"
         android:layout_marginTop="25dp"
         app:layout_constraintTop_toBottomOf="@id/layout_fecha"
         app:layout_constraintStart_toStartOf="parent">
@@ -63,7 +77,7 @@
                 android:id="@+id/dia0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="D"
+                android:text="@string/d"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/black" />
@@ -72,7 +86,7 @@
                 android:id="@+id/dia1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="L"
+                android:text="@string/l"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/black" />
@@ -81,7 +95,7 @@
                 android:id="@+id/dia2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="M"
+                android:text="@string/m"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/black" />
@@ -90,16 +104,17 @@
                 android:id="@+id/dia3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="X"
+                android:text="@string/x"
                 android:textSize="16sp"
                 android:gravity="center"
-                android:textColor="@color/black" />
+                android:textColor="@color/white"
+                android:background="@drawable/img_rectangulo_esq_sup" />
 
             <TextView
                 android:id="@+id/dia4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="J"
+                android:text="@string/j"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/black" />
@@ -108,7 +123,7 @@
                 android:id="@+id/dia5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="V"
+                android:text="@string/v"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/black" />
@@ -117,18 +132,19 @@
                 android:id="@+id/dia6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="S"
+                android:text="@string/s"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/black" />
         </TableRow>
+
         <!-- Fila con los números de la semana -->
         <TableRow>
             <TextView
                 android:id="@+id/numero0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="21"
+                android:text="@string/_0"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/black" />
@@ -137,7 +153,7 @@
                 android:id="@+id/numero1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="22"
+                android:text="@string/_0"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/black" />
@@ -146,7 +162,7 @@
                 android:id="@+id/numero2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="23"
+                android:text="@string/_0"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/black" />
@@ -155,16 +171,17 @@
                 android:id="@+id/numero3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="24"
+                android:text="@string/_0"
                 android:textSize="16sp"
                 android:gravity="center"
-                android:textColor="@color/black" />
+                android:background="@drawable/img_rectangulo_esq_inf"
+                android:textColor="@color/white" />
 
             <TextView
                 android:id="@+id/numero4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="25"
+                android:text="@string/_0"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/black" />
@@ -173,7 +190,7 @@
                 android:id="@+id/numero5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="26"
+                android:text="@string/_0"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/black" />
@@ -182,20 +199,20 @@
                 android:id="@+id/numero6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="27"
+                android:text="@string/_0"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:textColor="@color/black" />
         </TableRow>
-
     </TableLayout>
-    <fragment
+
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainer"
-        android:name="com.aka.staychill.fragments.DistintosEventos"
+
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/tabla_semana"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/barra"
+        app:layout_constraintStart_toStartOf="@+id/fr_eventos"
+        app:layout_constraintEnd_toEndOf="@+id/fr_eventos"
+        app:layout_constraintBottom_toBottomOf="@+id/fr_eventos"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

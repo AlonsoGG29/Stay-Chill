@@ -22,4 +22,17 @@
     <string name="configuracion">Configuracion</string>
     <string name="buscar">Buscar</string>
     <string name="email">Correo Electrónico</string>
+    <string name="mis_eventos">Mis Eventos</string>
+    <string name="otros_eventos">Otros Eventos</string>
+    <string name="no_eventos_creado">No tienes ningún evento creado.</string>
+    <string name="d">D</string>
+    <string name="l">L</string>
+    <string name="m">M</string>
+    <string name="x">X</string>
+    <string name="j">J</string>
+    <string name="v">V</string>
+    <string name="s">S</string>
+    <string name="_0">0</string>
+    <string name="fecha">Dic 2024</string>
+    <string name="miercoles">Miercoles</string>
 </resources>
