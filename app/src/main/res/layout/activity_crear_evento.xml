@@ -5,9 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
+    android:background="@color/white"
+    android:id="@+id/fr_crear"
     tools:context=".CrearEvento">
 
-    <!-- Botón de volver -->
     <ImageView
         android:id="@+id/btnBack"
         android:layout_width="48dp"
@@ -16,7 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Título -->
     <TextView
         android:id="@+id/txtTitulo"
         android:layout_width="wrap_content"
@@ -24,17 +24,18 @@
         android:text="Nuevo evento"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@id/btnBack"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Campo: Nombre del evento -->
     <TextView
         android:id="@+id/labelNombre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/black"
         android:text="Nombre del evento"
         android:textSize="14sp"
         android:textStyle="bold"
@@ -53,12 +54,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Campo: Localización -->
     <TextView
         android:id="@+id/labelLocalizacion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Localización"
+        android:textColor="@color/black"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/inputNombre"
@@ -76,7 +77,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Campo: Descripción -->
     <TextView
         android:id="@+id/labelDescripcion"
         android:layout_width="wrap_content"
@@ -84,6 +84,7 @@
         android:text="Descripción"
         android:textSize="14sp"
         android:textStyle="bold"
+        android:textColor="@color/black"
         app:layout_constraintTop_toBottomOf="@id/inputLocalizacion"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="16dp"/>
@@ -101,19 +102,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/labelDescripcion" />
 
-    <!-- Campo: Fecha y Hora en una sola fila -->
     <TextView
         android:id="@+id/labelFecha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Fecha del evento"
+        android:textColor="@color/black"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/inputDescripcion"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="16dp"/>
-
-    <!-- LinearLayout para fecha y hora en una fila -->
 
     <TextView
         android:id="@+id/labelHora"
@@ -121,12 +120,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:text="Hora del evento"
+        android:textColor="@color/black"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.534"
-
         app:layout_constraintStart_toEndOf="@+id/labelFecha" />
 
     <LinearLayout
@@ -140,7 +139,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/labelFecha">
 
-        <!-- Campo: Fecha -->
         <EditText
             android:id="@+id/inputFecha"
             android:layout_width="0dp"
@@ -152,7 +150,6 @@
             android:hint="09/09/2009"
             android:padding="12dp" />
 
-        <!-- Campo: Hora -->
         <EditText
             android:id="@+id/inputHora"
             android:layout_width="0dp"
@@ -169,13 +166,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:background="@drawable/boton_atras"
         android:text="Crear evento"
-        android:textColor="@android:color/white"
         android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        style="@style/boton_entrar"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

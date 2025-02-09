@@ -4,11 +4,15 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.aka.staychill.R;
+import com.aka.staychill.ui.main.EventosPagerAdapter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -25,6 +29,9 @@ public class Eventos extends Fragment {
 
         // Inicializar las referencias a los TextViews
         inicializarTextViews(view);
+
+        // Configurar ViewPager2 y TabLayout
+        configurarViewPagerTabLayout(view);
 
         // Obtener y ajustar la información del día actual
         actualizarDiaActual();
@@ -55,6 +62,25 @@ public class Eventos extends Fragment {
         diasNumeros[4] = view.findViewById(R.id.numero4);
         diasNumeros[5] = view.findViewById(R.id.numero5);
         diasNumeros[6] = view.findViewById(R.id.numero6);
+    }
+
+    private void configurarViewPagerTabLayout(View view) {
+        ViewPager2 viewPager = view.findViewById(R.id.viewPager);
+        TabLayout tabLayout = view.findViewById(R.id.tabLayout);
+
+        EventosPagerAdapter pagerAdapter = new EventosPagerAdapter(requireActivity());
+        viewPager.setAdapter(pagerAdapter);
+
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            switch (position) {
+                case 0:
+                    tab.setText("Mis Eventos");
+                    break;
+                case 1:
+                    tab.setText("Otros Eventos");
+                    break;
+            }
+        }).attach();
     }
 
     private void actualizarDiaActual() {
