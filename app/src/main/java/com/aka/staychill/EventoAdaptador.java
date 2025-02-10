@@ -1,62 +1,62 @@
 package com.aka.staychill;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
-import java.util.List;
 import java.util.ArrayList;
-import android.widget.Filter;
-import android.widget.Filterable;
+import java.util.List;
 
-public class EventoAdaptador extends RecyclerView.Adapter<EventoAdaptador.MiViewHolder> implements Filterable {
+public class EventoAdaptador extends RecyclerView.Adapter<EventoAdaptador.EventoViewHolder> implements Filterable {
 
     private final List<Evento> eventoList;
     private final List<Evento> eventoListFull;
 
-    public static class MiViewHolder extends RecyclerView.ViewHolder {
-        public ImageView imageView;
-        public TextView textView;
-        public ImageView imageView2;
-        public MiViewHolder(View v) {
-            super(v);
-            imageView = v.findViewById(R.id.imagen);
-            textView = v.findViewById(R.id.texto1);
-            imageView2 = v.findViewById(R.id.img_evento);
-        }
-    }
-
-    public EventoAdaptador(List<Evento> items) {
-        this.eventoList = items;
-        this.eventoListFull = new ArrayList<>(items);
+    public EventoAdaptador(List<Evento> eventoList) {
+        this.eventoList = eventoList;
+        this.eventoListFull = new ArrayList<>(eventoList);
     }
 
     @NonNull
     @Override
-    public MiViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.eventos, parent, false);
-        return new MiViewHolder(v);
+    public EventoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.eventos, parent, false);
+        return new EventoViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(MiViewHolder holder, int position) {
-        Evento currentItem = eventoList.get(position);
-        Glide.with(holder.imageView.getContext())
-                .load(currentItem.getImageUrl())
-                .circleCrop()
-                .into(holder.imageView);
+    public void onBindViewHolder(@NonNull EventoViewHolder holder, int position) {
+        Evento evento = eventoList.get(position);
 
-        holder.textView.setText(currentItem.getText());
-        Glide.with(holder.imageView2.getContext())
-                .load(currentItem.getImageUrl2())
-                .fitCenter()
-                .into(holder.imageView2);
+
+        if (evento.getText() != null) {
+            holder.textView.setText(evento.getNombre());
+        }
+
+        holder.nombreView.setText(evento.getNombre());
+        holder.localizacionView.setText(evento.getLocalizacion());
+        holder.descripcionView.setText(evento.getDescripcion());
+        holder.fechaView.setText(evento.getFecha());
+        holder.horaView.setText(evento.getHora());
+
+        holder.itemView.setOnClickListener(v -> {
+            Context context = holder.itemView.getContext();
+            Intent intent = new Intent(context, EventoClick.class);
+            intent.putExtra("nombreEvento", evento.getNombre());
+            intent.putExtra("ubicacionEvento", evento.getLocalizacion());
+            intent.putExtra("descripcionEvento", evento.getDescripcion());
+            intent.putExtra("fechaEvento", evento.getFecha());
+            intent.putExtra("horaEvento", evento.getHora());
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -66,42 +66,60 @@ public class EventoAdaptador extends RecyclerView.Adapter<EventoAdaptador.MiView
 
     @Override
     public Filter getFilter() {
-        return filtroEvento;
+        return eventoFilter;
     }
 
-    private final Filter filtroEvento = new Filter() {
+    private final Filter eventoFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<Evento> listaFiltrada = new ArrayList<>();
+            List<Evento> filteredList = new ArrayList<>();
 
             if (constraint == null || constraint.length() == 0) {
-                listaFiltrada.addAll(eventoListFull);
+                filteredList.addAll(eventoListFull);
             } else {
-                String patronFiltro = constraint.toString().toLowerCase().trim();
+                String filterPattern = constraint.toString().toLowerCase().trim();
 
                 for (Evento item : eventoListFull) {
-                    if (item.getText().toLowerCase().contains(patronFiltro)) {
-                        listaFiltrada.add(item);
+                    if (item.getNombre().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(item);
                     }
                 }
             }
 
             FilterResults results = new FilterResults();
-            results.values = listaFiltrada;
+            results.values = filteredList;
 
             return results;
         }
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            @SuppressWarnings("unchecked")
-            List<Evento> filteredList = (List<Evento>) results.values;
-
             eventoList.clear();
-            eventoList.addAll(filteredList);
-
-            // Utiliza métodos más específicos cuando sea posible
-            notifyItemRangeChanged(0, eventoList.size());
+            eventoList.addAll((List) results.values);
+            notifyDataSetChanged();
         }
     };
+
+    static class EventoViewHolder extends RecyclerView.ViewHolder {
+        ImageView imageView;
+        TextView textView;
+        ImageView imageView2;
+        TextView nombreView;
+        TextView localizacionView;
+        TextView descripcionView;
+        TextView fechaView;
+        TextView horaView;
+
+        public EventoViewHolder(@NonNull View itemView) {
+            super(itemView);
+            imageView = itemView.findViewById(R.id.imagen);
+            textView = itemView.findViewById(R.id.texto1);
+            imageView2 = itemView.findViewById(R.id.img_evento);
+            nombreView = itemView.findViewById(R.id.tituloEvento);
+            localizacionView = itemView.findViewById(R.id.ubicacionEvento);
+            descripcionView = itemView.findViewById(R.id.descripcionEvento);
+            fechaView = itemView.findViewById(R.id.fechaEvento);
+            horaView = itemView.findViewById(R.id.horaEvento);
+        }
+    }
 }

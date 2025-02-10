@@ -1,24 +1,34 @@
 package com.aka.staychill;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class EventoClick extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_evento_click);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.fr_main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
+        TextView tituloEvento = findViewById(R.id.tituloEvento);
+        TextView ubicacionEvento = findViewById(R.id.ubicacionEvento);
+        TextView descripcionEvento = findViewById(R.id.descripcionEvento);
+        TextView fechaEvento = findViewById(R.id.fechaEvento);
+        TextView horaEvento = findViewById(R.id.horaEvento);
+
+        // Obtener los datos del intent
+        String nombre = getIntent().getStringExtra("nombreEvento");
+        String ubicacion = getIntent().getStringExtra("ubicacionEvento");
+        String descripcion = getIntent().getStringExtra("descripcionEvento");
+        String fecha = getIntent().getStringExtra("fechaEvento");
+        String hora = getIntent().getStringExtra("horaEvento");
+
+        // Setear los datos en los TextView correspondientes
+        tituloEvento.setText(nombre);
+        ubicacionEvento.setText(ubicacion);
+        descripcionEvento.setText(descripcion);
+        fechaEvento.setText(fecha);
+        horaEvento.setText(hora);
     }
 }

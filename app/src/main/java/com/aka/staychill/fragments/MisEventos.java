@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+
 import com.aka.staychill.CrearEvento;
 import com.aka.staychill.R;
 
@@ -26,12 +27,7 @@ public class MisEventos extends Fragment {
 
     private void setupAgregarEventosButton(View view) {
         ImageButton agregarEventos = view.findViewById(R.id.agregarEventos);
-        agregarEventos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navigateToCrearEvento();
-            }
-        });
+        agregarEventos.setOnClickListener(v -> navigateToCrearEvento());
     }
 
     private void navigateToCrearEvento() {
