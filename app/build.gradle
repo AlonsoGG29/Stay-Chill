@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    id 'com.google.gms.google-services' // Añadir esta línea para aplicar el plugin
+    id 'com.google.gms.google-services' // Aplicar el plugin de Google services
 }
 
 android {
@@ -40,12 +40,18 @@ dependencies {
     implementation 'com.airbnb.android:lottie:5.2.0'
 
     // Dependencias de Glide
-    implementation 'com.github.bumptech.glide:glide:4.16.0' // Solo una versión de Glide
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+    implementation libs.glide
+    annotationProcessor libs.compiler
 
-    implementation "androidx.recyclerview:recyclerview:1.3.1"
-    implementation 'com.google.firebase:firebase-auth:21.0.1'
-    implementation "com.google.android.material:material:1.9.0"
+    // Firebase SDK
+    implementation 'com.google.firebase:firebase-auth:20.0.3'
+    implementation 'com.google.firebase:firebase-firestore:23.0.3'
+    implementation 'com.google.firebase:firebase-storage:20.0.1'
+    implementation 'com.google.firebase:firebase-analytics:18.0.3'
+
+    // ViewPager para eventos
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
 }
 
 // Aplicar el plugin de Google services al final

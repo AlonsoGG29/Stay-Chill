@@ -117,7 +117,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/labelContraseña"
+                android:id="@+id/labelContrasenia"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Contraseña"
@@ -125,7 +125,7 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/inputContraseña"
+                android:id="@+id/inputContrasenia"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
