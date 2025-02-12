@@ -71,7 +71,7 @@ Primera versión de las futuras pantallas que tendrá la app.
 
 - Barra de navegación
 <p align="center">
-  <img src="imagenes/pantalla_4c_navigationmenu.jpg" alt="MAIN" />
+  <img src="imagenes/pantalla_4a_menunavigation.jpg" alt="MAIN" />
 </p>
 
 
