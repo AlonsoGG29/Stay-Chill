@@ -1,86 +1,94 @@
-<div align="center"><h1> Stay Chill </h1></div>
+# STAY CHILL
+<p align="center">
+  <img src="imagenes/StayChill.svg" alt="COLORES" />
+</p>
 
-<div align="center">
-  <img src="imagenes/logo_stay_chill.svg" alt="Logo" />
-</div>
+Enlace a Figma: https://www.figma.com/design/KyVoo7Z4Q3HpOeT7HOTeMz/Stay-Chill?node-id=0-1&p=f&t=3dMJvDozEKVYZmZe-0
 
----
+Enlace a Trello : https://trello.com/b/efP3xoTZ/stay-chill
 
-##  Enlaces de interés.
-
-- Figma: https://www.figma.com/design/KyVoo7Z4Q3HpOeT7HOTeMz/Stay-Chill?node-id=0-1&p=f&t=3dMJvDozEKVYZmZe-0
-- Trello : https://trello.com/b/efP3xoTZ/stay-chill
 
 ## Integrantes del proyecto:
 
-- Angel Castillo - CM Cloud Master
-- Konrad Drobnik - DS Designer
-- Alonso Gómez - SM Scrum Master
+- Alonso Gómez - CM Cloud Master
+- Angel Castillo - DS Designer
+- Konrad Drobnik - SM Scrum Master
+
 
 ## Descripción de la app:
 
-Stay Chill se trata de una aplicación para móviles, que invita a los usuarios a conocer nuevas personas cerca de ellas. La diferencia de otras apps para conocer gente (Tinder, Badoo, etc...) es que aquí las personas se presentan de manera física. La gente crea un evento, por ejemplo, ir a echar un partido de baloncesto en las pistas del barrio, y desde la app el resto de usuarios pueden buscar ese u otros eventos y autoinvitarse.
+Stay Chill se trata de una aplicación para móviles, que invita a los usuarios a conocer nuevas personas cerca de ellas.
+La diferencia de otras apps para conocer gente (Tinder, Badoo, etc...) es que aquí las personas se presentan de manera física. La gente crea un evento, por ejemplo, ir a echar un partido de baloncesto en las pistas del barrio, y desde la app el resto de usuarios pueden buscar ese u otros eventos y autoinvitarse.
 
 La app busca que la gente se conozca como antiguamente, en persona, y no escribiéndose por chat. De esa manera, se crean relaciones o amistades más fuertes y directas.
 
----
 
-## Pantallas
+
+## Pantallas.
+
+Primera versión de las futuras pantallas que tendrá la app.
+
 
 ### Splash:
 
-Animación al entrar en la app.
+<p align="center">
+  <img src="imagenes/pantalla_1_splash.jpg" alt="MAIN" />
+</p>
 
-<div align="center">
-   <img src="imagenes/pantalla_splash.jpg" width="300">
-</div>
 
 ### Login:
 
-Pantalla donde el usuario puede iniciar sesión.
+<p align="center">
+  <img src="imagenes/pantalla_2_login.jpg" alt="MAIN" />
+</p>
 
-<div align="center">
-   <img src="imagenes/pantalla_login.jpg" width="300">
-</div>
 
 ### Register:
 
-<div align="center">
-   <img src="imagenes/pantalla_signup.jpg" width="300">
-</div>
+<p align="center">
+  <img src="imagenes/pantalla_3_register.jpg" alt="MAIN" />
+</p>
 
-### Main:
 
-Pantalla donde se muestran los eventos que van creando los usuarios.
+### Página principal:
 
-<div align="center">
-  <img src="imagenes/pantalla_main.jpg" width="300" />
-</div>
+<p align="center">
+  <img src="imagenes/pantalla_4_main.jpg" alt="MAIN" />
+</p>
 
-### Evento:
+- Busqueda en el menú principal
+<p align="center">
+  <img src="imagenes/pantalla_4b_busqueda.jpg" alt="MAIN" />
+</p>
 
-Donde el usuario podrá ver sus eventos, tanto los que ha creado como los que se ha unido
+- Barra de navegación
+<p align="center">
+  <img src="imagenes/pantalla_4a_menunavigation.jpg" alt="MAIN" />
+</p>
 
-<div align="center">
-  <img src="imagenes/pantalla_evento.jpg" width="300" />
-</div>
 
-### Mensaje:
+### Página de eventos (casi finalizada):
 
-El usuario podrá mandar mensajes a otros.
+<p align="center">
+  <img src="imagenes/pantalla_4d_calendario.jpg" alt="EVENTOS" />
+</p>
 
-<div align="center">
-  <img src="imagenes/pantalla_mensaje.jpg" width="300" />
-</div>
 
-<div align="center">
-  <img src="imagenes/pantalla_conversacion.jpg" width="300" />
-</div>
+### Página de mensajes (aun en desarrollo):
 
-### Configuración:
+<p align="center">
+  <img src="imagenes/mensajes.jpg" alt="MENSAJES" />
+</p>
 
-Todo lo relacionado con la configuración del perfil.
 
-<div align="center">
-  <img src="imagenes/pantalla_configuracion.jpg" width="300"  />
-</div>
+### Página de configuración:
+
+<p align="center">
+  <img src="imagenes/pantalla_5_fragmentopciones.jpg" alt="CONFIGURAR" />
+</p>
+
+### Apartado de cuenta:
+
+<p align="center">
+  <img src="imagenes/pantalla_5a_cuenta.jpg" alt="CONFIGURAR" />
+</p>
