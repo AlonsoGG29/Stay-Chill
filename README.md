@@ -75,10 +75,10 @@ Primera versión de las futuras pantallas que tendrá la app.
 </p>
 
 
-### Página de eventos (aún en desarrollo):
+### Página de eventos (casi finalizada):
 
 <p align="center">
-  <img src="imagenes/eventos.jpg" alt="EVENTOS" />
+  <img src="imagenes/pantalla_4d_calendario.jpg" alt="EVENTOS" />
 </p>
 
 
@@ -93,4 +93,10 @@ Primera versión de las futuras pantallas que tendrá la app.
 
 <p align="center">
   <img src="imagenes/pantalla_5_fragmentopciones.jpg" alt="CONFIGURAR" />
+</p>
+
+### Apartado de cuenta:
+
+<p align="center">
+  <img src="imagenes/pantalla_5a_cuenta.jpg" alt="CONFIGURAR" />
 </p>
