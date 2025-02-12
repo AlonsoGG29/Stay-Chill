@@ -23,14 +23,6 @@ La diferencia de otras apps para conocer gente (Tinder, Badoo, etc...) es que aq
 La app busca que la gente se conozca como antiguamente, en persona, y no escribiéndose por chat. De esa manera, se crean relaciones o amistades más fuertes y directas.
 
 
-## Paleta de colores:
-
-<p align="center">
-  <img src="imagenes/Paleta_StayChill.jpg" alt="COLORES" />
-</p>
-
-La paleta de colores fue seleccionada para transmitir confianza, calidez y dinamismo, reflejando la esencia de conectar personas a través de eventos. Los tonos combinan profesionalismo, cercanía y claridad visual, creando una experiencia atractiva y funcional que invita a la interacción.
-
 
 ## Pantallas.
 
