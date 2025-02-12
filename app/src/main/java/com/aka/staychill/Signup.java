@@ -23,25 +23,28 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import okhttp3.*;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class Signup extends AppCompatActivity {
 
     private Button btnEntrarSignUp;
     private TextView inicio;
     private EditText emailField, passwordField, passwordRepetirField;
-    private FirebaseAuth auth;
+    private IniciarSupabase supabaseConfig;
+    private OkHttpClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseApp.initializeApp(this); // Inicializar Firebase
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_signup);
 
-        auth = FirebaseAuth.getInstance();
+        supabaseConfig = new IniciarSupabase(); // Inicializar SupabaseConfig
+        client = IniciarSupabase.getClient(); // Obtener cliente OkHttp
 
         btnEntrarSignUp = findViewById(R.id.btn_signup);
         inicio = findViewById(R.id.inicio_text);
@@ -114,22 +117,45 @@ public class Signup extends AppCompatActivity {
     }
 
     private void crearCuenta(String email, String password) {
-        auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Registro exitoso, navegar a la actividad principal
-                        FirebaseUser user = auth.getCurrentUser();
-                        if (user != null) {
-                            Toast.makeText(Signup.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Signup.this, Main_bn.class);
-                            startActivity(intent);
-                            finish();
-                        }
-                    } else {
-                        // Si el registro falla, mostrar un mensaje al usuario
-                        String errorMessage = (task.getException() != null) ? task.getException().getMessage() : "Error desconocido";
-                        Toast.makeText(Signup.this, "Fallo en el registro: " + errorMessage, Toast.LENGTH_SHORT).show();
-                    }
-                });
+        String signupUrl = IniciarSupabase.getSupabaseUrl() + "/auth/v1/signup";
+        String apiKey = IniciarSupabase.getSupabaseKey();
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("email", email);
+            jsonBody.put("password", password);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url(signupUrl)
+                .header("apikey", apiKey)
+                .header("Authorization", "Bearer " + apiKey)
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> Toast.makeText(Signup.this, "Error de conexión", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(Signup.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Signup.this, Main_bn.class);
+                        startActivity(intent);
+                        finish();
+                    });
+                } else {
+                    runOnUiThread(() -> Toast.makeText(Signup.this, "Fallo en el registro: " + response.message(), Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
     }
 }

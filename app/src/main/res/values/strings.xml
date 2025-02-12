@@ -36,4 +36,10 @@
     <string name="fecha">Dic 2024</string>
     <string name="miercoles">Miercoles</string>
     <string name="no_eventos_agregado">No has agregado ningún vento</string>
+
+    <!--Back4App-->
+
+    <string name="parse_app_id">NK7L4MwCLysvKqp4RMHjSIFEyTgvZmjmopSwomah</string>
+    <string name="parse_client_key">V83zM31yY78xg1wxVJ1NHxRiKplOeKqm7X59UQnw</string>
+
 </resources>
