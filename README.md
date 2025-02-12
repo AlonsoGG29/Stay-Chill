@@ -24,7 +24,7 @@ La app busca que la gente se conozca como antiguamente, en persona, y no escribi
 
 
 
-## Pantallas.
+## PANTALLAS
 
 Primera versión de las futuras pantallas que tendrá la app.
 
