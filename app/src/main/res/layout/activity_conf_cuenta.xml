@@ -7,9 +7,8 @@
     android:orientation="vertical"
     android:background="@android:color/white"
     android:gravity="center_horizontal"
-    android:padding="16dp"> <!-- Añadí un padding general para que haya más espacio -->
+    android:padding="16dp">
 
-    <!-- Encabezado con botón de retroceso y título -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,179 +29,216 @@
             android:text="Editar cuenta"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="@color/black"
             android:layout_centerInParent="true"/>
     </RelativeLayout>
 
-    <!-- Imagen de perfil centrada, justo debajo del título -->
-
-    <!-- Campos: Nombre, Correo, Contraseña, Fecha de Nacimiento, País -->
-
-    <!-- Botón de Guardar -->
-    <ImageView
-        android:id="@+id/fotoPerfil"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="0dp"
-        android:src="@drawable/perfil" />
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
-        android:orientation="vertical">
-        <!-- Campo: Nombre -->
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/labelNombre"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nombre"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/fotoPerfil"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/perfil" />
 
-            <EditText
-                android:id="@+id/inputNombre"
+            <!-- Campo: Nombre -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/input_background"
-                android:hint="Ej: Juan Pérez"
-                android:minHeight="48dp"
-                android:padding="10dp" />
-        </LinearLayout>
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
 
-        <!-- Campo: Correo Electrónico -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
-            android:orientation="vertical">
+                <TextView
+                    android:text="Nombre"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="4dp"/>
 
-            <TextView
-                android:id="@+id/labelCorreoElectronico"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Correo Electrónico"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                <EditText
+                    android:id="@+id/inputNombre"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_background"
+                    android:hint="Ej: Juan Pérez"
+                    android:padding="10dp"/>
+            </LinearLayout>
 
-            <EditText
-                android:id="@+id/inputCorreoElectronico"
+            <!-- Campo: Correo Actual -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/input_background"
-                android:hint="ej: correo@dominio.com"
-                android:minHeight="48dp"
-                android:padding="10dp" />
-        </LinearLayout>
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
 
-        <!-- Campo: Contraseña -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
-            android:orientation="vertical">
+                <TextView
+                    android:text="Correo Actual"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
 
-            <TextView
-                android:id="@+id/labelContrasenia"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Contraseña"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                <EditText
+                    android:id="@+id/inputCorreoActual"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_background"
+                    android:hint="ej: correo@dominio.com"
+                    android:padding="10dp"/>
+            </LinearLayout>
 
-            <EditText
-                android:id="@+id/inputContrasenia"
+            <!-- Campo: Nuevo Correo Electrónico -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/input_background"
-                android:hint="**********"
-                android:inputType="textPassword"
-                android:padding="10dp"
-                tools:ignore="TouchTargetSizeCheck" />
-        </LinearLayout>
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
 
-        <!-- Campo: Fecha de Nacimiento -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
-            android:orientation="vertical">
+                <TextView
+                    android:text="Nuevo Correo Electrónico"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
 
-            <TextView
-                android:id="@+id/labelFechaNacimiento"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Fecha de Nacimiento"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                <EditText
+                    android:id="@+id/inputNuevoCorreo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_background"
+                    android:hint="ej: nuevo@correo.com"
+                    android:padding="10dp"/>
+            </LinearLayout>
 
-            <EditText
-                android:id="@+id/inputFechaNacimiento"
+            <!-- Campo: Contraseña Actual -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/input_background"
-                android:hint="DD/MM/AAAA"
-                android:inputType="date"
-                android:minHeight="48dp"
-                android:padding="10dp" />
-        </LinearLayout>
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
 
-        <!-- Campo: País -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
-            android:orientation="vertical">
+                <TextView
+                    android:text="Contraseña Actual"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
 
-            <TextView
-                android:id="@+id/labelPais"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="País"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                <EditText
+                    android:id="@+id/inputContraseñaActual"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_background"
+                    android:hint="**********"
+                    android:inputType="textPassword"
+                    android:padding="10dp"/>
+            </LinearLayout>
 
-            <Spinner
-                android:id="@+id/inputPais"
+            <!-- Campo: Nueva Contraseña -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/input_background"
-                android:dropDownWidth="match_parent"
-                android:minHeight="48dp"
-                android:padding="12dp" />
-        </LinearLayout>
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
 
-    </LinearLayout>
+                <TextView
+                    android:text="Nueva Contraseña"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+
+                <EditText
+                    android:id="@+id/inputNuevaContraseña"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_background"
+                    android:hint="**********"
+                    android:inputType="textPassword"
+                    android:padding="10dp"/>
+            </LinearLayout>
+
+            <!-- Campo: Repetir Nueva Contraseña -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="Repetir Nueva Contraseña"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+
+                <EditText
+                    android:id="@+id/inputRepetirNuevaContraseña"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_background"
+                    android:hint="**********"
+                    android:inputType="textPassword"
+                    android:padding="10dp"/>
+            </LinearLayout>
+
+            <!-- Campo: Fecha de Nacimiento -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="Fecha de Nacimiento"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+
+                <EditText
+                    android:id="@+id/inputFechaNacimiento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_background"
+                    android:hint="DD/MM/AAAA"
+                    android:inputType="date"
+                    android:padding="10dp"/>
+            </LinearLayout>
+
+            <!-- Campo: País -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="País"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
+
+                <Spinner
+                    android:id="@+id/inputPais"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_background"
+                    android:padding="12dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/botoncuenta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/boton_cuenta"
-        android:minHeight="48dp"
         android:text="Guardar"
         android:textColor="@android:color/white"/>
-
 </LinearLayout>

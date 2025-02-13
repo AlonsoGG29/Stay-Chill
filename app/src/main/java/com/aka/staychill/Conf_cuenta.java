@@ -50,7 +50,7 @@ public class Conf_cuenta extends AppCompatActivity {
 
         // Inicializar vistas
         inputNombre = findViewById(R.id.inputNombre);
-        inputCorreoElectronico = findViewById(R.id.inputCorreoElectronico);
+        inputCorreoElectronico = findViewById(R.id.inputCorreoActual);
         inputFechaNacimiento = findViewById(R.id.inputFechaNacimiento);
         inputPais = findViewById(R.id.inputPais);
         fotoPerfil = findViewById(R.id.fotoPerfil);
