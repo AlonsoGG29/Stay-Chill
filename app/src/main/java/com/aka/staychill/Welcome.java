@@ -22,13 +22,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import okhttp3.*;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class Welcome extends AppCompatActivity {
 
     private Button btnEntrar, btnIniciarSesion;
     private TextView registrarse;
+    private SupabaseConfig supabaseConfig;
+    private OkHttpClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,29 +41,63 @@ public class Welcome extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_welcome);
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = auth.getCurrentUser();
+        supabaseConfig = new SupabaseConfig(); // Inicializar SupabaseConfig
+        client = SupabaseConfig.getClient(); // Obtener cliente OkHttp
 
         // Verificar si el usuario ya está autenticado
-        if (currentUser != null) {
-            // Si el usuario está autenticado, navega directamente a la actividad principal
-            startActivity(new Intent(Welcome.this, Main_bn.class));
-            finish();
-        } else {
-            // Configurar la vista y listeners si el usuario no está autenticado
-            btnEntrar = findViewById(R.id.entrar_welcome);
-            btnIniciarSesion = findViewById(R.id.sesion_welcome);
-            registrarse = findViewById(R.id.registrarse_welcome);
+        verificarAutenticacion();
 
-            // Configurar listeners de botones
-            configurarListenersBotones();
+        // Configurar la vista y listeners
+        btnEntrar = findViewById(R.id.entrar_welcome);
+        btnIniciarSesion = findViewById(R.id.sesion_welcome);
+        registrarse = findViewById(R.id.registrarse_welcome);
 
-            // Aplicar insets de ventana
-            aplicarInsetsVentana();
+        // Configurar listeners de botones
+        configurarListenersBotones();
 
-            // Estilizar y hacer clicable "Regístrate"
-            estilizarYHacerClicable();
-        }
+        // Aplicar insets de ventana
+        aplicarInsetsVentana();
+
+        // Estilizar y hacer clicable "Regístrate"
+        estilizarYHacerClicable();
+    }
+
+    private void verificarAutenticacion() {
+        String sessionUrl = SupabaseConfig.getSupabaseUrl() + "/auth/v1/user";
+        String apiKey = SupabaseConfig.getSupabaseKey();
+
+        Request request = new Request.Builder()
+                .url(sessionUrl)
+                .header("apikey", apiKey)
+                .header("Authorization", "Bearer " + apiKey)
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        String responseBody = response.body().string();
+                        JSONObject jsonObject = new JSONObject(responseBody);
+                        if (jsonObject.has("id")) {
+                            // Usuario autenticado, redirigir a Main_bn
+                            runOnUiThread(() -> {
+                                startActivity(new Intent(Welcome.this, Main_bn.class));
+                                finish();
+                            });
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     private void configurarListenersBotones() {
