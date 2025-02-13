@@ -64,7 +64,7 @@
         app:layout_constraintTop_toBottomOf="@id/descLabel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-       />
+        />
 
     <!-- Imagen del problema -->
     <TextView
@@ -92,7 +92,7 @@
         app:layout_constraintTop_toBottomOf="@id/imgLabel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-       />
+        />
 
     <!-- Botón de Enviar -->
     <Button

@@ -23,7 +23,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.content.ContextCompat;
 
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,8 +39,7 @@ public class Signup extends AppCompatActivity {
 
     private Button btnEntrarSignUp;
     private TextView inicio;
-    private EditText emailField, passwordField, passwordRepetirField;
-    private IniciarSupabase supabaseConfig;
+    private EditText emailField, passwordField, passwordRepetirField, nombreField;
     private OkHttpClient client;
 
     @Override
@@ -43,14 +48,14 @@ public class Signup extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_signup);
 
-        supabaseConfig = new IniciarSupabase(); // Inicializar SupabaseConfig
-        client = IniciarSupabase.getClient(); // Obtener cliente OkHttp
+        client = SupabaseConfig.getClient(); // Obtener cliente OkHttp
 
         btnEntrarSignUp = findViewById(R.id.btn_signup);
         inicio = findViewById(R.id.inicio_text);
         emailField = findViewById(R.id.email);
         passwordField = findViewById(R.id.password);
         passwordRepetirField = findViewById(R.id.password_repetir);
+        nombreField = findViewById(R.id.nombre);
 
         // Configurar el botón "Entrar"
         configurarBotonEntrar();
@@ -67,15 +72,16 @@ public class Signup extends AppCompatActivity {
             String email = emailField.getText().toString();
             String password = passwordField.getText().toString();
             String passwordRepetir = passwordRepetirField.getText().toString();
+            String nombre = nombreField.getText().toString();
 
-            if (email.isEmpty() || password.isEmpty() || passwordRepetir.isEmpty()) {
+            if (email.isEmpty() || password.isEmpty() || passwordRepetir.isEmpty() || nombre.isEmpty()) {
                 Toast.makeText(Signup.this, "Por favor, rellena todos los campos", Toast.LENGTH_SHORT).show();
             } else if (!password.equals(passwordRepetir)) {
                 Toast.makeText(Signup.this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show();
             } else if (password.length() < 6) {
                 Toast.makeText(Signup.this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show();
             } else {
-                crearCuenta(email, password);
+                crearCuenta(email, password, nombre);
             }
         });
     }
@@ -116,14 +122,15 @@ public class Signup extends AppCompatActivity {
         inicio.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    private void crearCuenta(String email, String password) {
-        String signupUrl = IniciarSupabase.getSupabaseUrl() + "/auth/v1/signup";
-        String apiKey = IniciarSupabase.getSupabaseKey();
+    private void crearCuenta(String email, String password, String nombre) {
+        String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios"; // 'usuarios' es el nombre de tu tabla
+        String apiKey = SupabaseConfig.getSupabaseKey();
 
         JSONObject jsonBody = new JSONObject();
         try {
             jsonBody.put("email", email);
-            jsonBody.put("password", password);
+            jsonBody.put("contrasenia", password);
+            jsonBody.put("nombre", nombre);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -131,29 +138,57 @@ public class Signup extends AppCompatActivity {
         RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
-                .url(signupUrl)
+                .url(url)
                 .header("apikey", apiKey)
                 .header("Authorization", "Bearer " + apiKey)
+                .header("Content-Type", "application/json")
                 .post(body)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(Signup.this, "Error de conexión", Toast.LENGTH_SHORT).show());
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> Toast.makeText(Signup.this, "Error al crear la cuenta: " + e.getMessage(), Toast.LENGTH_LONG).show());
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String responseBody = response.body().string();
+                JSONObject jsonResponse = null;
+                try {
+                    jsonResponse = new JSONObject(responseBody);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                String errorMessage = "Fallo en el registro";
+                if (!response.isSuccessful()) {
+                    if (jsonResponse != null) {
+                        if (jsonResponse.has("error_description")) {
+                            errorMessage = jsonResponse.optString("error_description");
+                        } else if (jsonResponse.has("message")) {
+                            errorMessage = jsonResponse.optString("message");
+                        }
+
+                        // Añadir comprobaciones específicas
+                        if (errorMessage.contains("invalid email")) {
+                            errorMessage = "El formato del correo electrónico no es válido.";
+                        } else if (errorMessage.contains("weak password")) {
+                            errorMessage = "La contraseña es demasiado débil.";
+                        } else if (errorMessage.contains("already registered")) {
+                            errorMessage = "El correo electrónico ya está registrado.";
+                        }
+                    }
+                    String finalErrorMessage = "Fallo en el registro: " + errorMessage;
+                    runOnUiThread(() -> Toast.makeText(Signup.this, finalErrorMessage, Toast.LENGTH_LONG).show());
+                } else {
                     runOnUiThread(() -> {
                         Toast.makeText(Signup.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(Signup.this, Main_bn.class);
                         startActivity(intent);
                         finish();
                     });
-                } else {
-                    runOnUiThread(() -> Toast.makeText(Signup.this, "Fallo en el registro: " + response.message(), Toast.LENGTH_SHORT).show());
                 }
             }
         });
