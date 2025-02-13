@@ -1,5 +1,6 @@
 package com.aka.staychill;
 
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -11,20 +12,22 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 public class UserProfileManager {
-    private OkHttpClient client;
+    private final OkHttpClient client;
 
     public UserProfileManager() {
         client = SupabaseConfig.getClient();
     }
 
-    public void saveUserProfile(String userId, Map<String, Object> profileData) {
+    public void guardarPerfilUsuario(String userId, Map<String, Object> profileData) {
         String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/profiles";
         String apiKey = SupabaseConfig.getSupabaseKey();
 
@@ -54,13 +57,13 @@ public class UserProfileManager {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    throw new IOException("Error saving user profile");
+                    throw new IOException("Error guardando el perfil del usuario");
                 }
             }
         });
     }
 
-    public void getUserProfile(String userId, ProfileCallback callback) {
+    public void obtenerPerfilUsuario(String userId, PerfilCallback callback) {
         String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/profiles?user_id=eq." + userId;
         String apiKey = SupabaseConfig.getSupabaseKey();
 
@@ -82,27 +85,66 @@ public class UserProfileManager {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     try {
+                        assert response.body() != null;
                         String responseBody = response.body().string();
                         callback.onComplete(new JSONObject(responseBody), null);
                     } catch (JSONException e) {
                         callback.onComplete(null, e);
                     }
                 } else {
-                    callback.onComplete(null, new IOException("Error getting user profile"));
+                    callback.onComplete(null, new IOException("Error obteniendo el perfil del usuario"));
                 }
             }
         });
     }
 
-    public void uploadProfileImage(String userId, Uri imageUri, ProfileImageCallback callback) {
-        // Implementación de la subida de imagen a Supabase Storage o tu método de almacenamiento preferido
+    public void subirImagenPerfil(String userId, Uri imageUri, PerfilImagenCallback callback, Context context) {
+        try {
+            InputStream imageStream = context.getContentResolver().openInputStream(imageUri);
+            assert imageStream != null;
+            byte[] imageBytes = new byte[imageStream.available()];
+            imageStream.read(imageBytes);
+            imageStream.close();
+
+            String url = SupabaseConfig.getSupabaseUrl() + "/storage/v1/object/storage-bucket/" + userId + ".jpg";
+            String apiKey = SupabaseConfig.getSupabaseKey();
+
+            RequestBody body = RequestBody.create(imageBytes, MediaType.parse("image/jpeg"));
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .header("apikey", apiKey)
+                    .header("Authorization", "Bearer " + apiKey)
+                    .header("Content-Type", "image/jpeg")
+                    .put(body)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    callback.onComplete(null, e);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) {
+                    if (response.isSuccessful()) {
+                        String imageUrl = SupabaseConfig.getSupabaseUrl() + "/storage/v1/object/public/storage-bucket/" + userId + ".jpg";
+                        callback.onComplete(Uri.parse(imageUrl), null);
+                    } else {
+                        callback.onComplete(null, new IOException("Error subiendo la imagen"));
+                    }
+                }
+            });
+        } catch (IOException e) {
+            callback.onComplete(null, e);
+        }
     }
 
-    public interface ProfileCallback {
+    public interface PerfilCallback {
         void onComplete(JSONObject profile, Exception e);
     }
 
-    public interface ProfileImageCallback {
+    public interface PerfilImagenCallback {
         void onComplete(Uri uri, Exception e);
     }
 }

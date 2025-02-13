@@ -14,6 +14,7 @@ import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -22,25 +23,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import okhttp3.*;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-
 public class Welcome extends AppCompatActivity {
 
     private Button btnEntrar, btnIniciarSesion;
     private TextView registrarse;
-    private OkHttpClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_welcome);
-
-        client = SupabaseConfig.getClient(); // Obtener cliente OkHttp
 
         // Verificar si el usuario ya está autenticado
         verificarAutenticacion();
@@ -61,41 +53,13 @@ public class Welcome extends AppCompatActivity {
     }
 
     private void verificarAutenticacion() {
-        String sessionUrl = SupabaseConfig.getSupabaseUrl() + "/auth/v1/user";
-        String apiKey = SupabaseConfig.getSupabaseKey();
-
-        Request request = new Request.Builder()
-                .url(sessionUrl)
-                .header("apikey", apiKey)
-                .header("Authorization", "Bearer " + apiKey)
-                .get()
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    try {
-                        String responseBody = response.body().string();
-                        JSONObject jsonObject = new JSONObject(responseBody);
-                        if (jsonObject.has("id")) {
-                            // Usuario autenticado, redirigir a Main_bn
-                            runOnUiThread(() -> {
-                                startActivity(new Intent(Welcome.this, Main_bn.class));
-                                finish();
-                            });
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
+        String userId = getSharedPreferences("app_prefs", MODE_PRIVATE).getString("user_id", null);
+        if (userId != null) {
+            // Usuario autenticado, redirigir a Main_bn
+            Toast.makeText(this, "Bienvenido de nuevo", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(Welcome.this, Main_bn.class));
+            finish();
+        }
     }
 
     private void configurarListenersBotones() {

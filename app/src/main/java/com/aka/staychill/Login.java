@@ -9,6 +9,7 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -128,13 +129,20 @@ public class Login extends AppCompatActivity {
                     try {
                         String responseBody = response.body().string();
                         JSONObject jsonObject = new JSONObject(responseBody);
+
+                        // Imprimir la respuesta completa para depuración
+                        Log.d("Login", "Respuesta del servidor: " + jsonObject.toString());
+
                         if (jsonObject.has("access_token")) {
-                            runOnUiThread(() -> {
-                                Toast.makeText(Login.this, "Iniciada la sesión correctamente", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(Login.this, Main_bn.class);
-                                startActivity(intent);
-                                finish();
-                            });
+                            // Guardar el access_token en SharedPreferences
+                            String accessToken = jsonObject.getString("access_token");
+                            getSharedPreferences("app_prefs", MODE_PRIVATE)
+                                    .edit()
+                                    .putString("access_token", accessToken)
+                                    .apply();
+
+                            // Obtener detalles del usuario utilizando el access_token
+                            obtenerDetallesUsuario(accessToken);
                         } else {
                             runOnUiThread(() -> Toast.makeText(Login.this, "Email o contraseña errónea", Toast.LENGTH_SHORT).show());
                         }
@@ -143,6 +151,54 @@ public class Login extends AppCompatActivity {
                     }
                 } else {
                     runOnUiThread(() -> Toast.makeText(Login.this, "Email o contraseña errónea", Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+    private void obtenerDetallesUsuario(String accessToken) {
+        String url = SupabaseConfig.getSupabaseUrl() + "/auth/v1/user";
+        String apiKey = SupabaseConfig.getSupabaseKey();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .header("apikey", apiKey)
+                .header("Authorization", "Bearer " + accessToken)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> Toast.makeText(Login.this, "Error al obtener detalles del usuario", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        String responseBody = response.body().string();
+                        JSONObject jsonObject = new JSONObject(responseBody);
+
+                        // Guardar el userId en SharedPreferences
+                        String userId = jsonObject.getString("id");
+                        getSharedPreferences("app_prefs", MODE_PRIVATE)
+                                .edit()
+                                .putString("user_id", userId)
+                                .apply();
+
+                        Log.d("Login", "Detalles del usuario: " + jsonObject.toString());
+                        runOnUiThread(() -> {
+                            Toast.makeText(Login.this, "Iniciada la sesión correctamente", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(Login.this, Main_bn.class);
+                            startActivity(intent);
+                            finish();
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    runOnUiThread(() -> Toast.makeText(Login.this, "Error al obtener detalles del usuario", Toast.LENGTH_SHORT).show());
                 }
             }
         });
