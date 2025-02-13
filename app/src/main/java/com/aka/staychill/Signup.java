@@ -9,6 +9,7 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -81,7 +82,7 @@ public class Signup extends AppCompatActivity {
             } else if (password.length() < 6) {
                 Toast.makeText(Signup.this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show();
             } else {
-                crearCuenta(email, password, nombre);
+                registrarUsuario(email, password, nombre);
             }
         });
     }
@@ -122,14 +123,69 @@ public class Signup extends AppCompatActivity {
         inicio.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    private void crearCuenta(String email, String password, String nombre) {
-        String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios"; // 'usuarios' es el nombre de tu tabla
+    private void registrarUsuario(String email, String password, String nombre) {
+        String url = SupabaseConfig.getSupabaseUrl() + "/auth/v1/signup";
         String apiKey = SupabaseConfig.getSupabaseKey();
 
         JSONObject jsonBody = new JSONObject();
         try {
             jsonBody.put("email", email);
-            jsonBody.put("contrasenia", password);
+            jsonBody.put("password", password);
+            jsonBody.put("display_name", nombre);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url(url)
+                .header("apikey", apiKey)
+                .header("Content-Type", "application/json")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> Toast.makeText(Signup.this, "Error al registrar usuario", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        String responseBody = response.body().string();
+                        JSONObject jsonObject = new JSONObject(responseBody);
+                        String userId = jsonObject.getJSONObject("user").getString("id");
+
+                        // Guardar userId en SharedPreferences
+                        getSharedPreferences("app_prefs", MODE_PRIVATE)
+                                .edit()
+                                .putString("user_id", userId)
+                                .apply();
+
+                        // Crear entrada en la tabla `usuarios`
+                        crearEntradaUsuarios(userId, nombre);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    String responseBody = response.body().string();
+                    runOnUiThread(() -> Toast.makeText(Signup.this, "Error al registrar usuario: " + responseBody, Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+    private void crearEntradaUsuarios(String userId, String nombre) {
+        String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios";
+        String apiKey = SupabaseConfig.getSupabaseKey();
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("foren_uid", userId);
             jsonBody.put("nombre", nombre);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -149,46 +205,21 @@ public class Signup extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
-                runOnUiThread(() -> Toast.makeText(Signup.this, "Error al crear la cuenta: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                runOnUiThread(() -> Toast.makeText(Signup.this, "Error al crear entrada en la tabla usuarios", Toast.LENGTH_SHORT).show());
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                String responseBody = response.body().string();
-                JSONObject jsonResponse = null;
-                try {
-                    jsonResponse = new JSONObject(responseBody);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                String errorMessage = "Fallo en el registro";
-                if (!response.isSuccessful()) {
-                    if (jsonResponse != null) {
-                        if (jsonResponse.has("error_description")) {
-                            errorMessage = jsonResponse.optString("error_description");
-                        } else if (jsonResponse.has("message")) {
-                            errorMessage = jsonResponse.optString("message");
-                        }
-
-                        // Añadir comprobaciones específicas
-                        if (errorMessage.contains("invalid email")) {
-                            errorMessage = "El formato del correo electrónico no es válido.";
-                        } else if (errorMessage.contains("weak password")) {
-                            errorMessage = "La contraseña es demasiado débil.";
-                        } else if (errorMessage.contains("already registered")) {
-                            errorMessage = "El correo electrónico ya está registrado.";
-                        }
-                    }
-                    String finalErrorMessage = "Fallo en el registro: " + errorMessage;
-                    runOnUiThread(() -> Toast.makeText(Signup.this, finalErrorMessage, Toast.LENGTH_LONG).show());
-                } else {
+                if (response.isSuccessful()) {
                     runOnUiThread(() -> {
-                        Toast.makeText(Signup.this, "Registro exitoso", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Signup.this, "Usuario registrado con éxito", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(Signup.this, Main_bn.class);
                         startActivity(intent);
                         finish();
                     });
+                } else {
+                    String responseBody = response.body().string();
+                    runOnUiThread(() -> Toast.makeText(Signup.this, "Error al crear entrada en la tabla usuarios: " + responseBody, Toast.LENGTH_SHORT).show());
                 }
             }
         });
