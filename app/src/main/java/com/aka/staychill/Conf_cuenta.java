@@ -16,9 +16,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
+
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +28,6 @@ public class Conf_cuenta extends AppCompatActivity {
     private EditText inputFechaNacimiento;
     private Spinner inputPais;
     private ImageView fotoPerfil;
-    private FirebaseUser currentUser;
     private UserProfileManager profileManager;
     private Uri profileImageUri;
 
@@ -48,9 +46,6 @@ public class Conf_cuenta extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conf_cuenta);
 
-        // Inicializar Firebase Auth
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        currentUser = auth.getCurrentUser();
         profileManager = new UserProfileManager();
 
         // Inicializar vistas
@@ -67,30 +62,30 @@ public class Conf_cuenta extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         inputPais.setAdapter(adapter);
 
-        // Cargar datos del perfil si ya existen
-        if (currentUser != null) {
-            cargarDatosPerfil(currentUser.getUid());
+        // Obtener el userId del usuario actual
+        String userId = getIntent().getStringExtra("USER_ID"); // Asegúrate de pasar el userId a esta actividad
+        if (userId != null) {
+            cargarDatosPerfil(userId);
+        } else {
+            Toast.makeText(this, "Error: usuario no autenticado", Toast.LENGTH_SHORT).show();
         }
 
         // Listener para seleccionar imagen de perfil
         fotoPerfil.setOnClickListener(v -> seleccionarImagenPerfil());
 
         // Listener para guardar datos del perfil
-        botonGuardar.setOnClickListener(v -> guardarDatosPerfil());
+        botonGuardar.setOnClickListener(v -> guardarDatosPerfil(userId));
     }
 
     private void cargarDatosPerfil(String userId) {
-        profileManager.getUserProfile(userId, task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    inputNombre.setText(document.getString("nombre"));
-                    inputCorreoElectronico.setText(document.getString("email"));
-                    inputFechaNacimiento.setText(document.getString("fechaNacimiento"));
-                    String profileImageUrl = document.getString("profileImageUrl");
-                    if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
-                        Glide.with(this).load(profileImageUrl).into(fotoPerfil);
-                    }
+        profileManager.getUserProfile(userId, (profile, e) -> {
+            if (e == null && profile != null) {
+                inputNombre.setText(profile.optString("nombre"));
+                inputCorreoElectronico.setText(profile.optString("email"));
+                inputFechaNacimiento.setText(profile.optString("fechaNacimiento"));
+                String profileImageUrl = profile.optString("profileImageUrl");
+                if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+                    Glide.with(this).load(profileImageUrl).into(fotoPerfil);
                 }
             } else {
                 Toast.makeText(this, "Error al cargar datos del perfil", Toast.LENGTH_SHORT).show();
@@ -103,7 +98,7 @@ public class Conf_cuenta extends AppCompatActivity {
         selectImageLauncher.launch(intent);
     }
 
-    private void guardarDatosPerfil() {
+    private void guardarDatosPerfil(String userId) {
         String nombre = inputNombre.getText().toString();
         String email = inputCorreoElectronico.getText().toString();
         String fechaNacimiento = inputFechaNacimiento.getText().toString();
@@ -116,28 +111,33 @@ public class Conf_cuenta extends AppCompatActivity {
 
         String pais = selectedPais.toString(); // Convertir a String si no es null
 
-        if (currentUser != null) {
-            Map<String, Object> profileData = new HashMap<>();
-            profileData.put("nombre", nombre);
-            profileData.put("email", email);
-            profileData.put("fechaNacimiento", fechaNacimiento);
-            profileData.put("pais", pais);
+        Map<String, Object> profileData = new HashMap<>();
+        profileData.put("nombre", nombre);
+        profileData.put("email", email);
+        profileData.put("fechaNacimiento", fechaNacimiento);
+        profileData.put("pais", pais);
 
-            profileManager.saveUserProfile(currentUser.getUid(), profileData);
+        profileManager.saveUserProfile(userId, profileData);
 
-            if (profileImageUri != null) {
-                profileManager.uploadProfileImage(currentUser.getUid(), profileImageUri, uri -> {
-                    profileData.put("profileImageUrl", uri.toString());
-                    profileManager.saveUserProfile(currentUser.getUid(), profileData);
-                    Toast.makeText(this, "Datos del perfil guardados", Toast.LENGTH_SHORT).show();
-                    // Regresar a la pantalla de configuración
-                    startActivity(new Intent(this, Conf_cuenta.class));
-                }, e -> Toast.makeText(this, "Error al subir imagen de perfil: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-            } else {
-                Toast.makeText(this, "Datos del perfil guardados", Toast.LENGTH_SHORT).show();
-                // Regresar a la pantalla de configuración
-                startActivity(new Intent(this, Conf_cuenta.class));
-            }
+        if (profileImageUri != null) {
+            profileManager.uploadProfileImage(userId, profileImageUri, new UserProfileManager.ProfileImageCallback() {
+                @Override
+                public void onComplete(Uri uri, Exception e) {
+                    if (e == null) {
+                        profileData.put("profileImageUrl", uri.toString());
+                        profileManager.saveUserProfile(userId, profileData);
+                        Toast.makeText(Conf_cuenta.this, "Datos del perfil guardados", Toast.LENGTH_SHORT).show();
+                        // Regresar a la pantalla de configuración
+                        startActivity(new Intent(Conf_cuenta.this, Conf_cuenta.class));
+                    } else {
+                        Toast.makeText(Conf_cuenta.this, "Error al subir imagen de perfil: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        } else {
+            Toast.makeText(this, "Datos del perfil guardados", Toast.LENGTH_SHORT).show();
+            // Regresar a la pantalla de configuración
+            startActivity(new Intent(this, Conf_cuenta.class));
         }
     }
 }

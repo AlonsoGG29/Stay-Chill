@@ -18,23 +18,30 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class Login extends AppCompatActivity {
 
     private Button btnEntrar;
     private TextView register;
-    private FirebaseAuth auth;
+    private OkHttpClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseApp.initializeApp(this); // Inicializar Firebase
         setContentView(R.layout.activity_login);
 
-        auth = FirebaseAuth.getInstance();
+        client = SupabaseConfig.getClient(); // Obtener cliente OkHttp
 
         btnEntrar = findViewById(R.id.btn_login);
         register = findViewById(R.id.register_text);
@@ -88,21 +95,56 @@ public class Login extends AppCompatActivity {
     }
 
     private void iniciarSesion(String email, String contrasenia) {
-        auth.signInWithEmailAndPassword(email, contrasenia)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Si se loguea con éxito
-                        FirebaseUser usuario = auth.getCurrentUser();
-                        if (usuario != null) {
-                            Toast.makeText(this, "Iniciada la sesión correctamente", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Login.this, Main_bn.class);
-                            startActivity(intent);
-                            finish(); // Para cerrar la actividad Login
+        String url = SupabaseConfig.getSupabaseUrl() + "/auth/v1/token?grant_type=password";
+        String apiKey = SupabaseConfig.getSupabaseKey();
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("email", email);
+            jsonBody.put("password", contrasenia);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+
+        Request request = new Request.Builder()
+                .url(url)
+                .header("apikey", apiKey)
+                .header("Content-Type", "application/json")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> Toast.makeText(Login.this, "Error al iniciar sesión", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        String responseBody = response.body().string();
+                        JSONObject jsonObject = new JSONObject(responseBody);
+                        if (jsonObject.has("access_token")) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(Login.this, "Iniciada la sesión correctamente", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(Login.this, Main_bn.class);
+                                startActivity(intent);
+                                finish();
+                            });
+                        } else {
+                            runOnUiThread(() -> Toast.makeText(Login.this, "Email o contraseña errónea", Toast.LENGTH_SHORT).show());
                         }
-                    } else {
-                        // Si falla
-                        Toast.makeText(this, "Email o contraseña errónea", Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                });
+                } else {
+                    runOnUiThread(() -> Toast.makeText(Login.this, "Email o contraseña errónea", Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
     }
 }

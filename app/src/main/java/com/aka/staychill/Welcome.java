@@ -32,7 +32,6 @@ public class Welcome extends AppCompatActivity {
 
     private Button btnEntrar, btnIniciarSesion;
     private TextView registrarse;
-    private SupabaseConfig supabaseConfig;
     private OkHttpClient client;
 
     @Override
@@ -41,7 +40,6 @@ public class Welcome extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_welcome);
 
-        supabaseConfig = new SupabaseConfig(); // Inicializar SupabaseConfig
         client = SupabaseConfig.getClient(); // Obtener cliente OkHttp
 
         // Verificar si el usuario ya está autenticado
