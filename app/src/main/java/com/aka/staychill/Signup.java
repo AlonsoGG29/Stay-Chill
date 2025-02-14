@@ -1,7 +1,6 @@
 package com.aka.staychill;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -9,7 +8,6 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,10 +17,9 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.content.ContextCompat;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -49,7 +46,7 @@ public class Signup extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_signup);
 
-        client = SupabaseConfig.getClient(); // Obtener cliente OkHttp
+        client = SupabaseConfig.getClient();
 
         btnEntrarSignUp = findViewById(R.id.btn_signup);
         inicio = findViewById(R.id.inicio_text);
@@ -58,13 +55,8 @@ public class Signup extends AppCompatActivity {
         passwordRepetirField = findViewById(R.id.password_repetir);
         nombreField = findViewById(R.id.nombre);
 
-        // Configurar el botón "Entrar"
         configurarBotonEntrar();
-
-        // Aplicar insets de ventana
         aplicarInsetsVentana();
-
-        // Estilizar y hacer clicable "Inicia sesión"
         estilizarYHacerClicable();
     }
 
@@ -76,11 +68,11 @@ public class Signup extends AppCompatActivity {
             String nombre = nombreField.getText().toString();
 
             if (email.isEmpty() || password.isEmpty() || passwordRepetir.isEmpty() || nombre.isEmpty()) {
-                Toast.makeText(Signup.this, "Por favor, rellena todos los campos", Toast.LENGTH_SHORT).show();
+                showToast("Por favor, rellena todos los campos");
             } else if (!password.equals(passwordRepetir)) {
-                Toast.makeText(Signup.this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show();
+                showToast("Las contraseñas no coinciden");
             } else if (password.length() < 6) {
-                Toast.makeText(Signup.this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show();
+                showToast("La contraseña debe tener al menos 6 caracteres");
             } else {
                 registrarUsuario(email, password, nombre);
             }
@@ -89,35 +81,32 @@ public class Signup extends AppCompatActivity {
 
     private void aplicarInsetsVentana() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.fr_main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            v.setPadding(insets.getInsets(WindowInsetsCompat.Type.systemBars()).left,
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars()).top,
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars()).right,
+                    insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom);
             return insets;
         });
     }
 
     private void estilizarYHacerClicable() {
-        String texto = "¿Ya tienes cuenta? Inicia sesión";
-        SpannableString spannableString = new SpannableString(texto);
+        SpannableString spannableString = new SpannableString("¿Ya tienes cuenta? Inicia sesión");
 
-        // Hacer que "Inicia sesión" sea clicable y en negrita
-        spannableString.setSpan(new ClickableSpan() {
+        ClickableSpan clickableSpan = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
-                // Navegar a la actividad Login
-                Intent intent = new Intent(Signup.this, Login.class);
-                startActivity(intent);
+                startActivity(new Intent(Signup.this, Login.class));
             }
 
             @Override
             public void updateDrawState(@NonNull TextPaint ds) {
-                super.updateDrawState(ds);
-                ds.setFakeBoldText(true); // Aplicar negrita al texto
-                ds.setColor(ContextCompat.getColor(Signup.this, android.R.color.white)); // Cambiar el color a blanco
+                ds.setFakeBoldText(true);
+                ds.setColor(ContextCompat.getColor(Signup.this, android.R.color.white));
             }
-        }, texto.indexOf("Inicia sesión"), texto.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        };
 
-        // Aplicar negrita a "Inicia sesión"
-        spannableString.setSpan(new StyleSpan(Typeface.BOLD), texto.indexOf("Inicia sesión"), texto.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(clickableSpan, 17, 29, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 17, 29, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         inicio.setText(spannableString);
         inicio.setMovementMethod(LinkMovementMethod.getInstance());
@@ -149,7 +138,7 @@ public class Signup extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
-                runOnUiThread(() -> Toast.makeText(Signup.this, "Error al registrar usuario", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> showToast("Error al registrar usuario"));
             }
 
             @Override
@@ -160,20 +149,23 @@ public class Signup extends AppCompatActivity {
                         JSONObject jsonObject = new JSONObject(responseBody);
                         String userId = jsonObject.getJSONObject("user").getString("id");
 
-                        // Guardar userId en SharedPreferences
                         getSharedPreferences("app_prefs", MODE_PRIVATE)
                                 .edit()
                                 .putString("user_id", userId)
                                 .apply();
 
-                        // Crear entrada en la tabla `usuarios`
                         crearEntradaUsuarios(userId, nombre);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    String responseBody = response.body().string();
-                    runOnUiThread(() -> Toast.makeText(Signup.this, "Error al registrar usuario: " + responseBody, Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> {
+                        try {
+                            showToast("Error al registrar usuario: " + response.body().string());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                 }
             }
         });
@@ -205,23 +197,31 @@ public class Signup extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 e.printStackTrace();
-                runOnUiThread(() -> Toast.makeText(Signup.this, "Error al crear entrada en la tabla usuarios", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> showToast("Error al crear entrada en la tabla usuarios"));
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     runOnUiThread(() -> {
-                        Toast.makeText(Signup.this, "Usuario registrado con éxito", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(Signup.this, Main_bn.class);
-                        startActivity(intent);
+                        showToast("Usuario registrado con éxito");
+                        startActivity(new Intent(Signup.this, Main_bn.class));
                         finish();
                     });
                 } else {
-                    String responseBody = response.body().string();
-                    runOnUiThread(() -> Toast.makeText(Signup.this, "Error al crear entrada en la tabla usuarios: " + responseBody, Toast.LENGTH_SHORT).show());
+                    runOnUiThread(() -> {
+                        try {
+                            showToast("Error al crear entrada en la tabla usuarios: " + response.body().string());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                 }
             }
         });
+    }
+
+    private void showToast(String message) {
+        runOnUiThread(() -> Toast.makeText(Signup.this, message, Toast.LENGTH_SHORT).show());
     }
 }

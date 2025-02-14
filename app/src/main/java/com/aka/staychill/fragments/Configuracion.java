@@ -58,8 +58,21 @@ public class Configuracion extends Fragment {
 
         rootView.findViewById(R.id.conf_cerrar).setOnClickListener(v -> {
             if (getActivity() != null) {
+                // Cerrar sesión y navegar a la actividad de bienvenida
+                cerrarSesion();
                 startActivity(new Intent(getActivity(), Welcome.class));
+                getActivity().finish(); // Opcional: cerrar la actividad actual
             }
         });
+    }
+
+    private void cerrarSesion() {
+        // Aquí puedes agregar el código para cerrar sesión, por ejemplo, limpiar SharedPreferences
+        if (getActivity() != null) {
+            getActivity().getSharedPreferences("app_prefs", getActivity().MODE_PRIVATE)
+                    .edit()
+                    .clear()
+                    .apply();
+        }
     }
 }
