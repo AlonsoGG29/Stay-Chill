@@ -70,6 +70,7 @@
                     android:id="@+id/inputNombre"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     android:background="@drawable/input_background"
                     android:hint="Ej: Juan Pérez"
                     android:padding="10dp"/>
@@ -94,6 +95,7 @@
                     android:id="@+id/inputCorreoActual"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     android:background="@drawable/input_background"
                     android:hint="ej: correo@dominio.com"
                     android:padding="10dp"/>
@@ -118,6 +120,7 @@
                     android:id="@+id/inputNuevoCorreo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     android:background="@drawable/input_background"
                     android:hint="ej: nuevo@correo.com"
                     android:padding="10dp"/>
@@ -142,6 +145,7 @@
                     android:id="@+id/inputContraseniaActual"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     android:background="@drawable/input_background"
                     android:hint="**********"
                     android:inputType="textPassword"
@@ -170,7 +174,8 @@
                     android:background="@drawable/input_background"
                     android:hint="**********"
                     android:inputType="textPassword"
-                    android:padding="10dp"/>
+                    android:padding="10dp"
+                    android:textColor="@color/black" />
             </LinearLayout>
 
             <!-- Campo: Repetir Nueva Contraseña -->
@@ -193,6 +198,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/input_background"
+                    android:textColor="@color/black"
                     android:hint="**********"
                     android:inputType="textPassword"
                     android:padding="10dp"/>
@@ -217,6 +223,7 @@
                     android:id="@+id/inputFechaNacimiento"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     android:background="@drawable/input_background"
                     android:hint="DD/MM/AAAA"
                     android:inputType="date"
@@ -240,6 +247,7 @@
 
                 <Spinner
                     android:id="@+id/inputPais"
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/input_background"

@@ -79,6 +79,9 @@ public class Conf_cuenta extends AppCompatActivity {
         // Obtener los datos del usuario desde Supabase
         obtenerDatosUsuario();
 
+        // Obtener el correo electrónico del usuario desde la tabla de autenticación
+        obtenerCorreoUsuario();
+
         botonGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -242,6 +245,55 @@ public class Conf_cuenta extends AppCompatActivity {
 
         });
     }
+    private void obtenerCorreoUsuario() {
+        String url = SupabaseConfig.getSupabaseUrl() + "/auth/v1/users?id=eq." + userId;
+        Log.d(TAG, "URL de Supabase Auth: " + url);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .addHeader("Authorization", "Bearer " + SupabaseConfig.getSupabaseKey())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "Error en la solicitud Auth: " + e.getMessage());
+                runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Error al obtener correo", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    Log.d(TAG, "Respuesta de Supabase Auth: " + responseBody);
+
+                    JsonArray jsonArray = gson.fromJson(responseBody, JsonArray.class);
+                    if (jsonArray.size() > 0) {
+                        JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
+                        Log.d(TAG, "Usuario autenticado JSON: " + jsonObject.toString());
+
+                        runOnUiThread(() -> {
+                            if (jsonObject.has("email") && !jsonObject.get("email").isJsonNull()) {
+                                inputCorreoActual.setText(jsonObject.get("email").getAsString());
+                            } else {
+                                Log.e(TAG, "Campo 'email' no encontrado o nulo");
+                            }
+                        });
+                    } else {
+                        Log.e(TAG, "No se encontraron datos de correo para el usuario.");
+                    }
+                } else {
+                    Log.e(TAG, "Error en la respuesta Auth de Supabase: " + response.code() + " " + response.message());
+                    String responseBody = response.body().string();
+                    Log.e(TAG, "Cuerpo de la respuesta de error: " + responseBody);
+                    runOnUiThread(() -> Toast.makeText(getApplicationContext(), "Error al obtener correo", Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }
+
+
 
 
 
