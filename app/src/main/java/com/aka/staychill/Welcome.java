@@ -1,6 +1,7 @@
 package com.aka.staychill;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -53,8 +54,9 @@ public class Welcome extends AppCompatActivity {
     }
 
     private void verificarAutenticacion() {
-        String userId = getSharedPreferences("app_prefs", MODE_PRIVATE).getString("user_id", null);
-        if (userId != null) {
+        SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
+        String accessToken = prefs.getString("access_token", null);
+        if (accessToken != null && !accessToken.isEmpty()) {
             // Usuario autenticado, redirigir a Main_bn
             Toast.makeText(this, "Bienvenido de nuevo", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(Welcome.this, Main_bn.class));
