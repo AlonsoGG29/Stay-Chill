@@ -61,17 +61,14 @@
             android:name=".Welcome"
             android:exported="true" />
 
-        <!--Back4App-->
+        <!--Usuario pueda recortar su imagen-->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="unspecified"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        <meta-data
-            android:name="com.parse.SERVER_URL"
-            android:value="https://parseapi.back4app.com/" />
-        <meta-data
-            android:name="com.parse.APPLICATION_ID"
-            android:value="@string/parse_app_id" />
-        <meta-data
-            android:name="com.parse.CLIENT_KEY"
-            android:value="@string/parse_client_key" />
+
+
     </application>
 
 </manifest>
