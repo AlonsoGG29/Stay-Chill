@@ -1,9 +1,6 @@
 package com.aka.staychill;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -15,19 +12,16 @@ import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class Welcome extends AppCompatActivity {
 
     private Button btnEntrar, btnIniciarSesion;
     private TextView registrarse;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,67 +29,36 @@ public class Welcome extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_welcome);
 
-        // Verificar si el usuario ya está autenticado
-        verificarAutenticacion();
+        sessionManager = new SessionManager(this);
 
-        // Configurar la vista y listeners
+        if (sessionManager.isLoggedIn()) {
+            redirigirAMain();
+            return;
+        }
+
+        inicializarVistas();
+        configurarListeners();
+        estilizarTextoRegistro();
+    }
+
+    private void inicializarVistas() {
         btnEntrar = findViewById(R.id.entrar_welcome);
         btnIniciarSesion = findViewById(R.id.sesion_welcome);
         registrarse = findViewById(R.id.registrarse_welcome);
-
-        // Configurar listeners de botones
-        configurarListenersBotones();
-
-        // Aplicar insets de ventana
-        aplicarInsetsVentana();
-
-        // Estilizar y hacer clicable "Regístrate"
-        estilizarYHacerClicable();
     }
 
-    private void verificarAutenticacion() {
-        SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
-        String accessToken = prefs.getString("access_token", null);
-        if (accessToken != null && !accessToken.isEmpty()) {
-            // Usuario autenticado, redirigir a Main_bn
-            Toast.makeText(this, "Bienvenido de nuevo", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(Welcome.this, Main_bn.class));
-            finish();
-        }
+    private void configurarListeners() {
+        btnEntrar.setOnClickListener(v -> redirigirAMain());
+        btnIniciarSesion.setOnClickListener(v -> startActivity(new Intent(this, Login.class)));
     }
 
-    private void configurarListenersBotones() {
-        // Navegar a la actividad Main_bn
-        btnEntrar.setOnClickListener(view -> startActivity(new Intent(Welcome.this, Main_bn.class)));
-
-        // Navegar a la actividad Login
-        btnIniciarSesion.setOnClickListener(view -> startActivity(new Intent(Welcome.this, Login.class)));
-    }
-
-    private void aplicarInsetsVentana() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.fr_main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-    }
-
-    private void estilizarYHacerClicable() {
+    private void estilizarTextoRegistro() {
         String texto = getString(R.string.no_tiene_cuenta);
-
-        // Encontrar "Regístrate" en el texto
+        SpannableString spannable = new SpannableString(texto);
         int inicio = texto.indexOf("Regístrate");
         int fin = inicio + "Regístrate".length();
 
-        SpannableString spannableString = new SpannableString(texto);
-
-        // Aplicar estilos
-        spannableString.setSpan(new StyleSpan(Typeface.ITALIC), inicio, fin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannableString.setSpan(new StyleSpan(Typeface.BOLD), inicio, fin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannableString.setSpan(new UnderlineSpan(), inicio, fin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        // Hacer "Regístrate" clicable
-        spannableString.setSpan(new ClickableSpan() {
+        ClickableSpan clickSpan = new ClickableSpan() {
             @Override
             public void onClick(@NonNull View widget) {
                 startActivity(new Intent(Welcome.this, Signup.class));
@@ -105,12 +68,20 @@ public class Welcome extends AppCompatActivity {
             public void updateDrawState(@NonNull TextPaint ds) {
                 super.updateDrawState(ds);
                 ds.setUnderlineText(true);
-                ds.setColor(Color.WHITE);
-                ds.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD_ITALIC));
+                ds.setColor(getColor(android.R.color.white));
             }
-        }, inicio, fin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        };
 
-        registrarse.setText(spannableString);
+        spannable.setSpan(clickSpan, inicio, fin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD_ITALIC), inicio, fin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(new UnderlineSpan(), inicio, fin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        registrarse.setText(spannable);
         registrarse.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    private void redirigirAMain() {
+        startActivity(new Intent(this, Main_bn.class));
+        finish();
     }
 }

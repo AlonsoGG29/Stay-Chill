@@ -1,7 +1,6 @@
 package com.aka.staychill;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -18,6 +17,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -25,171 +29,160 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class Login extends AppCompatActivity {
 
-    private Button btnEntrar;
-    private TextView register;
+    private SessionManager sessionManager;
     private OkHttpClient client;
+    private EditText emailField, passwordField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        client = SupabaseConfig.getClient(); // Obtener cliente OkHttp
+        sessionManager = new SessionManager(this);
+        client = SupabaseConfig.getClient();
 
-        btnEntrar = findViewById(R.id.btn_login);
-        register = findViewById(R.id.register_text);
-
-        configurarBotonEntrar();
-        estilizarYHacerClicable();
-    }
-
-    private void configurarBotonEntrar() {
-        btnEntrar.setOnClickListener(view -> {
-            String email = ((EditText) findViewById(R.id.email)).getText().toString();
-            String contrasenia = ((EditText) findViewById(R.id.password)).getText().toString();
-
-            if (email.isEmpty() || contrasenia.isEmpty()) {
-                Toast.makeText(Login.this, "Por favor, rellena todos los campos", Toast.LENGTH_SHORT).show();
-            } else {
-                iniciarSesion(email, contrasenia);
-            }
-        });
-    }
-
-    private void estilizarYHacerClicable() {
-        String text = "¿No tienes cuenta? Regístrate";
-        SpannableString spannableString = new SpannableString(text);
-
-        // Hacer que "Regístrate" sea clicable y en negrita
-        spannableString.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(@NonNull View widget) {
-                // Navegar a la actividad Signup
-                Intent intent = new Intent(Login.this, Signup.class);
-                startActivity(intent);
-            }
-
-            @Override
-            public void updateDrawState(@NonNull TextPaint ds) {
-                super.updateDrawState(ds);
-                ds.setFakeBoldText(true); // Aplicar negrita al texto
-                ds.setColor(getResources().getColor(android.R.color.white)); // Cambiar el color a blanco
-            }
-        }, text.indexOf("Regístrate"), text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        // Aplicar negrita a "Regístrate"
-        spannableString.setSpan(new StyleSpan(Typeface.BOLD), text.indexOf("Regístrate"), text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        register.setText(spannableString);
-        register.setMovementMethod(LinkMovementMethod.getInstance());
-    }
-
-    private void iniciarSesion(String email, String contrasenia) {
-        String url = SupabaseConfig.getSupabaseUrl() + "/auth/v1/token?grant_type=password";
-        String apiKey = SupabaseConfig.getSupabaseKey();
-
-        JSONObject jsonBody = new JSONObject();
-        try {
-            jsonBody.put("email", email);
-            jsonBody.put("password", contrasenia);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (sessionManager.isLoggedIn()) {
+            validarTokenEnServidor();
         }
 
-        RequestBody body = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
+        inicializarVistas();
+        configurarListeners();
+    }
+    private void configurarListeners() {
+        Button btnLogin = findViewById(R.id.btn_login);
+        btnLogin.setOnClickListener(v -> validarYLogin());
+    }
+
+    private void inicializarVistas() {
+        emailField = findViewById(R.id.email);
+        passwordField = findViewById(R.id.password);
+        Button btnLogin = findViewById(R.id.btn_login);
+        TextView tvRegistro = findViewById(R.id.register_text);
+
+        btnLogin.setOnClickListener(v -> validarYLogin());
+        estilizarTextoRegistro(tvRegistro);
+    }
+
+    private void validarYLogin() {
+        String email = emailField.getText().toString().trim();
+        String password = passwordField.getText().toString().trim();
+
+        if (!validarCampos(email, password)) return;
+
+        RequestBody body = RequestBody.create(
+                crearJsonCredenciales(email, password),
+                MediaType.parse("application/json")
+        );
 
         Request request = new Request.Builder()
-                .url(url)
-                .header("apikey", apiKey)
-                .header("Content-Type", "application/json")
+                .url(SupabaseConfig.getSupabaseUrl() + "/auth/v1/token?grant_type=password")
                 .post(body)
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                runOnUiThread(() -> Toast.makeText(Login.this, "Error al iniciar sesión", Toast.LENGTH_SHORT).show());
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    procesarRespuestaExitosa(response);
+                } else {
+                    mostrarError("Credenciales incorrectas");
+                }
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    try {
-                        String responseBody = response.body().string();
-                        JSONObject jsonObject = new JSONObject(responseBody);
-
-                        if (jsonObject.has("access_token")) {
-                            String accessToken = jsonObject.getString("access_token");
-                            getSharedPreferences("app_prefs", MODE_PRIVATE)
-                                    .edit()
-                                    .putString("access_token", accessToken)
-                                    .apply();
-
-                            obtenerDetallesUsuario(accessToken);
-                        } else {
-                            runOnUiThread(() -> Toast.makeText(Login.this, "Email o contraseña errónea", Toast.LENGTH_SHORT).show());
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    runOnUiThread(() -> Toast.makeText(Login.this, "Email o contraseña errónea", Toast.LENGTH_SHORT).show());
-                }
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                mostrarError("Error de conexión");
             }
         });
     }
 
-    private void obtenerDetallesUsuario(String accessToken) {
-        String url = SupabaseConfig.getSupabaseUrl() + "/auth/v1/user";
-        String apiKey = SupabaseConfig.getSupabaseKey();
+    private String crearJsonCredenciales(String email, String password) {
+        try {
+            return new JSONObject()
+                    .put("email", email)
+                    .put("password", password)
+                    .toString();
+        } catch (JSONException e) {
+            return "{}";
+        }
+    }
 
+    private void procesarRespuestaExitosa(Response response) throws IOException {
+        try {
+            JSONObject json = new JSONObject(response.body().string());
+            sessionManager.saveAuthTokens(
+                    json.getString("access_token"),
+                    json.getString("refresh_token")
+            );
+            sessionManager.saveUserId(json.getJSONObject("user").getString("id"));
+            redirigirAMain();
+        } catch (JSONException e) {
+            mostrarError("Error procesando respuesta");
+        }
+    }
+
+    private void validarTokenEnServidor() {
         Request request = new Request.Builder()
-                .url(url)
-                .header("apikey", apiKey)
-                .header("Authorization", "Bearer " + accessToken)
+                .url(SupabaseConfig.getSupabaseUrl() + "/auth/v1/user")
+                .addHeader("Authorization", "Bearer " + sessionManager.getUserToken())
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                e.printStackTrace();
-                runOnUiThread(() -> Toast.makeText(Login.this, "Error al obtener detalles del usuario", Toast.LENGTH_SHORT).show());
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                if (response.isSuccessful()) redirigirAMain();
             }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    try {
-                        String responseBody = response.body().string();
-                        JSONObject jsonObject = new JSONObject(responseBody);
-
-                        String userId = jsonObject.getString("id");
-                        getSharedPreferences("app_prefs", MODE_PRIVATE)
-                                .edit()
-                                .putString("user_id", userId)
-                                .apply();
-
-                        runOnUiThread(() -> {
-                            Toast.makeText(Login.this, "Iniciada la sesión correctamente", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Login.this, Main_bn.class);
-                            startActivity(intent);
-                            finish();
-                        });
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    runOnUiThread(() -> Toast.makeText(Login.this, "Error al obtener detalles del usuario", Toast.LENGTH_SHORT).show());
-                }
-            }
+            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {}
         });
+    }
+
+    private boolean validarCampos(String email, String password) {
+        if (email.isEmpty() || password.isEmpty()) {
+            mostrarError("Campos obligatorios");
+            return false;
+        }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            mostrarError("Email inválido");
+            return false;
+        }
+        return true;
+    }
+
+    private void estilizarTextoRegistro(TextView textView) {
+        SpannableString spannable = new SpannableString("¿No tienes cuenta? Regístrate");
+        int inicio = spannable.toString().indexOf("Regístrate");
+
+        ClickableSpan clickSpan = new ClickableSpan() {
+            @Override public void onClick(@NonNull View widget) {
+                startActivity(new Intent(Login.this, Signup.class));
+            }
+            @Override public void updateDrawState(@NonNull TextPaint ds) {
+                ds.setColor(getColor(android.R.color.white));
+                ds.setUnderlineText(false);
+                ds.setFakeBoldText(true);
+            }
+        };
+
+        spannable.setSpan(clickSpan, inicio, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), inicio, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        textView.setText(spannable);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    private void redirigirAMain() {
+        runOnUiThread(() -> {
+            startActivity(new Intent(this, Main_bn.class));
+            finish();
+        });
+    }
+
+    private void mostrarError(String mensaje) {
+        runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show());
     }
 }
