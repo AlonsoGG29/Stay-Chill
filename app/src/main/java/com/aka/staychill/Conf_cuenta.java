@@ -5,6 +5,12 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -12,6 +18,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -50,7 +57,7 @@ public class Conf_cuenta extends AppCompatActivity {
     private static final String TAG = "Conf_cuenta";
 
     // Componentes UI
-    private ImageView fotoPerfil;
+    private ImageButton fotoPerfil; //
     private EditText inputNombre, inputApellido, inputFechaNacimiento;
     private Spinner inputPais;
 
@@ -76,8 +83,9 @@ public class Conf_cuenta extends AppCompatActivity {
         verificarUsuario();
     }
 
+
     private void inicializarComponentes() {
-        fotoPerfil = findViewById(R.id.fotoPerfil);
+        fotoPerfil = findViewById(R.id.fotoPerfil); // Asegúrate de que coincida con el XML
         ImageView btnBack = findViewById(R.id.btnBack);
         inputNombre = findViewById(R.id.inputNombre);
         inputApellido = findViewById(R.id.inputApellido);
@@ -92,8 +100,10 @@ public class Conf_cuenta extends AppCompatActivity {
         inputFechaNacimiento.setOnClickListener(v -> mostrarDatePicker());
 
         btnBack.setOnClickListener(v -> finish());
-        fotoPerfil.setOnClickListener(v -> manejarPermisosImagen());
+        fotoPerfil.setOnClickListener(v -> manejarPermisosImagen()); // Función de selección de imagen
     }
+
+
 
     private void configurarSpinner() {
         adapter = ArrayAdapter.createFromResource(this,
@@ -106,8 +116,8 @@ public class Conf_cuenta extends AppCompatActivity {
     private void mostrarDatePicker() {
         final Calendar calendario = Calendar.getInstance();
         DatePickerDialog datePicker = new DatePickerDialog(this,
-                (view, año, mes, dia) -> inputFechaNacimiento.setText(
-                        String.format(Locale.getDefault(), "%04d-%02d-%02d", año, mes + 1, dia)),
+                (view, anio, mes, dia) -> inputFechaNacimiento.setText(
+                        String.format(Locale.getDefault(), "%04d-%02d-%02d", anio, mes + 1, dia)),
                 calendario.get(Calendar.YEAR),
                 calendario.get(Calendar.MONTH),
                 calendario.get(Calendar.DAY_OF_MONTH)
@@ -168,6 +178,7 @@ public class Conf_cuenta extends AppCompatActivity {
                     String urlImagen = usuario.get("profile_image_url").getAsString();
                     Glide.with(Conf_cuenta.this)
                             .load(urlImagen + "?t=" + System.currentTimeMillis())
+                            .circleCrop()
                             .skipMemoryCache(true)
                             .into(fotoPerfil);
                 }
@@ -186,6 +197,7 @@ public class Conf_cuenta extends AppCompatActivity {
         });
     }
 
+
     private String obtenerValorSeguro(JsonObject json, String clave) {
         return campoValido(json, clave) ? json.get(clave).getAsString() : "";
     }
@@ -195,24 +207,66 @@ public class Conf_cuenta extends AppCompatActivity {
     }
 
     private void manejarPermisosImagen() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            seleccionarImagen();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+ usa READ_MEDIA_IMAGES en lugar de READ_EXTERNAL_STORAGE
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
+                    == PackageManager.PERMISSION_GRANTED) {
+                seleccionarImagen();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                        PERMISSION_REQUEST_CODE);
+            }
         } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    PERMISSION_REQUEST_CODE);
+            // Android 12 y versiones anteriores
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                seleccionarImagen();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        PERMISSION_REQUEST_CODE);
+            }
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_CODE && grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            seleccionarImagen();
+
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                seleccionarImagen(); // Permiso concedido, abre la galería
+            } else {
+                boolean mostrarRazon = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+                if (!mostrarRazon) {
+                    // Permiso denegado permanentemente, mostrar diálogo para abrir ajustes
+                    mostrarDialogoConfiguracion();
+                } else {
+                    // Permiso denegado temporalmente, mostrar mensaje
+                    mostrarError("El permiso es necesario para seleccionar una imagen.");
+                }
+            }
         }
     }
+
+    private void mostrarDialogoConfiguracion() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Permiso requerido")
+                .setMessage("Para seleccionar una imagen, permite el acceso a la galería en la configuración de la aplicación.")
+                .setPositiveButton("Ir a configuración", (dialog, which) -> {
+                    Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+
+
 
     private void seleccionarImagen() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -236,9 +290,15 @@ public class Conf_cuenta extends AppCompatActivity {
     private void iniciarRecorte(Uri sourceUri) {
         Uri destinoUri = Uri.fromFile(new File(getCacheDir(), "cropped_image.jpg"));
 
+        UCrop.Options options = new UCrop.Options();
+        options.setCircleDimmedLayer(true); // Hace el recorte circular
+        options.setShowCropGrid(false); // Oculta la cuadrícula de recorte
+        options.setShowCropFrame(false); // Oculta el marco del recorte
+
         UCrop.of(sourceUri, destinoUri)
-                .withAspectRatio(1, 1)
+                .withAspectRatio(1, 1) // Mantiene la proporción cuadrada
                 .withMaxResultSize(fotoPerfil.getWidth(), fotoPerfil.getHeight())
+                .withOptions(options)
                 .start(this, UCrop.REQUEST_CROP);
     }
 
@@ -247,7 +307,8 @@ public class Conf_cuenta extends AppCompatActivity {
         if (resultadoUri != null) {
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultadoUri);
-                fotoPerfil.setImageBitmap(bitmap);
+                Bitmap circularBitmap = crearImagenCircular(bitmap);
+                fotoPerfil.setImageBitmap(circularBitmap); // Mostrar imagen circular
                 imagenTempUri = resultadoUri;
                 hayCambiosImagen = true;
             } catch (Exception e) {
@@ -255,6 +316,25 @@ public class Conf_cuenta extends AppCompatActivity {
             }
         }
     }
+    private Bitmap crearImagenCircular(Bitmap bitmap) {
+        int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
+        Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(output);
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, size, size);
+        final RectF rectF = new RectF(rect);
+
+        paint.setAntiAlias(true);
+        canvas.drawOval(rectF, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return output;
+    }
+
+
+
 
     private void guardarCambios() {
         if (inputNombre.getText().toString().trim().isEmpty() ||

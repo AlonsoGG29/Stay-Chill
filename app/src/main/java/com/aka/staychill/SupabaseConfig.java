@@ -3,8 +3,8 @@ package com.aka.staychill;
 import okhttp3.OkHttpClient;
 
 public class SupabaseConfig {
-    private static final String SUPABASE_URL = "https://mvzvxavwzejtxyqsqivs.supabase.co";
-    private static final String SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12enZ4YXZ3emVqdHh5cXNxaXZzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczOTM5NTU3MywiZXhwIjoyMDU0OTcxNTczfQ.Hko0mSjjkL5YlRmzB3gtXJqQOpW65XnCvk2m57Az8iA";
+    private static final String SUPABASE_URL = "";
+    private static final String SUPABASE_KEY = "";
 
     private static OkHttpClient client;
 
