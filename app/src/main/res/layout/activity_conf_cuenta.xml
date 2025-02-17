@@ -38,12 +38,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/fotoPerfil"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/perfil" />
+            android:src="@drawable/perfil"
+            android:background="@null"
+            android:scaleType="fitCenter" />
 
         <!-- Campo: Nombre -->
         <LinearLayout
@@ -145,7 +147,7 @@
                 android:background="@drawable/input_background"
                 android:padding="12dp"/>
         </LinearLayout>
-    </LinearLayout>
+    </LinearLayout> <!-- Cierre correcto del LinearLayout -->
 
     <Button
         android:id="@+id/botoncuenta"
