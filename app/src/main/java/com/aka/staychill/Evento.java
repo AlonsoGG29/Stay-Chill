@@ -5,7 +5,6 @@ import java.util.Date;
 
 public class Evento {
 
-    private final String titulo;
     private final String nombre;
     private final String localizacion;
     private final String descripcion;
@@ -18,7 +17,6 @@ public class Evento {
         this.descripcion = descripcion;
         this.fecha = fecha;
         this.hora = hora;
-        this.titulo = null;
     }
 
     public OffsetTime getHora() {
@@ -41,9 +39,6 @@ public class Evento {
         return fecha;
     }
 
-    public String getText() {
-        return titulo;
-    }
 
 
 }
