@@ -1,19 +1,20 @@
 package com.aka.staychill;
 
 import java.util.Date;
-import java.time.OffsetTime;
+import java.util.UUID;
 
 public class Evento {
     private String nombre;
     private String localizacion;
     private String descripcion;
     private Date fecha;
-    private String hora;;
+    private Date hora;
     private String tipoDeEvento;
     private int imagenDelEvento;
-    private String creadorId;
+    private UUID creadorId;
 
-    public Evento(String nombre, String localizacion, String descripcion, Date fecha, String hora, String tipoDeEvento, int imagenDelEvento, String creadorId) {
+    public Evento(String nombre, String localizacion, String descripcion, Date fecha, Date hora,
+                  String tipoDeEvento, int imagenDelEvento, UUID creadorId) {
         this.nombre = nombre;
         this.localizacion = localizacion;
         this.descripcion = descripcion;
@@ -24,12 +25,13 @@ public class Evento {
         this.creadorId = creadorId;
     }
 
+    // Getters
     public String getNombre() { return nombre; }
     public String getLocalizacion() { return localizacion; }
     public String getDescripcion() { return descripcion; }
     public Date getFecha() { return fecha; }
-    public String getHora() { return hora; }
+    public Date getHora() { return hora; }
     public String getTipoDeEvento() { return tipoDeEvento; }
     public int getImagenDelEvento() { return imagenDelEvento; }
-    public String getCreadorId() { return creadorId; }
+    public UUID getCreadorId() { return creadorId; }
 }

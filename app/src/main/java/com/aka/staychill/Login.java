@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -49,11 +50,6 @@ public class Login extends AppCompatActivity {
         }
 
         inicializarVistas();
-        configurarListeners();
-    }
-    private void configurarListeners() {
-        Button btnLogin = findViewById(R.id.btn_login);
-        btnLogin.setOnClickListener(v -> validarYLogin());
     }
 
     private void inicializarVistas() {
@@ -89,13 +85,14 @@ public class Login extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     procesarRespuestaExitosa(response);
                 } else {
-                    mostrarError("Credenciales incorrectas");
+                    String errorMessage = obtenerMensajeError(response);
+                    mostrarError(errorMessage);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                mostrarError("Error de conexión");
+                mostrarError("Error de conexión: " + e.getMessage());
             }
         });
     }
@@ -114,40 +111,58 @@ public class Login extends AppCompatActivity {
     private void procesarRespuestaExitosa(Response response) throws IOException {
         try {
             JSONObject json = new JSONObject(response.body().string());
-            sessionManager.saveAuthTokens(
-                    json.getString("access_token"),
-                    json.getString("refresh_token")
-            );
-            sessionManager.saveUserId(json.getJSONObject("user").getString("id"));
-            redirigirAMain();
+            String accessToken = json.getString("access_token");
+            String refreshToken = json.getString("refresh_token");
+            UUID userId = UUID.fromString(json.getJSONObject("user").getString("id"));
+
+            sessionManager.saveSession(accessToken, refreshToken, userId);
+            verificarExistenciaPerfil(userId);
+
+        } catch (JSONException | IllegalArgumentException e) {
+            mostrarError("Error procesando respuesta del servidor");
+        }
+    }
+
+    private String obtenerMensajeError(Response response) throws IOException {
+        try {
+            JSONObject errorJson = new JSONObject(response.body().string());
+            return errorJson.optString("message", "Error desconocido");
         } catch (JSONException e) {
-            mostrarError("Error procesando respuesta");
+            return "Error " + response.code();
         }
     }
 
     private void validarTokenEnServidor() {
         Request request = new Request.Builder()
                 .url(SupabaseConfig.getSupabaseUrl() + "/auth/v1/user")
-                .addHeader("Authorization", "Bearer " + sessionManager.getUserToken())
+                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
-                if (response.isSuccessful()) redirigirAMain();
+                if (response.isSuccessful()) {
+                    redirigirAMain();
+                } else {
+                    sessionManager.logout();
+                }
             }
-            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {}
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                runOnUiThread(() -> mostrarError("Error de conexión"));
+            }
         });
     }
 
     private boolean validarCampos(String email, String password) {
         if (email.isEmpty() || password.isEmpty()) {
-            mostrarError("Campos obligatorios");
+            mostrarError("Todos los campos son obligatorios");
             return false;
         }
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            mostrarError("Email inválido");
+            mostrarError("Formato de email inválido");
             return false;
         }
         return true;
@@ -158,10 +173,13 @@ public class Login extends AppCompatActivity {
         int inicio = spannable.toString().indexOf("Regístrate");
 
         ClickableSpan clickSpan = new ClickableSpan() {
-            @Override public void onClick(@NonNull View widget) {
+            @Override
+            public void onClick(@NonNull View widget) {
                 startActivity(new Intent(Login.this, Signup.class));
             }
-            @Override public void updateDrawState(@NonNull TextPaint ds) {
+
+            @Override
+            public void updateDrawState(@NonNull TextPaint ds) {
                 ds.setColor(getColor(android.R.color.white));
                 ds.setUnderlineText(false);
                 ds.setFakeBoldText(true);
@@ -177,12 +195,45 @@ public class Login extends AppCompatActivity {
 
     private void redirigirAMain() {
         runOnUiThread(() -> {
+            mostrarExito("Inicio de sesión exitoso");
             startActivity(new Intent(this, Main_bn.class));
             finish();
         });
     }
 
     private void mostrarError(String mensaje) {
-        runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show());
+        runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
+    }
+
+    private void mostrarExito(String mensaje) {
+        runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
+    }
+
+    private void verificarExistenciaPerfil(UUID userId) {
+        Request request = new Request.Builder()
+                .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios?foren_uid=eq." + userId)
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String responseBody = response.body().string();
+                if (response.isSuccessful() && responseBody.length() > 2) {
+                    redirigirAMain();
+                } else {
+                    runOnUiThread(() -> {
+                        mostrarError("Perfil incompleto. Complete su perfil primero");
+                        sessionManager.logout();
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                mostrarError("Error de conexión");
+            }
+        });
     }
 }

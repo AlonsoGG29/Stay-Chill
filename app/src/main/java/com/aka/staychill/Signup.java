@@ -2,6 +2,8 @@ package com.aka.staychill;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -21,11 +23,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -33,7 +35,6 @@ import okhttp3.Response;
 public class Signup extends AppCompatActivity {
 
     private SessionManager sessionManager;
-    private OkHttpClient client;
     private EditText emailField, passwordField, confirmPasswordField, nameField;
 
     @Override
@@ -42,7 +43,6 @@ public class Signup extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
 
         sessionManager = new SessionManager(this);
-        client = SupabaseConfig.getClient();
 
         if (sessionManager.isLoggedIn()) {
             redirigirAMain();
@@ -50,11 +50,6 @@ public class Signup extends AppCompatActivity {
         }
 
         inicializarVistas();
-        configurarListeners();
-    }
-    private void configurarListeners() {
-        Button btnSignup = findViewById(R.id.btn_signup);
-        btnSignup.setOnClickListener(v -> procesarRegistro());
     }
 
     private void inicializarVistas() {
@@ -88,19 +83,20 @@ public class Signup extends AppCompatActivity {
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                 .build();
 
-        client.newCall(request).enqueue(new Callback() {
+        SupabaseConfig.getClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     procesarRegistroExitoso(response);
                 } else {
-                    mostrarError("Error en registro: " + response.code());
+                    String errorMessage = obtenerMensajeError(response);
+                    mostrarError(errorMessage);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                mostrarError("Error de conexión");
+                mostrarError("Error de conexión: " + e.getMessage());
             }
         });
     }
@@ -108,48 +104,70 @@ public class Signup extends AppCompatActivity {
     private void procesarRegistroExitoso(Response response) throws IOException {
         try {
             JSONObject json = new JSONObject(response.body().string());
-            String userId = json.getJSONObject("user").getString("id");
-            sessionManager.saveAuthTokens(
-                    json.getString("access_token"),
-                    json.getString("refresh_token")
-            );
-            crearUsuarioEnBD(userId, nameField.getText().toString().trim());
-        } catch (JSONException e) {
-            mostrarError("Error procesando respuesta");
+            String accessToken = json.getString("access_token");
+            String refreshToken = json.getString("refresh_token");
+            UUID userId = UUID.fromString(json.getJSONObject("user").getString("id"));
+
+            sessionManager.saveSession(accessToken, refreshToken, userId);
+            crearUsuarioEnBD(nameField.getText().toString().trim());
+
+        } catch (JSONException | IllegalArgumentException e) {
+            mostrarError("Error procesando respuesta del servidor");
         }
     }
 
-    private void crearUsuarioEnBD(String userId, String nombre) {
-        JSONObject json = new JSONObject();
+    private void crearUsuarioEnBD(String nombre) {
         try {
-            json.put("foren_uid", userId);
+            JSONObject json = new JSONObject();
             json.put("nombre", nombre);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            json.put("foren_uid", sessionManager.getUserId().toString());
 
-        RequestBody body = RequestBody.create(json.toString(), MediaType.parse("application/json"));
-        Request request = new Request.Builder()
-                .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios")
-                .post(body)
-                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                .addHeader("Authorization", "Bearer " + SupabaseConfig.getSupabaseKey())
-                .build();
+            RequestBody body = RequestBody.create(
+                    json.toString(),
+                    MediaType.parse("application/json")
+            );
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
-                if (response.isSuccessful()) {
-                    sessionManager.saveUserId(userId);
-                    redirigirAMain();
+            Request request = new Request.Builder()
+                    .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios")
+                    .post(body)
+                    .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                    .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
+                    .addHeader("Prefer", "return=representation")
+                    .build();
+
+            SupabaseConfig.getClient().newCall(request).enqueue(new Callback() {
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) {
+                    if (response.isSuccessful()) {
+                        mostrarExito("Registro exitoso!");
+                        redirigirAMain();
+                    } else {
+                        eliminarUsuarioAuth();
+                        mostrarError("Error creando perfil");
+                        sessionManager.logout();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                mostrarError("Error creando usuario");
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    eliminarUsuarioAuth();
+                    mostrarError("Error de conexión");
+                    sessionManager.logout();
+                }
+            });
+
+        } catch (JSONException e) {
+            mostrarError("Error construyendo datos del usuario");
+        }
+    }
+
+    private String obtenerMensajeError(Response response) throws IOException {
+        try {
+            JSONObject errorJson = new JSONObject(response.body().string());
+            return errorJson.optString("message", "Error en el registro");
+        } catch (JSONException e) {
+            return "Error " + response.code();
+        }
     }
 
     private boolean validarCampos(String email, String password, String confirmPassword, String name) {
@@ -157,14 +175,22 @@ public class Signup extends AppCompatActivity {
             mostrarError("Todos los campos son obligatorios");
             return false;
         }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            mostrarError("Formato de email inválido");
+            return false;
+        }
+
         if (!password.equals(confirmPassword)) {
             mostrarError("Las contraseñas no coinciden");
             return false;
         }
+
         if (password.length() < 6) {
             mostrarError("La contraseña debe tener al menos 6 caracteres");
             return false;
         }
+
         return true;
     }
 
@@ -173,8 +199,11 @@ public class Signup extends AppCompatActivity {
             return new JSONObject()
                     .put("email", email)
                     .put("password", password)
-                    .put("display_name", name)
-                    .toString();
+                    .put("options", new JSONObject()
+                            .put("data", new JSONObject()
+                                    .put("display_name", name)
+                            )
+                    ).toString();
         } catch (JSONException e) {
             return "{}";
         }
@@ -185,10 +214,13 @@ public class Signup extends AppCompatActivity {
         int inicio = spannable.toString().indexOf("Inicia sesión");
 
         ClickableSpan clickSpan = new ClickableSpan() {
-            @Override public void onClick(@NonNull View widget) {
+            @Override
+            public void onClick(@NonNull View widget) {
                 startActivity(new Intent(Signup.this, Login.class));
             }
-            @Override public void updateDrawState(@NonNull TextPaint ds) {
+
+            @Override
+            public void updateDrawState(@NonNull TextPaint ds) {
                 ds.setColor(getColor(android.R.color.white));
                 ds.setUnderlineText(false);
                 ds.setFakeBoldText(true);
@@ -203,13 +235,34 @@ public class Signup extends AppCompatActivity {
     }
 
     private void redirigirAMain() {
-        runOnUiThread(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             startActivity(new Intent(this, Main_bn.class));
             finish();
-        });
+        }, 1000); // Retardo para ver el Toast
     }
 
     private void mostrarError(String mensaje) {
-        runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show());
+        runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
+    }
+
+    private void mostrarExito(String mensaje) {
+        runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
+    }
+
+    private void eliminarUsuarioAuth() {
+        Request request = new Request.Builder()
+                .url(SupabaseConfig.getSupabaseUrl() + "/auth/v1/admin/users/" + sessionManager.getUserId())
+                .delete()
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .addHeader("Authorization", "Bearer " + SupabaseConfig.getSupabaseKey())
+                .build();
+
+        SupabaseConfig.getClient().newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {}
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {}
+        });
     }
 }

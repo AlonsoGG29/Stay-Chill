@@ -13,13 +13,13 @@ import androidx.appcompat.widget.SearchView;
 import java.util.List;
 
 import com.aka.staychill.Evento;
-import com.aka.staychill.EventoAdaptador;
-import com.aka.staychill.EventoManejador;
+//import com.aka.staychill.EventoAdaptador;
+//import com.aka.staychill.EventoManejador;
 import com.aka.staychill.R;
 
 public class Main extends Fragment {
 
-    private EventoAdaptador mAdapter;
+    //private EventoAdaptador mAdapter;
     private SearchView searchView;
 
     @Override
@@ -34,9 +34,9 @@ public class Main extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        List<Evento> itemList = EventoManejador.getEventos();
-        mAdapter = new EventoAdaptador(itemList);
-        recyclerView.setAdapter(mAdapter);
+        //List<Evento> itemList = EventoManejador.getEventos();
+        //mAdapter = new EventoAdaptador(itemList);
+        //recyclerView.setAdapter(mAdapter);
 
         configurarAparienciaSearchView();
         configurarBusqueda();
@@ -49,19 +49,7 @@ public class Main extends Fragment {
     }
 
     private void configurarBusqueda() {
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                mAdapter.getFilter().filter(query);
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                mAdapter.getFilter().filter(newText);
-                return false;
-            }
-        });
     }
 
     private void configurarClickFondoSearchView() {
