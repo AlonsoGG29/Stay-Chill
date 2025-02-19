@@ -59,8 +59,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
 
 
-    implementation 'io.github.jan-tennert.supabase:postgrest-kt:1.4.1' // Versión actualizada
-    implementation 'io.github.jan-tennert.supabase:supabase-kt:1.4.1'
+    //Horas del evento
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
 
 
     // ViewPager para eventos

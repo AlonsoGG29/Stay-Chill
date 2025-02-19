@@ -42,5 +42,11 @@
     <string name="parse_app_id">NK7L4MwCLysvKqp4RMHjSIFEyTgvZmjmopSwomah</string>
     <string name="parse_client_key">V83zM31yY78xg1wxVJ1NHxRiKplOeKqm7X59UQnw</string>
     <string name="perfil">Perfil</string>
+    <string name="tipo_de_evento">Tipo de evento</string>
+    <string name="evento_titulo">Evento titulo</string>
+    <string name="nuevo_evento">Nuevo evento</string>
+    <string name="nombre_del_evento">Nombre del evento</string>
+    <string name="ej_salida_geek">ej: Salida geek</string>
+    <string name="imagen_del_evento">Imagen del evento</string>
 
 </resources>
