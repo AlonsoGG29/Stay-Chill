@@ -1,132 +1,145 @@
 package com.aka.staychill;
 
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
+import android.view.View;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.gson.JsonObject;
-
+import com.google.gson.Gson;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.OffsetTime;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
-import java.util.Locale;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import java.util.HashMap;
+import okhttp3.*;
 
 public class CrearEvento extends AppCompatActivity {
 
     private EditText inputNombre, inputLocalizacion, inputDescripcion, inputFecha, inputHora;
-    private final OkHttpClient client = new OkHttpClient();
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private SessionManager sessionManager;
+    private ImageView inputImagen;
+    private Spinner spinnerTipoDeEvento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crear_evento);
 
-        sessionManager = new SessionManager(this);
-        inicializarComponentes();
-    }
-
-    private void inicializarComponentes() {
+        // Inicializar vistas
         inputNombre = findViewById(R.id.inputNombre);
         inputLocalizacion = findViewById(R.id.inputLocalizacion);
         inputDescripcion = findViewById(R.id.inputDescripcion);
         inputFecha = findViewById(R.id.inputFecha);
         inputHora = findViewById(R.id.inputHora);
+        inputImagen = findViewById(R.id.EventoImagen);
+        spinnerTipoDeEvento = findViewById(R.id.spinnerTipoDeEvento);
         Button btnCrearEvento = findViewById(R.id.btnCrearEvento);
 
-        btnCrearEvento.setOnClickListener(v -> {
-            if (validarCampos()) {
-                crearEventoEnSupabase();
+        // Configurar el Spinner con opciones para el tipo de evento
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"Concierto", "Teatro", "Deporte", "Fiesta"});
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerTipoDeEvento.setAdapter(adapter);
+
+        // Asociar imagen según el tipo de evento seleccionado
+        spinnerTipoDeEvento.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String tipoSeleccionado = parent.getItemAtPosition(position).toString();
+                switch (tipoSeleccionado) {
+                    case "Concierto":
+                        inputImagen.setImageResource(R.drawable.event_musica);
+                        inputImagen.setTag("concierto_vector");
+                        break;
+                    case "Teatro":
+                        inputImagen.setImageResource(R.drawable.event_cultura_arte);
+                        inputImagen.setTag("teatro_vector");
+                        break;
+                    case "Deporte":
+                        inputImagen.setImageResource(R.drawable.event_deporte1);
+                        inputImagen.setTag("deporte_vector");
+                        break;
+                    case "Fiesta":
+                        inputImagen.setImageResource(R.drawable.event_fiesta_social);
+                        inputImagen.setTag("fiesta_vector");
+                        break;
+                    default:
+                        inputImagen.setImageResource(R.drawable.event_deporte1);
+                        inputImagen.setTag("default_image");
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+
+        btnCrearEvento.setOnClickListener(view -> {
+            String nombre = inputNombre.getText().toString().trim();
+            String localizacion = inputLocalizacion.getText().toString().trim();
+            String descripcion = inputDescripcion.getText().toString().trim();
+            String fechaStr = inputFecha.getText().toString().trim();
+            String horaStr = inputHora.getText().toString().trim();
+            String imagen = inputImagen.getTag() != null ? inputImagen.getTag().toString() : "";
+            String tipoEvento = spinnerTipoDeEvento.getSelectedItem().toString();
+
+            if (nombre.isEmpty() || localizacion.isEmpty() || descripcion.isEmpty() ||
+                    fechaStr.isEmpty() || horaStr.isEmpty() || imagen.isEmpty()) {
+                Toast.makeText(CrearEvento.this, "Por favor, rellena todos los campos", Toast.LENGTH_SHORT).show();
+            } else {
+                try {
+                    SimpleDateFormat sdfInput = new SimpleDateFormat("dd/MM/yyyy");
+                    Date fecha = sdfInput.parse(fechaStr);
+                    OffsetTime hora = OffsetTime.parse(horaStr);
+
+                    Evento nuevoEvento = new Evento(nombre, localizacion, descripcion, fecha, hora, tipoEvento, imagen);
+                    subirEventoASupabase(nuevoEvento);
+
+                } catch (ParseException e) {
+                    Toast.makeText(CrearEvento.this, "Formato de fecha incorrecto. Use dd/MM/yyyy", Toast.LENGTH_SHORT).show();
+                } catch (DateTimeParseException e) {
+                    Toast.makeText(CrearEvento.this, "Formato de hora incorrecto. Ejemplo: 10:15:30+01:00", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
-    private boolean validarCampos() {
-        if (inputNombre.getText().toString().trim().isEmpty()) {
-            mostrarError("El nombre del evento es obligatorio");
-            return false;
-        }
-        if (inputFecha.getText().toString().trim().isEmpty()) {
-            mostrarError("La fecha es obligatoria");
-            return false;
-        }
-        if (inputHora.getText().toString().trim().isEmpty()) {
-            mostrarError("La hora es obligatoria");
-            return false;
-        }
-        return true;
-    }
+    private void subirEventoASupabase(Evento evento) {
+        OkHttpClient client = SupabaseConfig.getClient();
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("nombre_evento", evento.getNombre());
+        data.put("localizacion", evento.getLocalizacion());
+        data.put("descripcion", evento.getDescripcion());
+        SimpleDateFormat sdfOutput = new SimpleDateFormat("yyyy-MM-dd");
+        data.put("fecha_evento", sdfOutput.format(evento.getFecha()));
+        data.put("hora_evento", evento.getHora().toString());
+        data.put("tipo_de_evento", evento.getTipoDeEvento());
+        data.put("imagen_del_evento", evento.getImagenDelEvento());
 
-    private void crearEventoEnSupabase() {
-        new Thread(() -> {
-            try {
-                JsonObject eventoJson = new JsonObject();
-                eventoJson.addProperty("nombre_evento", inputNombre.getText().toString().trim());
-                eventoJson.addProperty("localizacion", inputLocalizacion.getText().toString().trim());
-                eventoJson.addProperty("descripcion", inputDescripcion.getText().toString().trim());
-                eventoJson.addProperty("fecha_evento", parsearFecha(inputFecha.getText().toString()));
-                eventoJson.addProperty("hora_evento", inputHora.getText().toString() + "+02:00"); // Ajusta la zona horaria
-                eventoJson.addProperty("creador_evento", sessionManager.getUserId());
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(data);
 
-                RequestBody body = RequestBody.create(
-                        eventoJson.toString(),
-                        MediaType.parse("application/json")
-                );
+        RequestBody body = RequestBody.create(jsonString, MediaType.get("application/json; charset=utf-8"));
 
-                Request request = new Request.Builder()
-                        .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/eventos")
-                        .post(body)
-                        .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                        .addHeader("Authorization", "Bearer " + sessionManager.getUserToken())
-                        .addHeader("Content-Type", "application/json")
-                        .addHeader("Prefer", "return=minimal")
-                        .build();
+        Request request = new Request.Builder()
+                .url(SupabaseConfig.getSupabaseUrl())
+                .post(body)
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .addHeader("Authorization", "Bearer " + SupabaseConfig.getSupabaseKey())
+                .addHeader("Content-Type", "application/json")
+                .build();
 
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        runOnUiThread(() -> mostrarError("Error de conexión: " + e.getMessage()));
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) {
-                        if (response.isSuccessful()) {
-                            runOnUiThread(() -> {
-                                Toast.makeText(CrearEvento.this, "Evento creado con éxito", Toast.LENGTH_SHORT).show();
-                                finish();
-                            });
-                        } else {
-                            runOnUiThread(() -> mostrarError("Error del servidor: " + response.code()));
-                        }
-                    }
-                });
-
-            } catch (Exception e) {
-                runOnUiThread(() -> mostrarError("Error: " + e.getMessage()));
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> Toast.makeText(CrearEvento.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
-        }).start();
-    }
 
-    private String parsearFecha(String fechaInput) throws Exception {
-        // Asume que el formato de entrada es dd/MM/yyyy (puedes ajustarlo)
-        SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        Date date = inputFormat.parse(fechaInput);
-        return dateFormat.format(date);
-    }
-
-    private void mostrarError(String mensaje) {
-        runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                runOnUiThread(() -> Toast.makeText(CrearEvento.this, response.isSuccessful() ? "Evento subido" : "Error al subir", Toast.LENGTH_SHORT).show());
+            }
+        });
     }
 }
