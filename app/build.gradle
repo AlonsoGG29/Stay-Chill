@@ -57,6 +57,7 @@ dependencies {
 
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.json:json:20231013'
 
 
     //Horas del evento
@@ -69,7 +70,7 @@ dependencies {
 
     //Recortar imagén del perfil
 
-    implementation 'com.github.yalantis:ucrop:2.2.10'
+    implementation 'com.github.yalantis:ucrop:2.2.8'
 
 }
 

@@ -1,25 +1,18 @@
 package com.aka.staychill;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -38,8 +31,13 @@ import com.yalantis.ucrop.UCrop;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.UUID;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -54,19 +52,14 @@ public class Conf_cuenta extends AppCompatActivity {
 
     private static final int SELECT_PICTURE = 1;
     private static final int PERMISSION_REQUEST_CODE = 100;
-    private static final String TAG = "Conf_cuenta";
 
-    // Componentes UI
-    private ImageButton fotoPerfil; //
+    private ImageButton fotoPerfil;
     private EditText inputNombre, inputApellido, inputFechaNacimiento;
     private Spinner inputPais;
-
-    // Variables de estado
     private Uri imagenTempUri = null;
     private boolean hayCambiosImagen = false;
-    private String userId;
+    private UUID userId;
 
-    // Dependencias
     private final OkHttpClient client = new OkHttpClient();
     private final Gson gson = new Gson();
     private ArrayAdapter<CharSequence> adapter;
@@ -78,32 +71,61 @@ public class Conf_cuenta extends AppCompatActivity {
         setContentView(R.layout.activity_conf_cuenta);
 
         sessionManager = new SessionManager(this);
+        if (!verificarSesion()) return;
+
         inicializarComponentes();
         configurarSpinner();
-        verificarUsuario();
+        cargarDatosUsuario();
     }
 
+    private boolean verificarSesion() {
+        if (sessionManager.getAccessToken() == null || sessionManager.getUserId() == null) {
+            runOnUiThread(this::manejarSesionExpirada);
+            return false;
+        }
+        userId = sessionManager.getUserId();
+        return true;
+    }
 
     private void inicializarComponentes() {
-        fotoPerfil = findViewById(R.id.fotoPerfil); // Asegúrate de que coincida con el XML
-        ImageView btnBack = findViewById(R.id.btnBack);
+        fotoPerfil = findViewById(R.id.fotoPerfil);
         inputNombre = findViewById(R.id.inputNombre);
         inputApellido = findViewById(R.id.inputApellido);
         inputFechaNacimiento = findViewById(R.id.inputFechaNacimiento);
         inputPais = findViewById(R.id.inputPais);
 
-        Button btnGuardar = findViewById(R.id.botoncuenta);
-        btnGuardar.setOnClickListener(v -> guardarCambios());
+        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        findViewById(R.id.botoncuenta).setOnClickListener(v -> guardarCambios());
 
-        inputFechaNacimiento.setFocusable(false);
-        inputFechaNacimiento.setClickable(true);
-        inputFechaNacimiento.setOnClickListener(v -> mostrarDatePicker());
-
-        btnBack.setOnClickListener(v -> finish());
-        fotoPerfil.setOnClickListener(v -> manejarPermisosImagen()); // Función de selección de imagen
+        configurarDatePicker();
+        fotoPerfil.setOnClickListener(v -> manejarPermisosImagen());
     }
 
+    private void configurarDatePicker() {
+        inputFechaNacimiento.setFocusable(false);
+        inputFechaNacimiento.setOnClickListener(v -> {
+            Calendar calendario = Calendar.getInstance();
+            DatePickerDialog datePicker = new DatePickerDialog(
+                    this,
+                    (view, anio, mes, dia) -> {
+                        Calendar fechaSeleccionada = Calendar.getInstance();
+                        fechaSeleccionada.set(anio, mes, dia);
 
+                        if (fechaSeleccionada.after(Calendar.getInstance())) {
+                            mostrarError("La fecha no puede ser futura");
+                        } else {
+                            inputFechaNacimiento.setText(String.format(Locale.getDefault(),
+                                    "%04d-%02d-%02d", anio, mes + 1, dia));
+                        }
+                    },
+                    calendario.get(Calendar.YEAR),
+                    calendario.get(Calendar.MONTH),
+                    calendario.get(Calendar.DAY_OF_MONTH)
+            );
+            datePicker.getDatePicker().setMaxDate(System.currentTimeMillis());
+            datePicker.show();
+        });
+    }
 
     private void configurarSpinner() {
         adapter = ArrayAdapter.createFromResource(this,
@@ -113,328 +135,320 @@ public class Conf_cuenta extends AppCompatActivity {
         inputPais.setAdapter(adapter);
     }
 
-    private void mostrarDatePicker() {
-        final Calendar calendario = Calendar.getInstance();
-        DatePickerDialog datePicker = new DatePickerDialog(this,
-                (view, anio, mes, dia) -> inputFechaNacimiento.setText(
-                        String.format(Locale.getDefault(), "%04d-%02d-%02d", anio, mes + 1, dia)),
-                calendario.get(Calendar.YEAR),
-                calendario.get(Calendar.MONTH),
-                calendario.get(Calendar.DAY_OF_MONTH)
-        );
-        datePicker.getDatePicker().setMaxDate(System.currentTimeMillis());
-        datePicker.show();
-    }
-
-    private void verificarUsuario() {
-        userId = sessionManager.getUserId();
-        if (userId == null) {
-            mostrarError("Usuario no autenticado");
-            finish();
-            return;
-        }
-        cargarDatosUsuario();
-    }
-
     private void cargarDatosUsuario() {
         Request request = new Request.Builder()
                 .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios?foren_uid=eq." + userId)
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                .addHeader("Authorization", "Bearer " + obtenerTokenUsuario())
+                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                mostrarError("Error de conexión: " + e.getMessage());
+                mostrarError("Error de conexión");
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
-                if (!response.isSuccessful()) {
-                    mostrarError("Error del servidor: " + response.code());
-                    return;
-                }
-
                 try {
-                    assert response.body() != null;
-                    JsonArray jsonArray = gson.fromJson(response.body().string(), JsonArray.class);
-                    if (jsonArray.isEmpty()) {
-                        mostrarError("Usuario no encontrado");
-                        return;
+                    if (response.isSuccessful()) {
+                        procesarRespuestaUsuario(response);
+                    } else {
+                        String errorBody = response.body() != null ? response.body().string() : "";
+                        mostrarError("Error: " + response.code() + " - " + errorBody);
                     }
-                    actualizarUI(jsonArray.get(0).getAsJsonObject());
                 } catch (Exception e) {
-                    mostrarError("Error procesando datos: " + e.getMessage());
+                    mostrarError("Error procesando respuesta");
                 }
             }
         });
+    }
+
+    private void procesarRespuestaUsuario(Response response) throws IOException {
+        assert response.body() != null;
+        JsonArray jsonArray = gson.fromJson(response.body().string(), JsonArray.class);
+        if (jsonArray.isEmpty()) {
+            mostrarError("Perfil no encontrado");
+            return;
+        }
+
+        JsonObject usuario = jsonArray.get(0).getAsJsonObject();
+        runOnUiThread(() -> actualizarUI(usuario));
     }
 
     private void actualizarUI(JsonObject usuario) {
-        runOnUiThread(() -> {
-            try {
-                if (campoValido(usuario, "profile_image_url")) {
-                    String urlImagen = usuario.get("profile_image_url").getAsString();
-                    Glide.with(Conf_cuenta.this)
-                            .load(urlImagen + "?t=" + System.currentTimeMillis())
-                            .circleCrop()
-                            .skipMemoryCache(true)
-                            .into(fotoPerfil);
+        try {
+            if (usuario.has("profile_image_url") &&
+                    !usuario.get("profile_image_url").isJsonNull() &&
+                    !usuario.get("profile_image_url").getAsString().isEmpty()) {
+
+                Glide.with(this)
+                        .load(usuario.get("profile_image_url").getAsString())
+                        .circleCrop()
+                        .into(fotoPerfil);
+            }
+
+            inputNombre.setText(usuario.has("nombre") && !usuario.get("nombre").isJsonNull() ?
+                    usuario.get("nombre").getAsString() : "");
+
+            inputApellido.setText(usuario.has("apellido") && !usuario.get("apellido").isJsonNull() ?
+                    usuario.get("apellido").getAsString() : "");
+
+            if (usuario.has("fecha_nacimiento") &&
+                    !usuario.get("fecha_nacimiento").isJsonNull()) {
+                inputFechaNacimiento.setText(usuario.get("fecha_nacimiento").getAsString());
+            }
+
+            if (usuario.has("pais") &&
+                    !usuario.get("pais").isJsonNull() &&
+                    !usuario.get("pais").getAsString().isEmpty()) {
+
+                String pais = usuario.get("pais").getAsString();
+                int posicion = adapter.getPosition(pais);
+                if (posicion >= 0) {
+                    inputPais.setSelection(posicion);
                 }
-
-                inputNombre.setText(obtenerValorSeguro(usuario, "nombre"));
-                inputApellido.setText(obtenerValorSeguro(usuario, "apellido"));
-                inputFechaNacimiento.setText(obtenerValorSeguro(usuario, "fecha_nacimiento"));
-
-                if (campoValido(usuario, "pais")) {
-                    String pais = usuario.get("pais").getAsString();
-                    inputPais.setSelection(adapter.getPosition(pais));
-                }
-            } catch (Exception e) {
-                mostrarError("Error actualizando UI: " + e.getMessage());
             }
-        });
-    }
-
-
-    private String obtenerValorSeguro(JsonObject json, String clave) {
-        return campoValido(json, clave) ? json.get(clave).getAsString() : "";
-    }
-
-    private boolean campoValido(JsonObject json, String clave) {
-        return json.has(clave) && !json.get(clave).isJsonNull();
-    }
-
-    private void manejarPermisosImagen() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            // Android 13+ usa READ_MEDIA_IMAGES en lugar de READ_EXTERNAL_STORAGE
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
-                    == PackageManager.PERMISSION_GRANTED) {
-                seleccionarImagen();
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_MEDIA_IMAGES},
-                        PERMISSION_REQUEST_CODE);
-            }
-        } else {
-            // Android 12 y versiones anteriores
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                seleccionarImagen();
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        PERMISSION_REQUEST_CODE);
-            }
+        } catch (Exception e) {
+            mostrarError("Error cargando datos del perfil");
         }
     }
 
+    private void manejarPermisosImagen() {
+        String permiso = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU ?
+                Manifest.permission.READ_MEDIA_IMAGES :
+                Manifest.permission.READ_EXTERNAL_STORAGE;
+
+        if (ContextCompat.checkSelfPermission(this, permiso) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{permiso}, PERMISSION_REQUEST_CODE);
+        } else {
+            iniciarSeleccionImagen();
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                seleccionarImagen(); // Permiso concedido, abre la galería
+                iniciarSeleccionImagen();
             } else {
-                boolean mostrarRazon = ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-                if (!mostrarRazon) {
-                    // Permiso denegado permanentemente, mostrar diálogo para abrir ajustes
-                    mostrarDialogoConfiguracion();
-                } else {
-                    // Permiso denegado temporalmente, mostrar mensaje
-                    mostrarError("El permiso es necesario para seleccionar una imagen.");
-                }
+                mostrarError("Permiso necesario para seleccionar imágenes");
             }
         }
     }
 
-    private void mostrarDialogoConfiguracion() {
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Permiso requerido")
-                .setMessage("Para seleccionar una imagen, permite el acceso a la galería en la configuración de la aplicación.")
-                .setPositiveButton("Ir a configuración", (dialog, which) -> {
-                    Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
-                })
-                .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
-                .show();
-    }
-
-
-
-
-    private void seleccionarImagen() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    private void iniciarSeleccionImagen() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
         startActivityForResult(intent, SELECT_PICTURE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            if (requestCode == SELECT_PICTURE && data != null) {
-                Uri sourceUri = data.getData();
-                iniciarRecorte(sourceUri);
-            } else if (requestCode == UCrop.REQUEST_CROP && data != null) {
-                handleResultadoRecorte(data);
+        if (resultCode == RESULT_OK && data != null) {
+            if (requestCode == SELECT_PICTURE) {
+                iniciarRecorteImagen(data.getData());
+            } else if (requestCode == UCrop.REQUEST_CROP) {
+                procesarImagenRecortada(UCrop.getOutput(data));
             }
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            mostrarError("Error al recortar imagen");
         }
     }
 
-    private void iniciarRecorte(Uri sourceUri) {
-        Uri destinoUri = Uri.fromFile(new File(getCacheDir(), "cropped_image.jpg"));
+    private void iniciarRecorteImagen(Uri sourceUri) {
+        try {
+            UCrop.Options options = new UCrop.Options();
+            options.setCircleDimmedLayer(true);
+            options.setCompressionQuality(85);
+            options.setHideBottomControls(true);
+            options.setShowCropGrid(false);
 
-        UCrop.Options options = new UCrop.Options();
-        options.setCircleDimmedLayer(true); // Hace el recorte circular
-        options.setShowCropGrid(false); // Oculta la cuadrícula de recorte
-        options.setShowCropFrame(false); // Oculta el marco del recorte
-
-        UCrop.of(sourceUri, destinoUri)
-                .withAspectRatio(1, 1) // Mantiene la proporción cuadrada
-                .withMaxResultSize(fotoPerfil.getWidth(), fotoPerfil.getHeight())
-                .withOptions(options)
-                .start(this, UCrop.REQUEST_CROP);
-    }
-
-    private void handleResultadoRecorte(Intent result) {
-        Uri resultadoUri = UCrop.getOutput(result);
-        if (resultadoUri != null) {
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultadoUri);
-                Bitmap circularBitmap = crearImagenCircular(bitmap);
-                fotoPerfil.setImageBitmap(circularBitmap); // Mostrar imagen circular
-                imagenTempUri = resultadoUri;
-                hayCambiosImagen = true;
-            } catch (Exception e) {
-                mostrarError("Error al cargar imagen recortada");
-            }
+            File tempFile = File.createTempFile("crop_temp", ".jpg", getCacheDir());
+            UCrop.of(sourceUri, Uri.fromFile(tempFile))
+                    .withAspectRatio(1, 1)
+                    .withMaxResultSize(512, 512)
+                    .withOptions(options)
+                    .start(this);
+        } catch (Exception e) {
+            mostrarError("Error preparando el editor de imagen");
         }
     }
-    private Bitmap crearImagenCircular(Bitmap bitmap) {
-        int size = Math.min(bitmap.getWidth(), bitmap.getHeight());
-        Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
 
-        Canvas canvas = new Canvas(output);
-        final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, size, size);
-        final RectF rectF = new RectF(rect);
+    private void procesarImagenRecortada(Uri imagenUri) {
+        try {
+            Glide.with(this)
+                    .load(imagenUri)
+                    .circleCrop()
+                    .into(fotoPerfil);
 
-        paint.setAntiAlias(true);
-        canvas.drawOval(rectF, paint);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-        canvas.drawBitmap(bitmap, rect, rect, paint);
-
-        return output;
+            imagenTempUri = imagenUri;
+            hayCambiosImagen = true;
+        } catch (Exception e) {
+            mostrarError("Error al cargar imagen");
+        }
     }
-
-
-
 
     private void guardarCambios() {
-        if (inputNombre.getText().toString().trim().isEmpty() ||
-                inputApellido.getText().toString().trim().isEmpty()) {
-            mostrarError("Nombre y apellido son obligatorios");
-            return;
+        if (validarCampos()) {
+            new Thread(this::procesarGuardado).start();
+        }
+    }
+
+    private boolean validarCampos() {
+        if (inputNombre.getText().toString().trim().isEmpty()) {
+            mostrarError("El nombre es obligatorio");
+            return false;
         }
 
-        new Thread(() -> {
+        String fecha = inputFechaNacimiento.getText().toString().trim();
+        if (!fecha.isEmpty()) {
             try {
-                String nuevaUrlImagen = null;
-                if (hayCambiosImagen && imagenTempUri != null) {
-                    nuevaUrlImagen = subirImagenYActualizarUrl();
+                Calendar fechaNacimiento = Calendar.getInstance();
+                fechaNacimiento.setTime(Objects.requireNonNull(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(fecha)));
+
+                if (fechaNacimiento.after(Calendar.getInstance())) {
+                    mostrarError("La fecha no puede ser futura");
+                    return false;
                 }
-
-                actualizarDatosUsuario(nuevaUrlImagen);
-
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Cambios guardados exitosamente", Toast.LENGTH_SHORT).show();
-                    hayCambiosImagen = false;
-                    finish();
-                });
-
-            } catch (Exception e) {
-                mostrarError("Error al guardar cambios: " + e.getMessage());
+            } catch (ParseException e) {
+                mostrarError("Formato de fecha inválido");
+                return false;
             }
-        }).start();
+        }
+        return true;
     }
 
-    private String subirImagenYActualizarUrl() throws IOException {
-        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imagenTempUri);
-        ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArray);
-        byte[] imageData = byteArray.toByteArray();
+    private void procesarGuardado() {
+        try {
+            String nuevaImagenUrl = hayCambiosImagen ? subirImagenPerfil() : null;
+            actualizarPerfilUsuario(nuevaImagenUrl);
+            runOnUiThread(this::finalizarGuardadoExitoso);
+        } catch (Exception e) {
+            mostrarError("Error: " + e.getMessage());
+        }
+    }
 
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("file", userId + "_profile.png",
-                        RequestBody.create(imageData, MediaType.parse("image/png")))
-                .build();
+    private String subirImagenPerfil() throws IOException {
+        // Nombre único basado en el userId que sobrescribirá la imagen anterior
+        String nombreArchivo = "user_uploads/" + userId + "_avatar.jpg";
 
-        Request request = new Request.Builder()
-                .url(SupabaseConfig.getSupabaseUrl() + "/storage/v1/object/user_files/" + userId + "_profile.png")
-                .put(requestBody)
-                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                .addHeader("Authorization", "Bearer " + obtenerTokenUsuario())
-                .build();
+        try (InputStream inputStream = getContentResolver().openInputStream(imagenTempUri)) {
+            byte[] bytes = toByteArray(inputStream);
 
-        Response response = client.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            throw new IOException("Error subiendo imagen: " + response.code());
+            RequestBody body = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", nombreArchivo,
+                            RequestBody.create(bytes, MediaType.parse("image/jpeg")))
+                    .build();
+
+            // Primero eliminamos la imagen anterior si existe
+            Request deleteRequest = new Request.Builder()
+                    .url(SupabaseConfig.getSupabaseUrl() + "/storage/v1/object/user_files/" + nombreArchivo)
+                    .delete()
+                    .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                    .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
+                    .build();
+
+            // Ejecutamos la eliminación de forma síncrona
+            try (Response deleteResponse = client.newCall(deleteRequest).execute()) {
+                // No importa si falla (puede que no existiera previamente)
+            }
+
+            // Subimos la nueva imagen
+            Request uploadRequest = new Request.Builder()
+                    .url(SupabaseConfig.getSupabaseUrl() + "/storage/v1/object/user_files/" + nombreArchivo)
+                    .put(body)
+                    .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                    .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
+                    .addHeader("Content-Type", "multipart/form-data")
+                    .build();
+
+            try (Response uploadResponse = client.newCall(uploadRequest).execute()) {
+                if (!uploadResponse.isSuccessful()) {
+                    throw new IOException("Error: " + uploadResponse.code() + " - " + uploadResponse.body().string());
+                }
+                return SupabaseConfig.getSupabaseUrl() + "/storage/v1/object/public/user_files/" + nombreArchivo;
+            }
+        }
+    }
+
+    private byte[] toByteArray(InputStream input) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[16384];
+        while ((nRead = input.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        return buffer.toByteArray();
+    }
+
+    private void actualizarPerfilUsuario(String imagenUrl) throws IOException {
+        JsonObject datos = new JsonObject();
+        datos.addProperty("nombre", inputNombre.getText().toString().trim());
+
+        if (!inputApellido.getText().toString().trim().isEmpty()) {
+            datos.addProperty("apellido", inputApellido.getText().toString().trim());
         }
 
-        return SupabaseConfig.getSupabaseUrl() + "/storage/v1/object/public/user_files/" + userId + "_profile.png";
-    }
+        if (!inputFechaNacimiento.getText().toString().trim().isEmpty()) {
+            datos.addProperty("fecha_nacimiento", inputFechaNacimiento.getText().toString().trim());
+        }
 
-    private void actualizarDatosUsuario(String nuevaUrlImagen) {
-        JsonObject datos = new JsonObject();
+        if (inputPais.getSelectedItemPosition() > 0) {
+            datos.addProperty("pais", inputPais.getSelectedItem().toString());
+        }
 
-        datos.addProperty("nombre", inputNombre.getText().toString().trim());
-        datos.addProperty("apellido", inputApellido.getText().toString().trim());
-        datos.addProperty("pais", inputPais.getSelectedItem().toString());
-        datos.addProperty("fecha_nacimiento", inputFechaNacimiento.getText().toString().trim());
-
-        if (nuevaUrlImagen != null) {
-            datos.addProperty("profile_image_url", nuevaUrlImagen);
+        if (imagenUrl != null) {
+            datos.addProperty("profile_image_url", imagenUrl);
         }
 
         Request request = new Request.Builder()
                 .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios?foren_uid=eq." + userId)
-                .patch(RequestBody.create(
-                        gson.toJson(datos),
-                        MediaType.parse("application/json")))
+                .patch(RequestBody.create(datos.toString(), MediaType.get("application/json")))
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                .addHeader("Authorization", "Bearer " + obtenerTokenUsuario())
+                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new IOException("Error actualizando datos: " + response.code());
+                throw new IOException("Error: " + response.code() + " - " + response.body().string());
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    private String obtenerTokenUsuario() {
-        String token = sessionManager.getUserToken();
-        if (token == null) {
-            runOnUiThread(() -> {
-                Toast.makeText(this, "Sesión expirada, por favor vuelve a iniciar sesión", Toast.LENGTH_LONG).show();
-                sessionManager.logout();
-                finish();
-            });
-        }
-        return token;
+    private void finalizarGuardadoExitoso() {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            Toast.makeText(this, "Perfil actualizado", Toast.LENGTH_SHORT).show();
+            hayCambiosImagen = false;
+            finish();
+        });
+    }
+
+    private void manejarSesionExpirada() {
+        new AlertDialog.Builder(this)
+                .setTitle("Sesión expirada")
+                .setMessage("Debes iniciar sesión nuevamente")
+                .setPositiveButton("Aceptar", (d, w) -> {
+                    sessionManager.logout();
+                    startActivity(new Intent(this, Login.class));
+                    finishAffinity();
+                })
+                .setCancelable(false)
+                .show();
     }
 
     private void mostrarError(String mensaje) {
         runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
-        Log.e(TAG, mensaje);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (imagenTempUri != null) {
+            new File(imagenTempUri.getPath()).delete();
+        }
+        super.onDestroy();
     }
 }
