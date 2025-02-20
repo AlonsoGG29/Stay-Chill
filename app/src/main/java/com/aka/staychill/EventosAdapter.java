@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.List;
 
@@ -37,21 +38,32 @@ public class EventosAdapter  extends RecyclerView.Adapter<EventosAdapter .Evento
         holder.tvNombreEvento.setText(evento.getNombre());
         holder.tvTipoEvento.setText(evento.getTipoDeEvento());
 
-        // Se asume que 'imagenDelEvento' ya es el ID del drawable
+        // Imagen del evento
         if(evento.getImagenDelEvento() != 0){
             holder.ivEvento.setImageResource(evento.getImagenDelEvento());
         } else {
             holder.ivEvento.setImageResource(R.drawable.event_viajes);
         }
 
-        // Para la foto de perfil del usuario, podrías usar Glide o Picasso:
-        String urlFotoPerfil = SupabaseConfig.getSupabaseUrl()+"/storage/v1/object/public/user_files/user_uploads/"
-                + evento.getCreadorId().toString() + "_avatar.jpg";
-        Glide.with(context)
-                .load(urlFotoPerfil)
-                .placeholder(R.drawable.event_viajes)
-                .circleCrop()// imagen por defecto mientras carga
-                .into(holder.ivPerfil);
+        // Foto de perfil con caché dinámica
+        String urlFotoPerfil = evento.getCreadorProfileImage();
+
+        if (urlFotoPerfil != null && !urlFotoPerfil.isEmpty()) {
+            // Agrega parámetro de tiempo para evitar caché
+            String urlConCacheBuster = urlFotoPerfil + "?v=" + System.currentTimeMillis();
+
+            Glide.with(context)
+                    .load(urlConCacheBuster)
+                    .placeholder(R.drawable.event_viajes)
+                    .error(R.drawable.event_viajes) // Imagen por defecto si hay error
+                    .circleCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Desactiva caché de disco
+                    .skipMemoryCache(true) // Desactiva caché en memoria
+                    .into(holder.ivPerfil);
+        } else {
+            holder.ivPerfil.setImageResource(R.drawable.event_viajes);
+        }
+
     }
 
     @Override

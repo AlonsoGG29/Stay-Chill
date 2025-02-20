@@ -24,6 +24,7 @@ import com.aka.staychill.EventosAdapter;
 import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
 import com.aka.staychill.SupabaseConfig;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -41,10 +42,9 @@ public class Main extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private OkHttpClient client;
     private SessionManager sessionManager;
-    // URL de tu endpoint en SupaBase (reemplaza por el de tu proyecto)
-    private static final String URL_EVENTOS = SupabaseConfig.getSupabaseUrl()+"/rest/v1/eventos";
-
-
+    // En Main.java:
+    private static final String URL_EVENTOS = SupabaseConfig.getSupabaseUrl()
+            + "/rest/v1/eventos?select=*,usuarios!creador_id(profile_image_url)";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -56,20 +56,25 @@ public class Main extends Fragment {
         adapter = new EventosAdapter(getContext(), new ArrayList<>());
         recyclerView.setAdapter(adapter);
 
-        // Inicializar el SessionManager para obtener el token de acceso
         sessionManager = new SessionManager(getContext());
+        client = new OkHttpClient.Builder().cache(null).build();
 
-        client = new OkHttpClient.Builder()
-                .cache(null)
-                .build();
+        // Configurar "pull-to-refresh" con limpieza de caché
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            // Limpiar caché de Glide antes de cargar eventos
+            clearGlideCache();
+            cargarEventos();
+        });
 
-        // Cargar eventos inicialmente
         cargarEventos();
-
-        // Configurar la funcionalidad de "pull-to-refresh"
-        swipeRefreshLayout.setOnRefreshListener(() -> cargarEventos());
-
         return view;
+    }
+
+    private void clearGlideCache() {
+        new Thread(() -> {
+            Glide.get(getContext()).clearDiskCache();
+            getActivity().runOnUiThread(() -> Glide.get(getContext()).clearMemory());
+        }).start();
     }
 
     private void cargarEventos() {

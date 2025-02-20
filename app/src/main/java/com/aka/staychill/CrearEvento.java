@@ -156,7 +156,8 @@ public class CrearEvento extends AppCompatActivity {
                     hora,
                     spinnerTipoDeEvento.getSelectedItem().toString(),
                     (int) inputImagen.getTag(),
-                    sessionManager.getUserId()
+                    sessionManager.getUserId(),
+                    ""  // Campo creadorProfileImage (se actualizará al cargar eventos)
             );
 
             subirEventoASupabase(nuevoEvento);
@@ -226,17 +227,25 @@ public class CrearEvento extends AppCompatActivity {
     private RequestBody crearCuerpoPeticion(Evento evento) {
         JsonObject payload = new JsonObject();
         try {
+            // Formato de fecha correcto (yyyy-MM-dd)
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             payload.addProperty("fecha_evento", dateFormat.format(evento.getFecha()));
 
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ssXXX");
+            // Formato de hora corregido (sin timezone)
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
             payload.addProperty("hora_evento", timeFormat.format(evento.getHora()));
 
+            // Resto de campos
             payload.addProperty("nombre_evento", evento.getNombre());
             payload.addProperty("localizacion", evento.getLocalizacion());
             payload.addProperty("descripcion", evento.getDescripcion());
             payload.addProperty("tipo_de_evento", evento.getTipoDeEvento());
-            payload.addProperty("imagen_del_evento", getResources().getResourceEntryName(evento.getImagenDelEvento()));
+
+            // Nombre del recurso drawable (ej: "event_musica")
+            String resourceName = getResources().getResourceEntryName(evento.getImagenDelEvento());
+            payload.addProperty("imagen_del_evento", resourceName);
+
+            // UUID del creador
             payload.addProperty("creador_id", evento.getCreadorId().toString());
 
         } catch (Exception e) {
