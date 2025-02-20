@@ -69,8 +69,5 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
     </application>
-    <meta-data
-        android:name="com.google.android.geo.API_KEY"
-        android:value="${GOOGLE_MAPS_API_KEY}"/>
 
 </manifest>
