@@ -183,7 +183,7 @@ public class Conf_cuenta extends AppCompatActivity {
                     !usuario.get("profile_image_url").getAsString().isEmpty()) {
 
                 Glide.with(this)
-                        .load(usuario.get("profile_image_url").getAsString())
+                        .load(usuario.get("profile_image_url").getAsString() + "?t=" + System.currentTimeMillis())
                         .circleCrop()
                         .into(fotoPerfil);
             }
@@ -286,6 +286,11 @@ public class Conf_cuenta extends AppCompatActivity {
 
             imagenTempUri = imagenUri;
             hayCambiosImagen = true;
+            String cacheBusterUrl = imagenUri.toString() + "?t=" + System.currentTimeMillis();
+            Glide.with(this)
+                    .load(cacheBusterUrl)
+                    .circleCrop()
+                    .into(fotoPerfil);
         } catch (Exception e) {
             mostrarError("Error al cargar imagen");
         }
@@ -344,18 +349,6 @@ public class Conf_cuenta extends AppCompatActivity {
                             RequestBody.create(bytes, MediaType.parse("image/jpeg")))
                     .build();
 
-            // Primero eliminamos la imagen anterior si existe
-            Request deleteRequest = new Request.Builder()
-                    .url(SupabaseConfig.getSupabaseUrl() + "/storage/v1/object/user_files/" + nombreArchivo)
-                    .delete()
-                    .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                    .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
-                    .build();
-
-            // Ejecutamos la eliminación de forma síncrona
-            try (Response deleteResponse = client.newCall(deleteRequest).execute()) {
-                // No importa si falla (puede que no existiera previamente)
-            }
 
             // Subimos la nueva imagen
             Request uploadRequest = new Request.Builder()
@@ -370,7 +363,11 @@ public class Conf_cuenta extends AppCompatActivity {
                 if (!uploadResponse.isSuccessful()) {
                     throw new IOException("Error: " + uploadResponse.code() + " - " + uploadResponse.body().string());
                 }
-                return SupabaseConfig.getSupabaseUrl() + "/storage/v1/object/public/user_files/" + nombreArchivo;
+
+                // Obtener URL real desde la respuesta JSON
+                JsonObject responseJson = gson.fromJson(uploadResponse.body().string(), JsonObject.class);
+                String path = responseJson.get("Key").getAsString(); // O el campo correcto de tu respuesta
+                return SupabaseConfig.getSupabaseUrl() + "/storage/v1/object/public/" + path;
             }
         }
     }
