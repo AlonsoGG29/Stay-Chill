@@ -19,8 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.aka.staychill.Evento;
-//import com.aka.staychill.EventoAdaptador;
-//import com.aka.staychill.EventoManejador;
 import com.aka.staychill.EventoDeserializer;
 import com.aka.staychill.EventosAdapter;
 import com.aka.staychill.R;
@@ -38,6 +36,7 @@ import okhttp3.Response;
 public class Main extends Fragment {
 
     private RecyclerView recyclerView;
+
     private EventosAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private OkHttpClient client;
@@ -60,7 +59,9 @@ public class Main extends Fragment {
         // Inicializar el SessionManager para obtener el token de acceso
         sessionManager = new SessionManager(getContext());
 
-        client = new OkHttpClient();
+        client = new OkHttpClient.Builder()
+                .cache(null)
+                .build();
 
         // Cargar eventos inicialmente
         cargarEventos();
@@ -75,7 +76,10 @@ public class Main extends Fragment {
         Request.Builder requestBuilder = new Request.Builder()
                 .url(URL_EVENTOS)
                 // Si SupaBase requiere la key anónima, se agrega en la cabecera:
-                .addHeader("apikey", SupabaseConfig.getSupabaseKey());
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Pragma", "no-cache")
+                .addHeader("Expires", "0");
 
         // Añadimos el token de acceso, obtenido de SessionManager
         String accessToken = sessionManager.getAccessToken();
