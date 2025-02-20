@@ -40,6 +40,7 @@ dependencies {
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
+    implementation libs.swiperefreshlayout
 
     // Dependencias para pruebas
     testImplementation libs.junit
@@ -57,7 +58,7 @@ dependencies {
 
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'org.json:json:20231013'
+
 
 
     //Horas del evento
