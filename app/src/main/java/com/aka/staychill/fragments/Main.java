@@ -1,6 +1,7 @@
 package com.aka.staychill.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,13 +20,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.aka.staychill.Evento;
-//import com.aka.staychill.EventoAdaptador;
-//import com.aka.staychill.EventoManejador;
+import com.aka.staychill.EventoClick;
 import com.aka.staychill.EventoDeserializer;
 import com.aka.staychill.EventosAdapter;
 import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
 import com.aka.staychill.SupabaseConfig;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -38,14 +39,14 @@ import okhttp3.Response;
 public class Main extends Fragment {
 
     private RecyclerView recyclerView;
+
     private EventosAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private OkHttpClient client;
     private SessionManager sessionManager;
-    // URL de tu endpoint en SupaBase (reemplaza por el de tu proyecto)
-    private static final String URL_EVENTOS = SupabaseConfig.getSupabaseUrl()+"/rest/v1/eventos";
-
-
+    // En Main.java:
+    private static final String URL_EVENTOS = SupabaseConfig.getSupabaseUrl()
+            + "/rest/v1/eventos?select=*,usuarios!creador_id(nombre,apellido,pais,profile_image_url)";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -57,25 +58,47 @@ public class Main extends Fragment {
         adapter = new EventosAdapter(getContext(), new ArrayList<>());
         recyclerView.setAdapter(adapter);
 
-        // Inicializar el SessionManager para obtener el token de acceso
         sessionManager = new SessionManager(getContext());
+        client = new OkHttpClient.Builder().cache(null).build();
 
-        client = new OkHttpClient();
+        // Configurar "pull-to-refresh" con limpieza de caché
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            // Limpiar caché de Glide antes de cargar eventos
+            clearGlideCache();
+            cargarEventos();
+        });
 
-        // Cargar eventos inicialmente
+        adapter.setOnItemClickListener(evento -> {
+            // Crear Intent para abrir el Activity de detalle
+            Intent intent = new Intent(getActivity(), EventoClick.class);
+
+            // Pasar los datos del evento usando Gson
+            Gson gson = new Gson();
+            String eventoJson = gson.toJson(evento);
+            intent.putExtra("EVENTO_DATA", eventoJson);
+
+            startActivity(intent);
+        });
+
         cargarEventos();
-
-        // Configurar la funcionalidad de "pull-to-refresh"
-        swipeRefreshLayout.setOnRefreshListener(() -> cargarEventos());
-
         return view;
+    }
+
+    private void clearGlideCache() {
+        new Thread(() -> {
+            Glide.get(getContext()).clearDiskCache();
+            getActivity().runOnUiThread(() -> Glide.get(getContext()).clearMemory());
+        }).start();
     }
 
     private void cargarEventos() {
         Request.Builder requestBuilder = new Request.Builder()
                 .url(URL_EVENTOS)
                 // Si SupaBase requiere la key anónima, se agrega en la cabecera:
-                .addHeader("apikey", SupabaseConfig.getSupabaseKey());
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .addHeader("Cache-Control", "no-cache")
+                .addHeader("Pragma", "no-cache")
+                .addHeader("Expires", "0");
 
         // Añadimos el token de acceso, obtenido de SessionManager
         String accessToken = sessionManager.getAccessToken();

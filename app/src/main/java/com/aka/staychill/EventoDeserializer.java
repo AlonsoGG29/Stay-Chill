@@ -1,7 +1,6 @@
 package com.aka.staychill;
 
 import android.content.Context;
-
 import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.text.ParseException;
@@ -19,45 +18,80 @@ public class EventoDeserializer implements JsonDeserializer<Evento> {
     }
 
     @Override
-    public Evento deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext jsonContext) throws JsonParseException {
+    public Evento deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
 
+        // Campos básicos del evento
         String nombre = jsonObject.get("nombre_evento").getAsString();
-        String localizacion = jsonObject.has("localizacion") && !jsonObject.get("localizacion").isJsonNull() ? jsonObject.get("localizacion").getAsString() : "";
-        String descripcion = jsonObject.has("descripcion") && !jsonObject.get("descripcion").isJsonNull() ? jsonObject.get("descripcion").getAsString() : "";
+        String localizacion = getNullableString(jsonObject, "localizacion");
+        String descripcion = getNullableString(jsonObject, "descripcion");
+        Date fecha = parseDate(jsonObject, "fecha_evento", dateFormat);
+        Date hora = parseDate(jsonObject, "hora_evento", timeFormat);
+        String tipoDeEvento = getNullableString(jsonObject, "tipo_de_evento");
+        UUID creadorId = parseUUID(jsonObject, "creador_id");
+        String creadorNombre = "";
+        String creadorApellido = "";
+        String creadorPais = "";
 
-        Date fecha = null;
-        if(jsonObject.has("fecha_evento") && !jsonObject.get("fecha_evento").isJsonNull()){
-            try {
-                fecha = dateFormat.parse(jsonObject.get("fecha_evento").getAsString());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-
-        Date hora = null;
-        if(jsonObject.has("hora_evento") && !jsonObject.get("hora_evento").isJsonNull()){
-            try {
-                hora = timeFormat.parse(jsonObject.get("hora_evento").getAsString());
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-
-        String tipoDeEvento = jsonObject.has("tipo_de_evento") && !jsonObject.get("tipo_de_evento").isJsonNull() ? jsonObject.get("tipo_de_evento").getAsString() : "";
-
-        // Convertir el nombre de la imagen en el id del recurso drawable.
-        String imagenNombre = jsonObject.has("imagen_del_evento") && !jsonObject.get("imagen_del_evento").isJsonNull() ? jsonObject.get("imagen_del_evento").getAsString() : "";
+        // Imagen del evento (estática)
+        String imagenNombre = getNullableString(jsonObject, "imagen_del_evento");
         int imagenDelEvento = 0;
-        if(!imagenNombre.isEmpty()){
-            imagenDelEvento = context.getResources().getIdentifier(imagenNombre, "drawable", context.getPackageName());
+        if (!imagenNombre.isEmpty()) {
+            imagenDelEvento = this.context.getResources().getIdentifier(imagenNombre, "drawable", this.context.getPackageName());
+
         }
 
-        UUID creadorId = null;
-        if(jsonObject.has("creador_id") && !jsonObject.get("creador_id").isJsonNull()){
-            creadorId = UUID.fromString(jsonObject.get("creador_id").getAsString());
+        // Foto de perfil del creador (desde el JOIN)
+        String creadorProfileImage = "";
+        if (jsonObject.has("usuarios") && !jsonObject.get("usuarios").isJsonNull()) {
+            JsonObject usuarioJson = jsonObject.getAsJsonObject("usuarios");
+            creadorProfileImage = getNullableString(usuarioJson, "profile_image_url");
+            creadorNombre = getNullableString(usuarioJson, "nombre");
+            creadorApellido = getNullableString(usuarioJson, "apellido");
+            creadorPais = getNullableString(usuarioJson, "pais");
         }
 
-        return new Evento(nombre, localizacion, descripcion, fecha, hora, tipoDeEvento, imagenDelEvento, creadorId);
+        return new Evento(
+                nombre,
+                localizacion,
+                descripcion,
+                fecha,
+                hora,
+                tipoDeEvento,
+                imagenDelEvento,
+                creadorId,
+                creadorProfileImage,
+                creadorNombre,
+                creadorApellido,
+                creadorPais
+        );
+    }
+
+    // Métodos auxiliares para simplificar el código
+    private String getNullableString(JsonObject json, String key) {
+        return json.has(key) && !json.get(key).isJsonNull()
+                ? json.get(key).getAsString()
+                : "";
+    }
+
+    private Date parseDate(JsonObject json, String key, SimpleDateFormat format) {
+        try {
+            return json.has(key) && !json.get(key).isJsonNull()
+                    ? format.parse(json.get(key).getAsString())
+                    : null;
+        } catch (ParseException e) {
+            return null;
+        }
+    }
+
+    private UUID parseUUID(JsonObject json, String key) {
+        try {
+            return json.has(key) && !json.get(key).isJsonNull()
+                    ? UUID.fromString(json.get(key).getAsString())
+                    : null;
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }
+
