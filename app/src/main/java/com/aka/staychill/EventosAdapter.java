@@ -20,6 +20,18 @@ public class EventosAdapter  extends RecyclerView.Adapter<EventosAdapter .Evento
     private List<Evento> eventos;
     private Context context;
 
+    private OnItemClickListener mListener;
+
+    public interface OnItemClickListener {
+        void onItemClick(Evento evento);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mListener = listener;
+    }
+
+
+
     public EventosAdapter (Context context, List<Evento> eventos) {
         this.context = context;
         this.eventos = eventos;
@@ -86,6 +98,13 @@ public class EventosAdapter  extends RecyclerView.Adapter<EventosAdapter .Evento
             tvTipoEvento = itemView.findViewById(R.id.tipoDeEvento);
             ivEvento = itemView.findViewById(R.id.img_evento);
             ivPerfil = itemView.findViewById(R.id.imagen); // Suponiendo que este ImageView muestra la foto de perfil
+
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION && mListener != null) {
+                    mListener.onItemClick(eventos.get(position));
+                }
+            });
         }
     }
 }

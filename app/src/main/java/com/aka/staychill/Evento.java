@@ -12,10 +12,14 @@ public class Evento {
     private String tipoDeEvento;
     private int imagenDelEvento;
     private UUID creadorId;
-    private String creadorProfileImage;  // Nuevo campo
+    private String creadorProfileImage;
+    private String creadorNombre;
+    private String creadorApellido;
+    private String creadorPais;
 
     public Evento(String nombre, String localizacion, String descripcion, Date fecha, Date hora,
-                  String tipoDeEvento, int imagenDelEvento, UUID creadorId, String creadorProfileImage) {
+                  String tipoDeEvento, int imagenDelEvento, UUID creadorId, String creadorProfileImage,
+                  String creadorNombre, String creadorApellido, String creadorPais) {
         this.nombre = nombre;
         this.localizacion = localizacion;
         this.descripcion = descripcion;
@@ -24,7 +28,10 @@ public class Evento {
         this.tipoDeEvento = tipoDeEvento;
         this.imagenDelEvento = imagenDelEvento;
         this.creadorId = creadorId;
-        this.creadorProfileImage = creadorProfileImage; // Inicializar nuevo campo
+        this.creadorProfileImage = creadorProfileImage;
+        this.creadorNombre = creadorNombre;
+        this.creadorApellido = creadorApellido;
+        this.creadorPais = creadorPais;
     }
 
 
@@ -38,4 +45,7 @@ public class Evento {
     public int getImagenDelEvento() { return imagenDelEvento; }
     public UUID getCreadorId() { return creadorId; }
     public String getCreadorProfileImage(){return creadorProfileImage;}
+    public String getCreadorNombre() { return creadorNombre; }
+    public String getCreadorApellido() { return creadorApellido; }
+    public String getCreadorPais() { return creadorPais; }
 }

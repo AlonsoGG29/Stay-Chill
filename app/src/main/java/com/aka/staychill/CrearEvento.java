@@ -157,7 +157,10 @@ public class CrearEvento extends AppCompatActivity {
                     spinnerTipoDeEvento.getSelectedItem().toString(),
                     (int) inputImagen.getTag(),
                     sessionManager.getUserId(),
-                    ""  // Campo creadorProfileImage (se actualizará al cargar eventos)
+                    "" ,
+                    "",
+                    "",
+                    ""
             );
 
             subirEventoASupabase(nuevoEvento);

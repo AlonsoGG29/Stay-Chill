@@ -1,6 +1,7 @@
 package com.aka.staychill.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.aka.staychill.Evento;
+import com.aka.staychill.EventoClick;
 import com.aka.staychill.EventoDeserializer;
 import com.aka.staychill.EventosAdapter;
 import com.aka.staychill.R;
@@ -44,7 +46,7 @@ public class Main extends Fragment {
     private SessionManager sessionManager;
     // En Main.java:
     private static final String URL_EVENTOS = SupabaseConfig.getSupabaseUrl()
-            + "/rest/v1/eventos?select=*,usuarios!creador_id(profile_image_url)";
+            + "/rest/v1/eventos?select=*,usuarios!creador_id(nombre,apellido,pais,profile_image_url)";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -64,6 +66,18 @@ public class Main extends Fragment {
             // Limpiar caché de Glide antes de cargar eventos
             clearGlideCache();
             cargarEventos();
+        });
+
+        adapter.setOnItemClickListener(evento -> {
+            // Crear Intent para abrir el Activity de detalle
+            Intent intent = new Intent(getActivity(), EventoClick.class);
+
+            // Pasar los datos del evento usando Gson
+            Gson gson = new Gson();
+            String eventoJson = gson.toJson(evento);
+            intent.putExtra("EVENTO_DATA", eventoJson);
+
+            startActivity(intent);
         });
 
         cargarEventos();

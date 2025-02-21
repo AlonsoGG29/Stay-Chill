@@ -29,12 +29,16 @@ public class EventoDeserializer implements JsonDeserializer<Evento> {
         Date hora = parseDate(jsonObject, "hora_evento", timeFormat);
         String tipoDeEvento = getNullableString(jsonObject, "tipo_de_evento");
         UUID creadorId = parseUUID(jsonObject, "creador_id");
+        String creadorNombre = "";
+        String creadorApellido = "";
+        String creadorPais = "";
 
         // Imagen del evento (estática)
         String imagenNombre = getNullableString(jsonObject, "imagen_del_evento");
         int imagenDelEvento = 0;
         if (!imagenNombre.isEmpty()) {
             imagenDelEvento = this.context.getResources().getIdentifier(imagenNombre, "drawable", this.context.getPackageName());
+
         }
 
         // Foto de perfil del creador (desde el JOIN)
@@ -42,6 +46,9 @@ public class EventoDeserializer implements JsonDeserializer<Evento> {
         if (jsonObject.has("usuarios") && !jsonObject.get("usuarios").isJsonNull()) {
             JsonObject usuarioJson = jsonObject.getAsJsonObject("usuarios");
             creadorProfileImage = getNullableString(usuarioJson, "profile_image_url");
+            creadorNombre = getNullableString(usuarioJson, "nombre");
+            creadorApellido = getNullableString(usuarioJson, "apellido");
+            creadorPais = getNullableString(usuarioJson, "pais");
         }
 
         return new Evento(
@@ -53,7 +60,10 @@ public class EventoDeserializer implements JsonDeserializer<Evento> {
                 tipoDeEvento,
                 imagenDelEvento,
                 creadorId,
-                creadorProfileImage // Nuevo campo añadido
+                creadorProfileImage,
+                creadorNombre,
+                creadorApellido,
+                creadorPais
         );
     }
 
@@ -84,3 +94,4 @@ public class EventoDeserializer implements JsonDeserializer<Evento> {
         }
     }
 }
+
