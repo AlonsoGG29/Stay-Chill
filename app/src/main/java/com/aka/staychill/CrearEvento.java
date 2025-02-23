@@ -49,7 +49,7 @@ public class CrearEvento extends AppCompatActivity {
         inputDescripcion = findViewById(R.id.inputDescripcion);
         inputFecha = findViewById(R.id.inputFecha);
         inputHora = findViewById(R.id.inputHora);
-        inputImagen = findViewById(R.id.EventoImagen);
+        inputImagen = findViewById(R.id.eventoImagen);
         spinnerTipoDeEvento = findViewById(R.id.spinnerTipoDeEvento);
 
         Button btnCrearEvento = findViewById(R.id.btnCrearEvento);
@@ -122,7 +122,7 @@ public class CrearEvento extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                inputImagen.setImageResource(R.drawable.event_viajes);
+                inputImagen.setImageResource(R.drawable.img_label);
             }
         });
     }

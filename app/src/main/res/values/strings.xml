@@ -9,13 +9,12 @@
     <string name="no_tiene_cuenta">¿No tienes cuenta? Regístrate</string>
     <string name="registrarse">Registrarse</string>
     <string name="nombre">Nombre</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="reportar">Reportar un problema</string>
     <string name="cerrar">Cerrar sesión</string>
     <string name="seguridad">Privacidad y Seguridad</string>
-    <string name="chill">chill</string>
-    <string name="logo">logo</string>
+    <string name="chill">Chill</string>
+    <string name="logo">Logo</string>
     <string name="cuenta">Cuenta</string>
     <string name="privacidad">Privacidad y Seguridad</string>
     <string name="notificaciones">Notificaciones</string>
@@ -37,16 +36,53 @@
     <string name="miercoles">Miercoles</string>
     <string name="no_eventos_agregado">No has agregado ningún vento</string>
 
-    <!--Back4App-->
-
-    <string name="parse_app_id">NK7L4MwCLysvKqp4RMHjSIFEyTgvZmjmopSwomah</string>
-    <string name="parse_client_key">V83zM31yY78xg1wxVJ1NHxRiKplOeKqm7X59UQnw</string>
     <string name="perfil">Perfil</string>
     <string name="tipo_de_evento">Tipo de evento</string>
     <string name="evento_titulo">Evento titulo</string>
     <string name="nuevo_evento">Nuevo evento</string>
     <string name="nombre_del_evento">Nombre del evento</string>
-    <string name="ej_salida_geek">ej: Salida geek</string>
+    <string name="ejem_salida_geek">Ej: Salida geek</string>
     <string name="imagen_del_evento">Imagen del evento</string>
+    <string name="apellido">Apellido</string>
+    <string name="ejem_apellido">Ej: Pérez</string>
+    <string name="fecha_de_nacimiento">Fecha de Nacimiento</string>
+    <string name="pais">País</string>
+    <string name="guardar">Guardar</string>
+    <string name="volver">Volver</string>
+    <string name="ejem_juan">Ej: Juan</string>
+    <string name="editar_cuenta">Editar cuenta</string>
+    <string name="formato_fecha">DD/MM/AAAA</string>
+    <string name="mensajes">Mensajes</string>
+    <string name="actualizaciones">Actualizaciones de la app</string>
+    <string name="eventos">Eventos</string>
+    <string name="activar_actualizaciones">Activar actualizaciones</string>
+    <string name="activar_eventos">Activar eventos</string>
+    <string name="activar_mensajes">Activar mensajes</string>
+    <string name="actualizaciones_app">Actualizaciones de la app</string>
+    <string name="recibir_mensajes">Recibir mensajes</string>
+    <string name="recibir_eventos">Recibir Eventos</string>
+    <string name="privacidad_y_seguridad">Privacidad y seguridad</string>
+    <string name="cambiar_correo">Cambiar correo</string>
+    <string name="cambiar_contrasenia">Cambiar contraseña</string>
+    <string name="borrar_cuenta">Borrar cuenta</string>
+    <string name="aviso_legal">Aviso legal</string>
+    <string name="sobre_esta_app">Sobre esta aplicación</string>
+    <string name="descripcion_del_problema">Descripción del problema *</string>
+    <string name="escribe_aqui">Escribe aquí...</string>
+    <string name="imagen_del_problema">Imagen del problema *</string>
+    <string name="reportar_un_problema">Reportar un problema</string>
+    <string name="enviar">Enviar</string>
+    <string name="agregar_una_imagen">Agregar una imagen</string>
+    <string name="crear_evento">Crear evento</string>
+    <string name="ejem_descripcion">Encuentro de fanáticos de la cultura geek</string>
+    <string name="localizacion">Localización</string>
+    <string name="ejem_localizacion">Ej: Calle Palo de Los Palotes</string>
+    <string name="descripcion">Descripción</string>
+    <string name="fecha_del_evento">Fecha del evento</string>
+    <string name="hora_del_evento">Hora del evento</string>
+    <string name="formato_hora">12:00 PM</string>
+    <string name="personas">personas</string>
+    <string name="ejemp_titulo_evento">¡Encuentro cinéfilo!</string>
+    <string name="ejem_nombre">Paco García</string>
 
 </resources>

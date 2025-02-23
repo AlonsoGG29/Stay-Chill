@@ -14,8 +14,8 @@ android {
         applicationId "com.aka.staychill"
         minSdk 24
         targetSdk 34
-        versionCode 3
-        versionName "0.3"
+        versionCode 4
+        versionName "0.4"
 
         // Configuración del runner para pruebas instrumentadas
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -72,6 +72,9 @@ dependencies {
     //Recortar imagén del perfil
 
     implementation 'com.github.yalantis:ucrop:2.2.8'
+
+    //Switch
+    implementation 'com.google.android.material:material:1.11.0'
 
 }
 
