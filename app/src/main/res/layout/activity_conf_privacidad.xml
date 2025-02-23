@@ -15,7 +15,8 @@
             android:id="@+id/btnBack"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/atrasflecha_foreground"
+            android:contentDescription="@string/volver"
+            android:src="@drawable/img_volver_fecha"
             android:scaleType="centerInside"
             android:layout_alignParentStart="true" />
 
@@ -23,7 +24,7 @@
             android:id="@+id/txtTitulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Privacidad y seguridad"
+            android:text="@string/privacidad_y_seguridad"
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_centerInParent="true"/>
@@ -41,7 +42,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E0E0E0" />
+            android:background="@color/ligthgray" />
 
         <!-- Cambiar correo -->
         <LinearLayout
@@ -56,12 +57,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Cambiar correo"
+                android:text="@string/cambiar_correo"
                 android:textSize="16sp" />
 
             <ImageView
                 android:layout_width="26dp"
                 android:layout_height="26dp"
+                android:contentDescription="@string/cambiar_correo"
                 android:src="@drawable/flechaprivacidad_foreground"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
@@ -69,7 +71,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E0E0E0" />
+            android:background="@color/ligthgray" />
 
         <!-- Cambiar contraseña -->
         <LinearLayout
@@ -84,12 +86,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Cambiar contraseña"
+                android:text="@string/cambiar_contrasenia"
                 android:textSize="16sp" />
 
             <ImageView
                 android:layout_width="26dp"
                 android:layout_height="26dp"
+                android:contentDescription="@string/cambiar_contrasenia"
                 android:src="@drawable/flechaprivacidad_foreground"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
@@ -97,7 +100,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E0E0E0" />
+            android:background="@color/ligthgray" />
 
         <!-- Borrar cuenta -->
         <LinearLayout
@@ -112,12 +115,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Borrar cuenta"
+                android:text="@string/borrar_cuenta"
                 android:textSize="16sp" />
 
             <ImageView
                 android:layout_width="26dp"
                 android:layout_height="26dp"
+                android:contentDescription="@string/borrar_cuenta"
                 android:src="@drawable/flechaprivacidad_foreground"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
@@ -125,7 +129,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E0E0E0" />
+            android:background="@color/ligthgray" />
 
         <LinearLayout
             android:id="@+id/opcionAvisoLegal"
@@ -139,12 +143,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Aviso legal"
+                android:text="@string/aviso_legal"
                 android:textSize="16sp" />
 
             <ImageView
                 android:layout_width="26dp"
                 android:layout_height="26dp"
+                android:contentDescription="@string/aviso_legal"
                 android:src="@drawable/flechaprivacidad_foreground"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
@@ -152,7 +157,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E0E0E0" />
+            android:background="@color/ligthgray" />
 
         <LinearLayout
             android:id="@+id/opcionSobreApp"
@@ -166,12 +171,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Sobre esta aplicación"
+                android:text="@string/sobre_esta_app"
                 android:textSize="16sp" />
 
             <ImageView
                 android:layout_width="26dp"
                 android:layout_height="26dp"
+                android:contentDescription="@string/sobre_esta_app"
                 android:src="@drawable/flechaprivacidad_foreground"
                 android:layout_gravity="center_vertical"/>
         </LinearLayout>
@@ -179,7 +185,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E0E0E0" />
+            android:background="@color/ligthgray" />
 
     </LinearLayout>
 </LinearLayout>
