@@ -101,7 +101,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintStart_toStartOf="@id/nombreOrganizador"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="@id/eventoClick"
             app:layout_constraintEnd_toEndOf="@id/eventoClick"
             app:layout_constraintTop_toBottomOf="@id/ubicacionEvento">
 
@@ -110,13 +111,15 @@
             android:layout_width="1dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+
             >
 
             <!-- Imagen -->
             <ImageView
                 android:layout_width="100dp"
                 android:layout_height="40dp"
-                android:src="@drawable/img_label_user"
+                android:src="@drawable/img_label_evento"
+                android:layout_gravity="center"
                 android:contentDescription="@string/personas"/>
 
             <!-- Texto en parte superior de la imagen -->
@@ -126,49 +129,26 @@
                 android:text="@string/_0"
                 android:textSize="24sp"
                 android:textColor="@android:color/black"
-                android:layout_marginStart="65dp"
+                android:layout_gravity="center"
             />
 
         </FrameLayout>
 
         <!-- Grupo 2: Fecha (Misma estructura) -->
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            >
 
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="80dp"
-                android:src="@drawable/img_label_fecha"
-                android:contentDescription="@string/fecha_del_evento"/>
-
-            <TextView
-                android:id="@+id/fechaEvento"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/formato_fecha"
-                android:textSize="14sp"
-                android:textColor="@android:color/black"
-                android:layout_gravity="top|end"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"/>
-
-        </FrameLayout>
 
         <!-- Grupo 3: Vistas -->
         <FrameLayout
-            android:layout_width="0dp"
+            android:layout_width="1dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_margin="8dp">
+           >
 
             <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@drawable/img_label_vistas"
-                android:scaleType="fitCenter"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:src="@drawable/img_label_evento"
+                android:layout_gravity="center"
                 android:contentDescription="vistas"/>
 
             <TextView
@@ -178,11 +158,34 @@
                 android:text="500"
                 android:textSize="14sp"
                 android:textColor="@android:color/black"
-                android:layout_gravity="top|end"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"/>
+                android:layout_gravity="center"/>
 
         </FrameLayout>
+            <FrameLayout
+                android:layout_width="1dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                >
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/fecha_del_evento"
+                    android:src="@drawable/img_label_evento" />
+
+                <TextView
+                    android:id="@+id/fechaEvento"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/formato_fecha"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black"
+                    android:layout_gravity="center"
+
+                    />
+
+            </FrameLayout>
 
     </LinearLayout>
 
