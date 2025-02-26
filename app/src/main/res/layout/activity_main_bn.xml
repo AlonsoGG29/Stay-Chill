@@ -28,6 +28,7 @@
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:src="@drawable/img_stay_chill"
+                android:contentDescription="@string/logo"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,6 +38,7 @@
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:src="@drawable/img_notificacion"
+                android:contentDescription="@string/notificaciones"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
