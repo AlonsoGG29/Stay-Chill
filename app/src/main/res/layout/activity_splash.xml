@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="-45dp"
         android:scaleType="fitCenter"
+        android:contentDescription="@string/imagen_de_la_app"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -84,5 +84,11 @@
     <string name="personas">personas</string>
     <string name="ejemp_titulo_evento">¡Encuentro cinéfilo!</string>
     <string name="ejem_nombre">Paco García</string>
+    <string name="vistas">vistas</string>
+    <string name="vamos">Vamos</string>
+    <string name="fondo">Fondo</string>
+    <string name="imagen_evento">Imagen evento</string>
+    <string name="repetir_contrasena">Repetir contraseña</string>
+    <string name="imagen_de_la_app">Imagen de la app</string>
 
 </resources>

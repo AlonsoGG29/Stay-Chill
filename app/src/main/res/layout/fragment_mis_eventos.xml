@@ -11,6 +11,8 @@
         android:id="@+id/agregarEventos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
+        android:contentDescription="@string/crear_evento"
         android:background="@android:color/transparent"
         android:src="@drawable/img_agregar_eventos"
         app:layout_constraintBottom_toBottomOf="@+id/fr_mis"
