@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,13 +16,31 @@ import com.aka.staychill.Conf_notificaciones;
 import com.aka.staychill.Conf_privacidad;
 import com.aka.staychill.Conf_reportar;
 import com.aka.staychill.R;
+import com.aka.staychill.SessionManager;
+import com.aka.staychill.SupabaseConfig;
 import com.aka.staychill.Welcome;
 
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class Configuracion extends Fragment {
+
+    private SessionManager sessionManager;
+    private OkHttpClient client;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        sessionManager = new SessionManager(requireContext());
+        client = SupabaseConfig.getClient();
         // Infla el diseño del fragmento
         View rootView = inflater.inflate(R.layout.fragment_configuracion, container, false);
 
@@ -67,12 +86,39 @@ public class Configuracion extends Fragment {
     }
 
     private void cerrarSesion() {
-        // Aquí puedes agregar el código para cerrar sesión, por ejemplo, limpiar SharedPreferences
-        if (getActivity() != null) {
-            getActivity().getSharedPreferences("app_prefs", getActivity().MODE_PRIVATE)
-                    .edit()
-                    .clear()
-                    .apply();
+        String accessToken = sessionManager.getAccessToken();
+        if (accessToken == null) {
+            logoutLocal();
+            return;
         }
+
+        Request request = new Request.Builder()
+                .url(SupabaseConfig.getSupabaseUrl() + "/auth/v1/logout")
+                .post(RequestBody.create(new byte[0], null))
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                logoutLocal();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(getActivity(), "Error cerrando sesión", Toast.LENGTH_SHORT).show()
+                );
+            }
+        });
+    }
+
+    private void logoutLocal() {
+        sessionManager.logout();
+        requireActivity().runOnUiThread(() -> {
+            startActivity(new Intent(getActivity(), Welcome.class));
+            requireActivity().finish();
+        });
     }
 }
