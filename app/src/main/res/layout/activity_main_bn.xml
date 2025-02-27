@@ -23,20 +23,19 @@
             android:layout_height="wrap_content"
             android:padding="10dp">
 
-            <ImageView
-                android:id="@+id/logo_esquina"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:src="@drawable/img_stay_chill"
-                android:contentDescription="@string/logo"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/stay_chill" />
 
             <ImageView
                 android:id="@+id/notif_esquina"
                 android:layout_marginTop="5dp"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="20dp"
+                android:layout_marginRight="5dp"
+                android:layout_height="20dp"
                 android:src="@drawable/img_notificacion"
                 android:contentDescription="@string/notificaciones"
                 app:layout_constraintEnd_toEndOf="parent"

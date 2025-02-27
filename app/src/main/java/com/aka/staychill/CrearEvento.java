@@ -41,6 +41,7 @@ public class CrearEvento extends AppCompatActivity {
         imagenesPorTipo.put("Teatro", R.drawable.event_cultura_arte);
         imagenesPorTipo.put("Deporte", R.drawable.event_deporte1);
         imagenesPorTipo.put("Fiesta", R.drawable.event_fiesta_social);
+        imagenesPorTipo.put("Aprendizaje", R.drawable.event_aprendizaje);
     }
 
     private void inicializarVistas() {
