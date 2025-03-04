@@ -22,6 +22,7 @@ public class EventoDeserializer implements JsonDeserializer<Evento> {
         JsonObject jsonObject = json.getAsJsonObject();
 
         // Campos básicos del evento
+        Long id = jsonObject.get("id").getAsLong();
         String nombre = jsonObject.get("nombre_evento").getAsString();
         String localizacion = getNullableString(jsonObject, "localizacion");
         String descripcion = getNullableString(jsonObject, "descripcion");
@@ -52,6 +53,7 @@ public class EventoDeserializer implements JsonDeserializer<Evento> {
         }
 
         return new Evento(
+                id,
                 nombre,
                 localizacion,
                 descripcion,
