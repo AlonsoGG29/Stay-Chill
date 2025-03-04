@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.UUID;
 
 public class Evento {
+
+    private Long id;
     private String nombre;
     private String localizacion;
     private String descripcion;
@@ -17,9 +19,10 @@ public class Evento {
     private String creadorApellido;
     private String creadorPais;
 
-    public Evento(String nombre, String localizacion, String descripcion, Date fecha, Date hora,
+    public Evento(Long id, String nombre, String localizacion, String descripcion, Date fecha, Date hora,
                   String tipoDeEvento, int imagenDelEvento, UUID creadorId, String creadorProfileImage,
                   String creadorNombre, String creadorApellido, String creadorPais) {
+        this.id = id;
         this.nombre = nombre;
         this.localizacion = localizacion;
         this.descripcion = descripcion;
@@ -36,6 +39,7 @@ public class Evento {
 
 
     // Getters
+    public Long getIdEvento(){return id;}
     public String getNombre() { return nombre; }
     public String getLocalizacion() { return localizacion; }
     public String getDescripcion() { return descripcion; }
@@ -48,4 +52,5 @@ public class Evento {
     public String getCreadorNombre() { return creadorNombre; }
     public String getCreadorApellido() { return creadorApellido; }
     public String getCreadorPais() { return creadorPais; }
+
 }

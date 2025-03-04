@@ -7,7 +7,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,6 +32,10 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Login extends AppCompatActivity {
+
+    private static final String TAG = "LoginActivity";
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final String SUPABASE_AUTH_URL = SupabaseConfig.getSupabaseUrl() + "/auth/v1/";
 
     private SessionManager sessionManager;
     private OkHttpClient client;
@@ -70,11 +74,11 @@ public class Login extends AppCompatActivity {
 
         RequestBody body = RequestBody.create(
                 crearJsonCredenciales(email, password),
-                MediaType.parse("application/json")
+                JSON
         );
 
         Request request = new Request.Builder()
-                .url(SupabaseConfig.getSupabaseUrl() + "/auth/v1/token?grant_type=password")
+                .url(SUPABASE_AUTH_URL + "token?grant_type=password")
                 .post(body)
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                 .build();
@@ -82,17 +86,22 @@ public class Login extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                assert response.body() != null;
+                String responseBody = response.body().string();
                 if (response.isSuccessful()) {
-                    procesarRespuestaExitosa(response);
+                    procesarRespuestaExitosa(responseBody);
                 } else {
-                    String errorMessage = obtenerMensajeError(response);
-                    mostrarError(errorMessage);
+                    String errorMessage = obtenerMensajeError(responseBody, email);
+                    Log.e(TAG, "Error en login: " + response.code() + " - " + errorMessage);
+                    mostrarMensaje(errorMessage);
+
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                mostrarError("Error de conexión: " + e.getMessage());
+                Log.e(TAG, "Error de conexión: " + e.getMessage());
+                mostrarMensaje("Error de conexión: " + e.getMessage());
             }
         });
     }
@@ -104,37 +113,72 @@ public class Login extends AppCompatActivity {
                     .put("password", password)
                     .toString();
         } catch (JSONException e) {
-            return "{}";
+            throw new RuntimeException("Error creando JSON de credenciales");
         }
     }
 
-    private void procesarRespuestaExitosa(Response response) throws IOException {
+    private void procesarRespuestaExitosa(String responseBody) {
         try {
-            JSONObject json = new JSONObject(response.body().string());
+            JSONObject json = new JSONObject(responseBody);
             String accessToken = json.getString("access_token");
             String refreshToken = json.getString("refresh_token");
             UUID userId = UUID.fromString(json.getJSONObject("user").getString("id"));
 
             sessionManager.saveSession(accessToken, refreshToken, userId);
-            verificarExistenciaPerfil(userId);
+            redirigirAMain();
+
 
         } catch (JSONException | IllegalArgumentException e) {
-            mostrarError("Error procesando respuesta del servidor");
+            Log.e(TAG, "Error procesando respuesta: " + e.getMessage());
+            mostrarMensaje("Error procesando respuesta del servidor");
         }
     }
 
-    private String obtenerMensajeError(Response response) throws IOException {
+    private String obtenerMensajeError(String responseBody, String email) {
         try {
-            JSONObject errorJson = new JSONObject(response.body().string());
-            return errorJson.optString("message", "Error desconocido");
+            JSONObject errorJson = new JSONObject(responseBody);
+            String mensajeUsuario = "Error de autenticación"; // Mensaje por defecto
+
+
+
+            // Manejar estructura específica de Supabase
+            if (errorJson.has("error_code")) {
+                String errorCode = errorJson.optString("error_code");
+                String errorMsg = errorJson.optString("msg");
+
+                switch (errorCode.toLowerCase()) {
+                    case "user_not_found":
+                        mensajeUsuario = "Usuario no registrado";
+                        break;
+                    case "invalid_credentials":
+                        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                            mensajeUsuario = "Formato de email inválido";
+                        }
+                        else{
+                            mensajeUsuario = "Correo o contraseña incorrectos";
+                        }
+                        break;
+                    case "email_not_confirmed":
+                        mensajeUsuario = "Confirma tu email antes de iniciar sesión";
+                        break;
+                    case "too_many_requests":
+                        mensajeUsuario = "Demasiados intentos. Espera 5 minutos";
+                        break;
+                    default:
+                        mensajeUsuario = "Error: " + errorMsg;
+                }
+            }
+            return mensajeUsuario;
+
         } catch (JSONException e) {
-            return "Error " + response.code();
+            return "Error inesperado. Intenta nuevamente";
         }
     }
+
 
     private void validarTokenEnServidor() {
         Request request = new Request.Builder()
-                .url(SupabaseConfig.getSupabaseUrl() + "/auth/v1/user")
+                .url(SUPABASE_AUTH_URL + "user")
                 .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                 .build();
@@ -151,18 +195,19 @@ public class Login extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(() -> mostrarError("Error de conexión"));
+                mostrarMensaje("Error de conexión");
             }
         });
     }
 
+
     private boolean validarCampos(String email, String password) {
-        if (email.isEmpty() || password.isEmpty()) {
-            mostrarError("Todos los campos son obligatorios");
+        if (email.isEmpty()) {
+            mostrarMensaje("Ingresa tu correo electrónico");
             return false;
         }
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            mostrarError("Formato de email inválido");
+        if (password.isEmpty()) {
+            mostrarMensaje("Ingresa tu contraseña");
             return false;
         }
         return true;
@@ -187,53 +232,21 @@ public class Login extends AppCompatActivity {
         };
 
         spannable.setSpan(clickSpan, inicio, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), inicio, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
         textView.setText(spannable);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private void redirigirAMain() {
         runOnUiThread(() -> {
-            mostrarExito("Inicio de sesión exitoso");
+            mostrarMensaje("Inicio de sesión exitoso");
             startActivity(new Intent(this, Main_bn.class));
             finish();
         });
     }
 
-    private void mostrarError(String mensaje) {
+    private void mostrarMensaje(String mensaje) {
         runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
     }
 
-    private void mostrarExito(String mensaje) {
-        runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
-    }
 
-    private void verificarExistenciaPerfil(UUID userId) {
-        Request request = new Request.Builder()
-                .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios?foren_uid=eq." + userId)
-                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                String responseBody = response.body().string();
-                if (response.isSuccessful() && responseBody.length() > 2) {
-                    redirigirAMain();
-                } else {
-                    runOnUiThread(() -> {
-                        mostrarError("Perfil incompleto. Complete su perfil primero");
-                        sessionManager.logout();
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                mostrarError("Error de conexión");
-            }
-        });
-    }
 }

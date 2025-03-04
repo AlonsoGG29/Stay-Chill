@@ -90,13 +90,13 @@ public class Signup extends AppCompatActivity {
                     procesarRegistroExitoso(response);
                 } else {
                     String errorMessage = obtenerMensajeError(response);
-                    mostrarError(errorMessage);
+                    mostrarMensaje(errorMessage);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                mostrarError("Error de conexión: " + e.getMessage());
+                mostrarMensaje("Error de conexión: " + e.getMessage());
             }
         });
     }
@@ -112,7 +112,7 @@ public class Signup extends AppCompatActivity {
             crearUsuarioEnBD(nameField.getText().toString().trim());
 
         } catch (JSONException | IllegalArgumentException e) {
-            mostrarError("Error procesando respuesta del servidor");
+            mostrarMensaje("Error procesando respuesta del servidor");
         }
     }
 
@@ -139,11 +139,11 @@ public class Signup extends AppCompatActivity {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) {
                     if (response.isSuccessful()) {
-                        mostrarExito("Registro exitoso!");
+                        mostrarMensaje("Registro exitoso!");
                         redirigirAMain();
                     } else {
                         eliminarUsuarioAuth();
-                        mostrarError("Error creando perfil");
+                        mostrarMensaje("Error creando perfil");
                         sessionManager.logout();
                     }
                 }
@@ -151,13 +151,13 @@ public class Signup extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     eliminarUsuarioAuth();
-                    mostrarError("Error de conexión");
+                    mostrarMensaje("Error de conexión");
                     sessionManager.logout();
                 }
             });
 
         } catch (JSONException e) {
-            mostrarError("Error construyendo datos del usuario");
+            mostrarMensaje("Error construyendo datos del usuario");
         }
     }
 
@@ -172,22 +172,22 @@ public class Signup extends AppCompatActivity {
 
     private boolean validarCampos(String email, String password, String confirmPassword, String name) {
         if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || name.isEmpty()) {
-            mostrarError("Todos los campos son obligatorios");
+            mostrarMensaje("Todos los campos son obligatorios");
             return false;
         }
 
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            mostrarError("Formato de email inválido");
+            mostrarMensaje("Formato de email inválido");
             return false;
         }
 
         if (!password.equals(confirmPassword)) {
-            mostrarError("Las contraseñas no coinciden");
+            mostrarMensaje("Las contraseñas no coinciden");
             return false;
         }
 
         if (password.length() < 6) {
-            mostrarError("La contraseña debe tener al menos 6 caracteres");
+            mostrarMensaje("La contraseña debe tener al menos 6 caracteres");
             return false;
         }
 
@@ -228,7 +228,6 @@ public class Signup extends AppCompatActivity {
         };
 
         spannable.setSpan(clickSpan, inicio, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannable.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), inicio, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         textView.setText(spannable);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
@@ -238,14 +237,12 @@ public class Signup extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             startActivity(new Intent(this, Main_bn.class));
             finish();
-        }, 1000); // Retardo para ver el Toast
+        }, 500); // Retardo para ver el Toast
     }
 
-    private void mostrarError(String mensaje) {
-        runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
-    }
 
-    private void mostrarExito(String mensaje) {
+
+    private void mostrarMensaje(String mensaje) {
         runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
     }
 

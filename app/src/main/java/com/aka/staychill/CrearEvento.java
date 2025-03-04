@@ -150,6 +150,7 @@ public class CrearEvento extends AppCompatActivity {
             }
 
             Evento nuevoEvento = new Evento(
+                    null,
                     inputNombre.getText().toString().trim(),
                     inputLocalizacion.getText().toString().trim(),
                     inputDescripcion.getText().toString().trim(),
