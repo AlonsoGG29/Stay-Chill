@@ -7,7 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,30 +17,27 @@ import android.widget.Toast;
 
 import com.aka.staychill.BuscarUsuario;
 import com.aka.staychill.Chat;
-import com.aka.staychill.Conf_cuenta;
 import com.aka.staychill.Conversacion;
 import com.aka.staychill.ConversacionesAdapter;
 import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
 import com.aka.staychill.SupabaseConfig;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
-import org.jetbrains.annotations.Nullable;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
-
 
 public class Mensajes extends Fragment {
     private RecyclerView recyclerConversaciones;
@@ -46,6 +45,7 @@ public class Mensajes extends Fragment {
     private SessionManager sessionManager;
     private OkHttpClient client = new OkHttpClient();
     private Gson gson = new Gson();
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public void onResume() {
@@ -56,40 +56,42 @@ public class Mensajes extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mensajes, container, false);
-
-
         nuevoMensanje(view);
         return view;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         sessionManager = new SessionManager(requireContext());
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
         recyclerConversaciones = view.findViewById(R.id.recyclerConversacion);
         recyclerConversaciones.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        cargarConversaciones();
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            clearGlideCache();
+            cargarConversaciones();
+        });
     }
 
-
     private void cargarConversaciones() {
-
         String userId = sessionManager.getUserIdString();
         String token = sessionManager.getAccessToken();
 
-        // Construye la URL con parámetros escapados correctamente
-        String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/mensajes?" +
-                "select=sender_id,receiver_id,contenido,fecha,usuarios:receiver_id(nombre,apellido,profile_image_url)" + // ⚠️ Relación corregida
-                "&or=(sender_id.eq." + userId + ",receiver_id.eq." + userId + ")" +
+        String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/conversaciones?" +
+                "select=*,usuarios:participante2(foren_uid,nombre,profile_image_url)" +
+                "&or=(participante1.eq." + userId + ",participante2.eq." + userId + ")" + // Sintaxis corregida
                 "&order=fecha.desc";
+
+        Log.d("URL_DEBUG", url); // Antes de client.newCall(...)
 
         Request request = new Request.Builder()
                 .url(url)
-                .get() // ⚠️ Cambia a GET
+                .get()
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                 .addHeader("Authorization", "Bearer " + token)
                 .build();
+
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -100,11 +102,50 @@ public class Mensajes extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String json = response.body().string();
-
+                    Log.d("Mensajes", "JSON recibido: " + json);
                     try {
-                        Conversacion[] conversaciones = gson.fromJson(json, Conversacion[].class);
-                        actualizarUI(conversaciones);
-                    } catch (JsonSyntaxException e) {
+                        JSONArray jsonArray = new JSONArray(json);
+                        List<Conversacion> listaConversaciones = new ArrayList<>();
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject obj = jsonArray.getJSONObject(i);
+
+                            // 1. Extraer participantes
+                            String participante1 = obj.getString("participante1");
+                            String participante2 = obj.getString("participante2");
+                            String userId = sessionManager.getUserIdString();
+
+                            // Determinar quién es el contacto
+                            String otroParticipanteId = participante1.equals(userId) ? participante2 : participante1;
+                            String usuarioKey = participante1.equals(userId) ? "usuario2" : "usuario1";
+
+                            // Validar existencia del usuario
+                            if (!obj.has(usuarioKey)) {
+                                Log.e("Mensajes", "No se encontró " + usuarioKey);
+                                continue;
+                            }
+
+                            JSONObject usuario = obj.getJSONObject(usuarioKey);
+
+                            // 4. Validar que el usuario corresponde al participante correcto
+                            if (!usuario.getString("foren_uid").equals(otroParticipanteId)) {
+                                Log.w("Mensajes", "El usuario no coincide con el participante");
+                                continue;
+                            }
+
+                            // 5. Construir objeto Conversacion
+                            Conversacion conversacion = new Conversacion();
+                            conversacion.setContactoId(otroParticipanteId);
+                            conversacion.setNombre(usuario.getString("nombre"));
+                            conversacion.setFoto(usuario.getString("profile_image_url"));
+                            conversacion.setUltimoMensaje(obj.getString("ultimo_mensaje"));
+                            conversacion.setFecha(obj.getString("fecha"));
+
+                            listaConversaciones.add(conversacion);
+                        }
+                        actualizarUI(listaConversaciones);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                         mostrarError("Error al procesar datos");
                     }
                 } else {
@@ -114,14 +155,15 @@ public class Mensajes extends Fragment {
         });
     }
 
-    private void actualizarUI(Conversacion[] conversaciones) {
+    private void actualizarUI(List<Conversacion> conversaciones) {
         requireActivity().runOnUiThread(() -> {
             adapter = new ConversacionesAdapter(
-                    Arrays.asList(conversaciones),
+                    conversaciones,
                     this::abrirChat,
                     requireContext()
             );
             recyclerConversaciones.setAdapter(adapter);
+            swipeRefreshLayout.setRefreshing(false);
         });
     }
 
@@ -129,20 +171,27 @@ public class Mensajes extends Fragment {
         Intent intent = new Intent(getActivity(), Chat.class);
         intent.putExtra("contacto_id", contactoId);
         startActivity(intent);
-
     }
 
     private void mostrarError(String mensaje) {
         requireActivity().runOnUiThread(() ->
                 Toast.makeText(requireContext(), mensaje, Toast.LENGTH_SHORT).show()
         );
+        swipeRefreshLayout.setRefreshing(false);
     }
 
-    public void nuevoMensanje(View view){
+    public void nuevoMensanje(View view) {
         view.findViewById(R.id.agregarEventos).setOnClickListener(v -> {
             if (getActivity() != null) {
                 startActivity(new Intent(getActivity(), BuscarUsuario.class));
             }
         });
+    }
+
+    private void clearGlideCache() {
+        new Thread(() -> {
+            Glide.get(getContext()).clearDiskCache();
+            getActivity().runOnUiThread(() -> Glide.get(getContext()).clearMemory());
+        }).start();
     }
 }
