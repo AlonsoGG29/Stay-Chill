@@ -137,7 +137,7 @@ public class Login extends AppCompatActivity {
     private String obtenerMensajeError(String responseBody, String email) {
         try {
             JSONObject errorJson = new JSONObject(responseBody);
-            String mensajeUsuario = "Error de autenticación"; // Mensaje por defecto
+            String mensajeUsuario = "Error de autenticación"; // Mensajes por defecto
 
 
 
@@ -148,7 +148,7 @@ public class Login extends AppCompatActivity {
 
                 switch (errorCode.toLowerCase()) {
                     case "user_not_found":
-                        mensajeUsuario = "Usuario no registrado";
+                        mensajeUsuario = "com.aka.staychill.Usuario no registrado";
                         break;
                     case "invalid_credentials":
                         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {

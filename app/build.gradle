@@ -41,6 +41,8 @@ dependencies {
     implementation libs.activity
     implementation libs.constraintlayout
     implementation libs.swiperefreshlayout
+    implementation libs.lifecycle.livedata.ktx
+    implementation libs.lifecycle.viewmodel.ktx
 
     // Dependencias para pruebas
     testImplementation libs.junit

@@ -88,7 +88,7 @@ public class OtrosEventos extends Fragment {
     private void cargarEventos() {
         UUID userId = sessionManager.getUserId();
         if (userId == null) {
-            mostrarError("Usuario no autenticado");
+            mostrarError("com.aka.staychill.Usuario no autenticado");
             return;
         }
 

@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import com.aka.staychill.fragments.Eventos;
 import com.aka.staychill.fragments.Main;
 import com.aka.staychill.fragments.Configuracion;
-import com.aka.staychill.fragments.Mensaje;
+import com.aka.staychill.fragments.Mensajes;
 
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -24,7 +24,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         } else if (position == 1) {
             return new Eventos();
         } else if (position == 2) {
-            return new Mensaje();
+            return new Mensajes();
         } else if (position == 3) {
             return new Configuracion();
         }
