@@ -3,13 +3,22 @@ package com.aka.staychill;
 import com.google.gson.annotations.SerializedName;
 
 public class Conversacion {
-    @SerializedName("contacto_id")
+    @SerializedName("id")
+    private String id;
+
+    @SerializedName("foren_uid")
     private String contactoId;
 
     @SerializedName("nombre")
     private String nombre;
 
-    @SerializedName("foto")
+    @SerializedName("participante1")
+    private String participante1;
+
+    @SerializedName("participante2")
+    private String participante2;
+
+    @SerializedName("profile_image_url")
     private String foto;
 
     @SerializedName("ultimo_mensaje")
@@ -18,10 +27,66 @@ public class Conversacion {
     @SerializedName("fecha")
     private String fecha;
 
-    // Getters y Setters
-    public String getContactoId() { return contactoId; }
-    public String getNombre() { return nombre; }
-    public String getFoto() { return foto; }
-    public String getUltimoMensaje() { return ultimoMensaje; }
-    public String getFecha() { return fecha; }
+    // Getters
+    public String getId() {
+        return id;
+    }
+
+    public String getContactoId() {
+        return contactoId;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public String getUltimoMensaje() {
+        return ultimoMensaje;
+    }
+
+    public String getFecha() {
+        return fecha;
+    }
+
+    public String getParticipante1() { return participante1; }
+
+
+
+    public String getParticipante2() { return participante2; }
+
+
+
+    // Setters
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setContactoId(String contactoId) {
+        this.contactoId = contactoId;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
+    public void setUltimoMensaje(String ultimoMensaje) {
+        this.ultimoMensaje = ultimoMensaje;
+    }
+
+    public void setFecha(String fecha) {
+        this.fecha = fecha;
+    }
+    public void setParticipante1(String participante1) { this.participante1 = participante1; }
+
+    public void setParticipante2(String participante2) { this.participante2 = participante2; }
+
+
 }

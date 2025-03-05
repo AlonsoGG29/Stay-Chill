@@ -65,6 +65,7 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.ViewHold
             Glide.with(holder.itemView.getContext())
                     .load(usuario.getImagenPerfil())
                     .placeholder(R.drawable.img_default)
+                    .circleCrop()
                     .into(holder.imagenPerfil);
         } else {
             holder.imagenPerfil.setImageResource(R.drawable.img_default);
