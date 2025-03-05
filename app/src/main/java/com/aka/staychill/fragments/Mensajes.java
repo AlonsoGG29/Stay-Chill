@@ -79,8 +79,8 @@ public class Mensajes extends Fragment {
         String token = sessionManager.getAccessToken();
 
         String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/conversaciones?" +
-                "select=*,usuarios:participante2(foren_uid,nombre,profile_image_url)" +
-                "&or=(participante1.eq." + userId + ",participante2.eq." + userId + ")" + // Sintaxis corregida
+                "select=*,usuario1:participante1(foren_uid,nombre,profile_image_url),usuario2:participante2(foren_uid,nombre,profile_image_url)" +
+                "&or=(participante1.eq." + userId + ",participante2.eq." + userId + ")" + // ✅ Correcto
                 "&order=fecha.desc";
 
         Log.d("URL_DEBUG", url); // Antes de client.newCall(...)
