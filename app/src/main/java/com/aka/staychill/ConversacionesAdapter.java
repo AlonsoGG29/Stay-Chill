@@ -20,6 +20,11 @@ public class ConversacionesAdapter extends RecyclerView.Adapter<ConversacionesAd
     private OnConversacionClickListener listener;
     private Context context;
 
+
+    public List<Conversacion> getConversaciones() {
+        return conversaciones;
+    }
+
     public ConversacionesAdapter(List<Conversacion> conversaciones,
                                  OnConversacionClickListener listener,
                                  Context context) {
