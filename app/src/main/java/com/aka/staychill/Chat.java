@@ -1,7 +1,7 @@
 package com.aka.staychill;
 
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -12,8 +12,14 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -23,7 +29,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Chat extends AppCompatActivity {
-
     private RecyclerView recyclerMensajes;
     private EditText etMensaje;
     private ImageButton btnEnviar;
@@ -31,11 +36,7 @@ public class Chat extends AppCompatActivity {
     private SessionManager sessionManager;
     private OkHttpClient client = new OkHttpClient();
     private Gson gson = new Gson();
-    private String contactoId;
-    // Suponemos que la clase Conversacion ahora incluye un campo "id" y campos para participantes.
-    // Por ejemplo:
-    // private String id, participant1, participant2, ultimo_mensaje, fecha;
-    // Con sus respectivos getters y setters.
+    private String conversacionId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +44,10 @@ public class Chat extends AppCompatActivity {
         setContentView(R.layout.fragment_chat);
 
         sessionManager = new SessionManager(this);
+        conversacionId = getIntent().getStringExtra("conversacion_id");
 
-        contactoId = getIntent().getStringExtra("contacto_id");
-        if (contactoId == null) {
-            Toast.makeText(this, "Error: Contacto no válido", Toast.LENGTH_SHORT).show();
+        if (conversacionId == null) {
+            Toast.makeText(this, "Error: Conversación no válida", Toast.LENGTH_SHORT).show();
             finish();
         }
 
@@ -66,13 +67,9 @@ public class Chat extends AppCompatActivity {
     }
 
     private void cargarMensajes() {
-        String usuarioActualId = sessionManager.getUserIdString();
-        // Si usas conversación, lo ideal es cargar los mensajes filtrando por el conversation_id de la conversación actual.
-        // Este ejemplo asume que ya se obtuvo o se tiene el conversation_id, o que se consulta según los participantes.
-        // Por simplicidad, aquí se consulta todos los mensajes entre ambos usuarios.
         String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/mensajes?" +
-                "select=*&and=(or(sender_id.eq." + usuarioActualId + ",receiver_id.eq." + usuarioActualId + ")" +
-                ",or(sender_id.eq." + contactoId + ",receiver_id.eq." + contactoId + "))" +
+                "select=id,contenido,fecha,sender_id:usuarios(nombre,profile_image_url,foren_uid)" + // Corrección clave
+                "&conversacion_id=eq." + conversacionId +
                 "&order=fecha.asc";
 
         Request request = new Request.Builder()
@@ -91,12 +88,14 @@ public class Chat extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String json = response.body().string();
+                    Log.d("CHAT_DEBUG", "Respuesta mensajes: " + json); // Para depuración
                     Mensaje[] mensajes = gson.fromJson(json, Mensaje[].class);
                     actualizarMensajes(mensajes);
                 }
             }
         });
     }
+
 
     private void actualizarMensajes(Mensaje[] mensajes) {
         runOnUiThread(() -> {
@@ -117,6 +116,7 @@ public class Chat extends AppCompatActivity {
             String contenido = etMensaje.getText().toString().trim();
             if (!contenido.isEmpty()) {
                 enviarMensaje(contenido);
+
                 etMensaje.setText("");
             }
         });
@@ -125,12 +125,18 @@ public class Chat extends AppCompatActivity {
     // Método que gestiona el envío del mensaje y la creación/actualización de la conversación
     private void enviarMensaje(String contenido) {
         String userId = sessionManager.getUserIdString();
-        // URL corregida
-        // URL corregida para buscar conversaciones sin importar el orden
+
+
+        List<String> participantes = Arrays.asList(userId, conversacionId );
+        Collections.sort(participantes);
+        String part1 = participantes.get(0);
+        String part2 = participantes.get(1);
+
         String convQueryUrl = SupabaseConfig.getSupabaseUrl() + "/rest/v1/conversaciones?" +
                 "select=*" +
-                "&or=(and(participante1.eq." + userId + ",participante2.eq." + contactoId + ")" +
-                ",and(participante1.eq." + contactoId + ",participante2.eq." + userId + "))";
+                "&and=(participante1.eq." + part1 + ",participante2.eq." + part2 + ")";
+
+
 
         Request convRequest = new Request.Builder()
                 .url(convQueryUrl)
@@ -151,6 +157,7 @@ public class Chat extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     String convJson = response.body().string();
                     Conversacion[] convs = gson.fromJson(convJson, Conversacion[].class);
+                    Log.d("CHAT_DEBUG", "Conversación encontrada: " + convJson);
                     if (convs != null && convs.length > 0) {
                         // Ya existe la conversación: usar su id y actualizar la conversación.
                         String conversationId = convs[0].getId();
@@ -158,7 +165,7 @@ public class Chat extends AppCompatActivity {
                         actualizarConversacion(conversationId, contenido);
                     } else {
                         // No existe la conversación: crearla y luego insertar el mensaje.
-                        crearConversacion(userId, contactoId, contenido);
+                        crearConversacion(userId, conversacionId , contenido);
                     }
                 } else {
                     runOnUiThread(() -> mostrarError("Error al verificar conversación"));
@@ -172,8 +179,9 @@ public class Chat extends AppCompatActivity {
         try {
             JSONObject body = new JSONObject();
             body.put("sender_id", sessionManager.getUserIdString());
-            body.put("receiver_id", contactoId);
             body.put("contenido", contenido);
+            body.put("conversacion_id", conversationId); // ¡Añade esto!
+            // Elimina "receiver_id", ya no es necesario
             // Puedes agregar "fecha" o dejar que la base de datos asigne el valor por defecto.
 
             Request request = new Request.Builder()
@@ -181,6 +189,7 @@ public class Chat extends AppCompatActivity {
                     .post(RequestBody.create(body.toString(), MediaType.get("application/json")))
                     .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                     .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
+                    .addHeader("Prefer", "return=representation") // ← ¡Importante!
                     .build();
 
             client.newCall(request).enqueue(new Callback() {
@@ -205,9 +214,14 @@ public class Chat extends AppCompatActivity {
     // Crea una nueva conversación y, al completarse, inserta el mensaje
     private void crearConversacion(String userId, String contactoId, String contenido) {
         try {
-            // Ordenar IDs alfabéticamente para evitar duplicados
-            String part1 = userId.compareTo(contactoId) < 0 ? userId : contactoId;
-            String part2 = userId.compareTo(contactoId) < 0 ? contactoId : userId;
+            // ORDENAR PARTICIPANTES
+            List<String> participantes = new ArrayList<>();
+            participantes.add(userId);
+            participantes.add(contactoId);
+            Collections.sort(participantes);
+
+            String part1 = participantes.get(0);
+            String part2 = participantes.get(1);
 
             JSONObject body = new JSONObject();
             body.put("participante1", part1);
@@ -220,7 +234,7 @@ public class Chat extends AppCompatActivity {
                     .post(RequestBody.create(body.toString(), MediaType.get("application/json")))
                     .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                     .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
-                    .addHeader("Prefer", "return=representation") // Para recibir la conversación creada
+                    .addHeader("Prefer", "return=representation") // ¡Este header es crucial!
                     .build();
 
             client.newCall(request).enqueue(new Callback() {
@@ -233,7 +247,9 @@ public class Chat extends AppCompatActivity {
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
                         String convJson = response.body().string();
-                        Conversacion[] conversaciones = gson.fromJson(convJson, Conversacion[].class); // <- Parsea como array
+                        Log.d("Chat", "Respuesta crear conversación: " + convJson); // <-- Añade esto
+                        Conversacion[] conversaciones = gson.fromJson(convJson, Conversacion[].class);
+
                         if (conversaciones != null && conversaciones.length > 0) {
                             Conversacion conv = conversaciones[0];
                             if (conv != null && conv.getId() != null) {
@@ -251,15 +267,19 @@ public class Chat extends AppCompatActivity {
     // Actualiza la conversación (por ejemplo, el último mensaje y la fecha) cuando se envía un mensaje
     private void actualizarConversacion(String conversationId, String contenido) {
         try {
+            // FORMATO DE FECHA CORRECTO
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            String fechaActual = sdf.format(new Date());
+
             JSONObject body = new JSONObject();
             body.put("ultimo_mensaje", contenido);
-            // Si necesitas actualizar la fecha manualmente:
-            // String currentTime = Instant.now().toString();
-            // body.put("fecha", currentTime);
+            body.put("fecha", fechaActual);
+
 
             Request request = new Request.Builder()
                     .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/conversaciones?id=eq." + conversationId)
-                    .patch(RequestBody.create(body.toString(), MediaType.get("application/json"))) // Usa PATCH directamente
+                    .patch(RequestBody.create(body.toString(), MediaType.get("application/json")))
                     .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                     .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
                     .build();
@@ -267,12 +287,12 @@ public class Chat extends AppCompatActivity {
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    // Puedes mostrar un error o ignorar si la actualización falla
+                    Log.e("Chat", "Error al actualizar conversación", e);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    // No es necesario recargar mensajes aquí, ya que insertarMensaje se encarga de ello.
+                    Log.d("Chat", "Conversación actualizada: " + response.code());
                 }
             });
         } catch (JSONException e) {

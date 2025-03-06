@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -15,10 +16,9 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class ConversacionesAdapter extends RecyclerView.Adapter<ConversacionesAdapter.ViewHolder> {
-
     private List<Conversacion> conversaciones;
     private OnConversacionClickListener listener;
-    private Context context; // Necesario para Glide
+    private Context context;
 
     public ConversacionesAdapter(List<Conversacion> conversaciones,
                                  OnConversacionClickListener listener,
@@ -27,6 +27,7 @@ public class ConversacionesAdapter extends RecyclerView.Adapter<ConversacionesAd
         this.listener = listener;
         this.context = context;
     }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -35,34 +36,21 @@ public class ConversacionesAdapter extends RecyclerView.Adapter<ConversacionesAd
         return new ViewHolder(view);
     }
 
-    // ... (onCreateViewHolder y interface OnConversacionClickListener)
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Conversacion conversacion = conversaciones.get(position);
 
-        // 1. Nombre y último mensaje
         holder.tvNombre.setText(conversacion.getNombre());
         holder.tvMensaje.setText(conversacion.getUltimoMensaje());
 
-        // 2. Cargar imagen de perfil con Glide
-        String fotoUrl = conversacion.getFoto();
-        if (fotoUrl != null && !fotoUrl.isEmpty()) {
-            Glide.with(context)
-                    .load(fotoUrl)
-                    .placeholder(R.drawable.img_default) // Imagen mientras carga
-                    .error(R.drawable.img_default) // Imagen si falla
-                    .circleCrop() // Recortar como círculo
-                    .into(holder.ivFoto);
-        } else {
-            // Si no hay URL, mostrar placeholder
-            holder.ivFoto.setImageResource(R.drawable.img_default);
-        }
+        Glide.with(context)
+                .load(conversacion.getFoto())
+                .placeholder(R.drawable.img_default)
+                .circleCrop()
+                .into(holder.ivFoto);
 
-        // 3. Click en la conversación
-        holder.itemView.setOnClickListener(v -> {
-            listener.onConversacionClick(conversacion.getContactoId());
-        });
+        holder.itemView.setOnClickListener(v ->
+                listener.onConversacionClick(conversacion.getId()));
     }
 
 
@@ -84,6 +72,31 @@ public class ConversacionesAdapter extends RecyclerView.Adapter<ConversacionesAd
     }
     public int getItemCount() {
         return conversaciones.size(); // Devuelve el número de conversaciones
+    }
+    public void actualizarDatos(List<Conversacion> nuevasConversaciones) {
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() { return conversaciones.size(); }
+
+            @Override
+            public int getNewListSize() { return nuevasConversaciones.size(); }
+
+            @Override
+            public boolean areItemsTheSame(int oldPos, int newPos) {
+                return conversaciones.get(oldPos).getId().equals(
+                        nuevasConversaciones.get(newPos).getId());
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldPos, int newPos) {
+                return conversaciones.get(oldPos).equals(
+                        nuevasConversaciones.get(newPos));
+            }
+        });
+
+        conversaciones.clear();
+        conversaciones.addAll(nuevasConversaciones);
+        result.dispatchUpdatesTo(this);
     }
 
 }

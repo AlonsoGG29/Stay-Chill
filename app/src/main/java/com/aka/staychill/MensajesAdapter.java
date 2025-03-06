@@ -6,10 +6,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -26,11 +24,6 @@ public class MensajesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.usuarioActualId = usuarioActualId;
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        return mensajes.get(position).getSenderId().equals(usuarioActualId)
-                ? TIPO_ENVIADO : TIPO_RECIBIDO;
-    }
 
     @NonNull
     @Override
@@ -46,20 +39,30 @@ public class MensajesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return mensajes.get(position).getSender().getId().equals(usuarioActualId)
+                ? TIPO_ENVIADO : TIPO_RECIBIDO;
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Mensaje mensaje = mensajes.get(position);
         MensajeViewHolder vh = (MensajeViewHolder) holder;
 
         vh.tvMensaje.setText(mensaje.getContenido());
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSSX");
-        SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm");
+
+        // Ejemplo: Mostrar hora del mensaje
         try {
-            Date date = inputFormat.parse(mensaje.getFecha());
-            vh.tvHora.setText(outputFormat.format(date));
-        } catch (ParseException e) {
+            SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+            Date fecha = input.parse(mensaje.getFecha());
+            SimpleDateFormat output = new SimpleDateFormat("HH:mm");
+            vh.tvHora.setText(output.format(fecha));
+        } catch (Exception e) {
             vh.tvHora.setText("");
-        } // Formato HH:mm
+        }
     }
+
+
 
     static class MensajeViewHolder extends RecyclerView.ViewHolder {
         TextView tvMensaje, tvHora;
@@ -71,6 +74,7 @@ public class MensajesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
     public void setMensajes(List<Mensaje> nuevosMensajes) {
+        this.mensajes.clear();
         this.mensajes.clear();
         this.mensajes.addAll(nuevosMensajes);
         notifyDataSetChanged(); // ¡Notifica los cambios!
