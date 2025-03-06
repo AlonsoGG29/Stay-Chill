@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
@@ -46,14 +48,20 @@ public class Chat extends AppCompatActivity {
 
         sessionManager = new SessionManager(this);
 
-        // Obtener ambos posibles extras
         conversacionId = getIntent().getStringExtra("conversacion_id");
         contactoId = getIntent().getStringExtra("contacto_id");
+
+        if (conversacionId == null && contactoId != null) {
+            verificarConversacionExistente();
+        } else {
+            cargarMensajes(); // Cargar mensajes normalmente si ya tenemos conversacionId
+        }
 
         if (conversacionId == null && contactoId == null) {
             Toast.makeText(this, "Error: Conversación no válida", Toast.LENGTH_SHORT).show();
             finish();
         }
+
 
 
         recyclerMensajes = findViewById(R.id.recyclerMensajes);
@@ -65,6 +73,50 @@ public class Chat extends AppCompatActivity {
         configurarEnvio();
     }
 
+    private void verificarConversacionExistente() {
+        String userId = sessionManager.getUserIdString();
+        List<String> participantes = new ArrayList<>();
+        participantes.add(userId);
+        participantes.add(contactoId);
+        Collections.sort(participantes);
+
+        String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/conversaciones?" +
+                "select=id" +
+                "&and=(participante1.eq." + participantes.get(0) +
+                ",participante2.eq." + participantes.get(1) + ")";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> mostrarError("Error al verificar conversación"));
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    try {
+                        JSONArray jsonArray = new JSONArray(response.body().string());
+                        if (jsonArray.length() > 0) {
+                            conversacionId = jsonArray.getJSONObject(0).getString("id");
+                            runOnUiThread(() -> {
+                                cargarMensajes(); // Recargar con la conversación existente
+                            });
+                        }
+                        // Si no existe, no hacemos nada (se creará al enviar mensaje)
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
     private void configurarRecyclerView() {
         adapter = new MensajesAdapter(new ArrayList<>(), sessionManager.getUserIdString());
         recyclerMensajes.setAdapter(adapter);
@@ -72,8 +124,12 @@ public class Chat extends AppCompatActivity {
     }
 
     private void cargarMensajes() {
+        if (conversacionId == null) {
+            return; // Esperar hasta tener conversacionId
+        }
+
         String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/mensajes?" +
-                "select=id,contenido,fecha,sender_id:usuarios(nombre,profile_image_url,foren_uid)" + // Corrección clave
+                "select=id,contenido,fecha,sender_id:usuarios(nombre,profile_image_url,foren_uid)" +
                 "&conversacion_id=eq." + conversacionId +
                 "&order=fecha.asc";
 
@@ -104,9 +160,11 @@ public class Chat extends AppCompatActivity {
 
     private void actualizarMensajes(Mensaje[] mensajes) {
         runOnUiThread(() -> {
-            if (!isDestroyed() && !isFinishing()) { // <-- Verificación añadida
+            if (!isDestroyed() && !isFinishing()) {
                 if (mensajes != null && mensajes.length > 0) {
                     adapter.setMensajes(Arrays.asList(mensajes));
+                    recyclerMensajes.smoothScrollToPosition(adapter.getItemCount() - 1);
+
                     int ultimaPosicion = adapter.getItemCount() - 1;
                     if (ultimaPosicion >= 0) {
                         recyclerMensajes.smoothScrollToPosition(ultimaPosicion);
