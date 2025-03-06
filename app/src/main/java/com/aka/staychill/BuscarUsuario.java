@@ -67,9 +67,8 @@ public class BuscarUsuario extends AppCompatActivity {
     }
 
     private void abrirChat(String usuarioId) {
-        // Navegar al Fragmento/Activity del Chat
         Intent intent = new Intent(this, Chat.class);
-        intent.putExtra("contacto_id", usuarioId);
+        intent.putExtra("contacto_id", usuarioId); // <- clave correcta
         startActivity(intent);
     }
     private void configurarBuscador() {
@@ -105,7 +104,7 @@ public class BuscarUsuario extends AppCompatActivity {
         try {
             String consultaCodificada = URLEncoder.encode("%" + consulta + "%", "UTF-8");
             String url = String.format(
-                    "%s?or=(nombre.ilike.%s,apellido.ilike.%s)",
+                    "%s?select=id,nombre,apellido,profile_image_url&or=(nombre.ilike.%s,apellido.ilike.%s)",
                     urlSupabase,
                     consultaCodificada,
                     consultaCodificada

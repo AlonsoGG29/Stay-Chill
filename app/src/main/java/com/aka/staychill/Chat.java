@@ -37,6 +37,7 @@ public class Chat extends AppCompatActivity {
     private OkHttpClient client = new OkHttpClient();
     private Gson gson = new Gson();
     private String conversacionId;
+    private String contactoId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +45,16 @@ public class Chat extends AppCompatActivity {
         setContentView(R.layout.fragment_chat);
 
         sessionManager = new SessionManager(this);
-        conversacionId = getIntent().getStringExtra("conversacion_id");
 
-        if (conversacionId == null) {
+        // Obtener ambos posibles extras
+        conversacionId = getIntent().getStringExtra("conversacion_id");
+        contactoId = getIntent().getStringExtra("contacto_id");
+
+        if (conversacionId == null && contactoId == null) {
             Toast.makeText(this, "Error: Conversación no válida", Toast.LENGTH_SHORT).show();
             finish();
         }
+
 
         recyclerMensajes = findViewById(R.id.recyclerMensajes);
         etMensaje = findViewById(R.id.etMensaje);
@@ -125,10 +130,25 @@ public class Chat extends AppCompatActivity {
     // Método que gestiona el envío del mensaje y la creación/actualización de la conversación
     private void enviarMensaje(String contenido) {
         String userId = sessionManager.getUserIdString();
+        String contactoId = getIntent().getStringExtra("contacto_id");
 
 
-        List<String> participantes = Arrays.asList(userId, conversacionId );
+        if (!contactoId.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")) {
+            mostrarError("ID de contacto inválido");
+            return;
+        }
+
+        if (userId == null || contactoId == null) {
+            mostrarError("Error: IDs de usuario inválidos");
+            return;
+        }
+
+
+        List<String> participantes = new ArrayList<>();
+        participantes.add(userId);
+        participantes.add(contactoId);
         Collections.sort(participantes);
+
         String part1 = participantes.get(0);
         String part2 = participantes.get(1);
 
@@ -165,7 +185,8 @@ public class Chat extends AppCompatActivity {
                         actualizarConversacion(conversationId, contenido);
                     } else {
                         // No existe la conversación: crearla y luego insertar el mensaje.
-                        crearConversacion(userId, conversacionId , contenido);
+                        // CÓDIGO CORREGIDO
+                        crearConversacion(userId, contactoId, contenido);  // <- Usar contactoId
                     }
                 } else {
                     runOnUiThread(() -> mostrarError("Error al verificar conversación"));
@@ -181,8 +202,6 @@ public class Chat extends AppCompatActivity {
             body.put("sender_id", sessionManager.getUserIdString());
             body.put("contenido", contenido);
             body.put("conversacion_id", conversationId); // ¡Añade esto!
-            // Elimina "receiver_id", ya no es necesario
-            // Puedes agregar "fecha" o dejar que la base de datos asigne el valor por defecto.
 
             Request request = new Request.Builder()
                     .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/mensajes")
@@ -214,8 +233,17 @@ public class Chat extends AppCompatActivity {
     // Crea una nueva conversación y, al completarse, inserta el mensaje
     private void crearConversacion(String userId, String contactoId, String contenido) {
         try {
+
+            if (userId == null || contactoId == null) {
+                mostrarError("IDs inválidos");
+                return;
+            }
             // ORDENAR PARTICIPANTES
             List<String> participantes = new ArrayList<>();
+
+
+            Log.d("DEBUG_IDS", "User ID: " + userId + ", Contacto ID: " + contactoId);
+
             participantes.add(userId);
             participantes.add(contactoId);
             Collections.sort(participantes);
@@ -226,7 +254,9 @@ public class Chat extends AppCompatActivity {
             JSONObject body = new JSONObject();
             body.put("participante1", part1);
             body.put("participante2", part2);
-            body.put("ultimo_mensaje", contenido);
+
+
+
             // Elimina la línea de fecha para usar el valor por defecto de la base de datos
 
             Request request = new Request.Builder()
@@ -242,19 +272,17 @@ public class Chat extends AppCompatActivity {
                 public void onFailure(Call call, IOException e) {
                     runOnUiThread(() -> mostrarError("Error al crear conversación"));
                 }
-
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
                         String convJson = response.body().string();
-                        Log.d("Chat", "Respuesta crear conversación: " + convJson); // <-- Añade esto
                         Conversacion[] conversaciones = gson.fromJson(convJson, Conversacion[].class);
 
                         if (conversaciones != null && conversaciones.length > 0) {
                             Conversacion conv = conversaciones[0];
-                            if (conv != null && conv.getId() != null) {
-                                insertarMensaje(conv.getId(), contenido);
-                            }
+                            conversacionId = conv.getId(); // Actualizar el ID de conversación
+                            insertarMensaje(conv.getId(), contenido);
+                            cargarMensajes(); // Recargar mensajes con la nueva conversación
                         }
                     }
                 }

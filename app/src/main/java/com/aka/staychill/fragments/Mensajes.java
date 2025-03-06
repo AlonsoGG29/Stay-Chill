@@ -94,8 +94,9 @@ public class Mensajes extends Fragment {
         String token = sessionManager.getAccessToken();
 
         String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/conversaciones?" +
-                "select=*,participante1:participante1(nombre,profile_image_url)," +
-                "participante2:participante2(nombre,profile_image_url)" +
+                "select=id,participante1,participante2,fecha,ultimo_mensaje," +
+                "usuario1:participante1(nombre,profile_image_url)," + // Alias "usuario1"
+                "usuario2:participante2(nombre,profile_image_url)" +  // Alias "usuario2"
                 "&or=(participante1.eq." + userId + ",participante2.eq." + userId + ")" +
                 "&order=fecha.desc";
 
@@ -141,8 +142,10 @@ public class Mensajes extends Fragment {
     private Conversacion parsearConversacion(JSONObject obj, String userId) throws JSONException {
         String participante1Id = obj.getString("participante1");
         String participante2Id = obj.getString("participante2");
-        JSONObject usuario1 = obj.optJSONObject("participante1");
-        JSONObject usuario2 = obj.optJSONObject("participante2");
+
+        // Obtener objetos anidados usando los nuevos alias
+        JSONObject usuario1 = obj.optJSONObject("usuario1");
+        JSONObject usuario2 = obj.optJSONObject("usuario2");
 
         Conversacion conversacion = new Conversacion();
         conversacion.setId(obj.getString("id"));
@@ -170,15 +173,20 @@ public class Mensajes extends Fragment {
             swipeRefreshLayout.setRefreshing(false);
         });
     }
-
     private void abrirChat(String conversacionId) {
         Intent intent = new Intent(getActivity(), Chat.class);
         intent.putExtra("conversacion_id", conversacionId);
 
-        // Obtener el ID del contacto desde la conversación
-        String contactoId = ...; // Lógica para obtener el ID del otro participante
-        intent.putExtra("contacto_id", contactoId);
-
+        // Obtener el ID del otro participante desde los IDs originales
+        for (Conversacion conversacion : adapter.getConversaciones()) {
+            if (conversacion.getId().equals(conversacionId)) {
+                String otroParticipante = sessionManager.getUserIdString().equals(conversacion.getParticipante1())
+                        ? conversacion.getParticipante2()
+                        : conversacion.getParticipante1();
+                intent.putExtra("contacto_id", otroParticipante);
+                break;
+            }
+        }
         startActivity(intent);
     }
 

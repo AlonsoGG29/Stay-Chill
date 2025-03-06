@@ -75,9 +75,8 @@ public class MensajesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
     public void setMensajes(List<Mensaje> nuevosMensajes) {
         this.mensajes.clear();
-        this.mensajes.clear();
         this.mensajes.addAll(nuevosMensajes);
-        notifyDataSetChanged(); // ¡Notifica los cambios!
+        notifyDataSetChanged();
     }
 
     @Override

@@ -48,6 +48,13 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int posicion) {
         Usuario usuario = listaUsuarios.get(posicion);
 
+        // Cambiar de getUid() a getId() si corresponde
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onUsuarioClick(usuario.getUid()); // <- Verifica que esto sea un UUID válido
+            }
+        });
+
         // Nombre completo
         String nombreCompleto = (usuario.getNombre() != null ? usuario.getNombre() : "")
                 + " "
