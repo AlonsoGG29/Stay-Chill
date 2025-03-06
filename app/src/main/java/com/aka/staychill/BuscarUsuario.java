@@ -102,12 +102,14 @@ public class BuscarUsuario extends AppCompatActivity {
         String tokenAcceso = sessionManager.getAccessToken();
 
         try {
-            String consultaCodificada = URLEncoder.encode("%" + consulta + "%", "UTF-8");
+            String nombreCodificado = URLEncoder.encode("%" + consulta + "%", "UTF-8");
+            String apellidoCodificado = URLEncoder.encode("%" + consulta + "%", "UTF-8");
+
             String url = String.format(
-                    "%s?or=(nombre.ilike.%s,apellido.ilike.%s)",
+                    "%s?select=foren_uid,nombre,apellido,profile_image_url&or=(nombre.ilike.%s,apellido.ilike.%s)",
                     urlSupabase,
-                    consultaCodificada,
-                    consultaCodificada
+                    nombreCodificado,
+                    apellidoCodificado
             );
             /*
             *

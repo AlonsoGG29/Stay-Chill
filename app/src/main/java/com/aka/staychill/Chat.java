@@ -254,6 +254,8 @@ public class Chat extends AppCompatActivity {
             JSONObject body = new JSONObject();
             body.put("participante1", part1);
             body.put("participante2", part2);
+      
+
 
 
 
