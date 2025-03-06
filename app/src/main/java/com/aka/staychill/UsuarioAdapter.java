@@ -51,7 +51,7 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.ViewHold
         // Cambiar de getUid() a getId() si corresponde
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onUsuarioClick(usuario.getUid()); // <- Verifica que esto sea un UUID válido
+                listener.onUsuarioClick(usuario.getId()); // Usar getter corregido
             }
         });
 
@@ -62,7 +62,7 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.ViewHold
         holder.textoNombre.setText(nombreCompleto.trim());
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onUsuarioClick(usuario.getUid());
+                listener.onUsuarioClick(usuario.getId());
             }
         });
 
