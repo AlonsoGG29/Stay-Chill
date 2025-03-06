@@ -7,10 +7,7 @@ public class Mensaje {
     private String id;
 
     @SerializedName("sender_id")
-    private String senderId;
-
-    @SerializedName("receiver_id")
-    private String receiverId;
+    private Sender sender; // Usamos una clase anidada para el remitente
 
     @SerializedName("contenido")
     private String contenido;
@@ -18,10 +15,25 @@ public class Mensaje {
     @SerializedName("fecha")
     private String fecha;
 
-    // Getters y Setters
+    // Clase para el remitente
+    public static class Sender {
+        @SerializedName("foren_uid")
+        private String id;
+
+        @SerializedName("nombre")
+        private String nombre;
+
+        @SerializedName("profile_image_url")
+        private String foto;
+
+        public String getId() { return id; }
+        public String getNombre() { return nombre; }
+        public String getFoto() { return foto; }
+    }
+
+    // Getters
     public String getId() { return id; }
-    public String getSenderId() { return senderId; }
-    public String getReceiverId() { return receiverId; }
+    public Sender getSender() { return sender; }
     public String getContenido() { return contenido; }
     public String getFecha() { return fecha; }
 }

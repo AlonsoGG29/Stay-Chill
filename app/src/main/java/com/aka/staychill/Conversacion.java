@@ -6,8 +6,6 @@ public class Conversacion {
     @SerializedName("id")
     private String id;
 
-    @SerializedName("foren_uid")
-    private String contactoId;
 
     @SerializedName("nombre")
     private String nombre;
@@ -32,9 +30,7 @@ public class Conversacion {
         return id;
     }
 
-    public String getContactoId() {
-        return contactoId;
-    }
+
 
     public String getNombre() {
         return nombre;
@@ -65,9 +61,6 @@ public class Conversacion {
         this.id = id;
     }
 
-    public void setContactoId(String contactoId) {
-        this.contactoId = contactoId;
-    }
 
     public void setNombre(String nombre) {
         this.nombre = nombre;

@@ -1,8 +1,11 @@
 package com.aka.staychill.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,6 +34,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.Call;
@@ -46,11 +50,12 @@ public class Mensajes extends Fragment {
     private OkHttpClient client = new OkHttpClient();
     private Gson gson = new Gson();
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ActivityResultLauncher<Intent> buscarUsuarioLauncher;
 
     @Override
     public void onResume() {
         super.onResume();
-        cargarConversaciones(); // Recargar al volver
+        cargarConversaciones();
     }
 
     @Override
@@ -63,6 +68,16 @@ public class Mensajes extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        buscarUsuarioLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        cargarConversaciones();
+                    }
+                }
+        );
+
         sessionManager = new SessionManager(requireContext());
         swipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
         recyclerConversaciones = view.findViewById(R.id.recyclerConversacion);
@@ -79,11 +94,10 @@ public class Mensajes extends Fragment {
         String token = sessionManager.getAccessToken();
 
         String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/conversaciones?" +
-                "select=*,usuario1:participante1(foren_uid,nombre,profile_image_url),usuario2:participante2(foren_uid,nombre,profile_image_url)" +
-                "&or=(participante1.eq." + userId + ",participante2.eq." + userId + ")" + // ✅ Correcto
+                "select=*,participante1:participante1(nombre,profile_image_url)," +
+                "participante2:participante2(nombre,profile_image_url)" +
+                "&or=(participante1.eq." + userId + ",participante2.eq." + userId + ")" +
                 "&order=fecha.desc";
-
-        Log.d("URL_DEBUG", url); // Antes de client.newCall(...)
 
         Request request = new Request.Builder()
                 .url(url)
@@ -102,50 +116,19 @@ public class Mensajes extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String json = response.body().string();
-                    Log.d("Mensajes", "JSON recibido: " + json);
                     try {
                         JSONArray jsonArray = new JSONArray(json);
                         List<Conversacion> listaConversaciones = new ArrayList<>();
 
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject obj = jsonArray.getJSONObject(i);
-
-                            // 1. Extraer participantes
-                            String participante1 = obj.getString("participante1");
-                            String participante2 = obj.getString("participante2");
-                            String userId = sessionManager.getUserIdString();
-
-                            // Determinar quién es el contacto
-                            String otroParticipanteId = participante1.equals(userId) ? participante2 : participante1;
-                            String usuarioKey = participante1.equals(userId) ? "usuario2" : "usuario1";
-
-                            // Validar existencia del usuario
-                            if (!obj.has(usuarioKey)) {
-                                Log.e("Mensajes", "No se encontró " + usuarioKey);
-                                continue;
-                            }
-
-                            JSONObject usuario = obj.getJSONObject(usuarioKey);
-
-                            // 4. Validar que el usuario corresponde al participante correcto
-                            if (!usuario.getString("foren_uid").equals(otroParticipanteId)) {
-                                Log.w("Mensajes", "El usuario no coincide con el participante");
-                                continue;
-                            }
-
-                            // 5. Construir objeto Conversacion
-                            Conversacion conversacion = new Conversacion();
-                            conversacion.setContactoId(otroParticipanteId);
-                            conversacion.setNombre(usuario.getString("nombre"));
-                            conversacion.setFoto(usuario.getString("profile_image_url"));
-                            conversacion.setUltimoMensaje(obj.getString("ultimo_mensaje"));
-                            conversacion.setFecha(obj.getString("fecha"));
-
-                            listaConversaciones.add(conversacion);
+                            Conversacion conversacion = parsearConversacion(obj, userId);
+                            if (conversacion != null) listaConversaciones.add(conversacion);
                         }
+
+                        Collections.sort(listaConversaciones, (c1, c2) -> c2.getFecha().compareTo(c1.getFecha()));
                         actualizarUI(listaConversaciones);
                     } catch (JSONException e) {
-                        e.printStackTrace();
                         mostrarError("Error al procesar datos");
                     }
                 } else {
@@ -155,21 +138,47 @@ public class Mensajes extends Fragment {
         });
     }
 
-    private void actualizarUI(List<Conversacion> conversaciones) {
+    private Conversacion parsearConversacion(JSONObject obj, String userId) throws JSONException {
+        String participante1Id = obj.getString("participante1");
+        String participante2Id = obj.getString("participante2");
+        JSONObject usuario1 = obj.optJSONObject("participante1");
+        JSONObject usuario2 = obj.optJSONObject("participante2");
+
+        Conversacion conversacion = new Conversacion();
+        conversacion.setId(obj.getString("id"));
+        conversacion.setParticipante1(participante1Id);
+        conversacion.setParticipante2(participante2Id);
+
+        JSONObject usuarioContacto = participante1Id.equals(userId) ? usuario2 : usuario1;
+        if (usuarioContacto == null) return null;
+
+        conversacion.setNombre(usuarioContacto.getString("nombre"));
+        conversacion.setFoto(usuarioContacto.optString("profile_image_url", ""));
+        conversacion.setUltimoMensaje(obj.optString("ultimo_mensaje", ""));
+        conversacion.setFecha(obj.getString("fecha"));
+        return conversacion;
+    }
+
+    private void actualizarUI(List<Conversacion> nuevasConversaciones) {
         requireActivity().runOnUiThread(() -> {
-            adapter = new ConversacionesAdapter(
-                    conversaciones,
-                    this::abrirChat,
-                    requireContext()
-            );
-            recyclerConversaciones.setAdapter(adapter);
+            if (adapter == null) {
+                adapter = new ConversacionesAdapter(nuevasConversaciones, this::abrirChat, requireContext());
+                recyclerConversaciones.setAdapter(adapter);
+            } else {
+                adapter.actualizarDatos(nuevasConversaciones);
+            }
             swipeRefreshLayout.setRefreshing(false);
         });
     }
 
-    private void abrirChat(String contactoId) {
+    private void abrirChat(String conversacionId) {
         Intent intent = new Intent(getActivity(), Chat.class);
+        intent.putExtra("conversacion_id", conversacionId);
+
+        // Obtener el ID del contacto desde la conversación
+        String contactoId = ...; // Lógica para obtener el ID del otro participante
         intent.putExtra("contacto_id", contactoId);
+
         startActivity(intent);
     }
 
@@ -182,11 +191,11 @@ public class Mensajes extends Fragment {
 
     public void nuevoMensanje(View view) {
         view.findViewById(R.id.agregarEventos).setOnClickListener(v -> {
-            if (getActivity() != null) {
-                startActivity(new Intent(getActivity(), BuscarUsuario.class));
-            }
+            Intent intent = new Intent(getActivity(), BuscarUsuario.class);
+            buscarUsuarioLauncher.launch(intent); // Usar el launcher
         });
     }
+
 
     private void clearGlideCache() {
         new Thread(() -> {
