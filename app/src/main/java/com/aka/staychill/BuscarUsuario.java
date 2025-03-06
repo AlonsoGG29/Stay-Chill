@@ -104,11 +104,24 @@ public class BuscarUsuario extends AppCompatActivity {
         try {
             String consultaCodificada = URLEncoder.encode("%" + consulta + "%", "UTF-8");
             String url = String.format(
-                    "%s?select=id,nombre,apellido,profile_image_url&or=(nombre.ilike.%s,apellido.ilike.%s)",
+                    "%s?or=(nombre.ilike.%s,apellido.ilike.%s)",
                     urlSupabase,
                     consultaCodificada,
                     consultaCodificada
             );
+            /*
+            *
+String url = String.format(
+                    "%s?or=(nombre.ilike.%s,apellido.ilike.%s)",
+                    urlSupabase,
+                    consultaCodificada,
+                    consultaCodificada
+            );
+            *
+            *
+            *
+            * */
+
 
             Request solicitud = new Request.Builder()
                     .url(url)
