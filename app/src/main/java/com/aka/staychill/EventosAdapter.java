@@ -54,7 +54,7 @@ public class EventosAdapter  extends RecyclerView.Adapter<EventosAdapter .Evento
         if(evento.getImagenDelEvento() != 0){
             holder.ivEvento.setImageResource(evento.getImagenDelEvento());
         } else {
-            holder.ivEvento.setImageResource(R.drawable.event_viajes);
+            holder.ivEvento.setImageResource(R.drawable.img_default);
         }
 
         // Foto de perfil con caché dinámica
@@ -66,14 +66,14 @@ public class EventosAdapter  extends RecyclerView.Adapter<EventosAdapter .Evento
 
             Glide.with(context)
                     .load(urlConCacheBuster)
-                    .placeholder(R.drawable.event_viajes)
-                    .error(R.drawable.event_viajes) // Imagen por defecto si hay error
+                    .placeholder(R.drawable.img_default)
+                    .error(R.drawable.img_default) // Imagen por defecto si hay error
                     .circleCrop()
                     .diskCacheStrategy(DiskCacheStrategy.NONE) // Desactiva caché de disco
                     .skipMemoryCache(true) // Desactiva caché en memoria
                     .into(holder.ivPerfil);
         } else {
-            holder.ivPerfil.setImageResource(R.drawable.event_viajes);
+            holder.ivPerfil.setImageResource(R.drawable.img_default);
         }
 
     }

@@ -28,7 +28,7 @@
             android:id="@+id/imagen"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/img_home"
+            android:src="@drawable/img_default"
             android:layout_marginEnd="10dp"/>
         <LinearLayout
             android:layout_width="match_parent"
@@ -66,7 +66,7 @@
         app:layout_constraintEnd_toEndOf="@id/eventos"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:src="@drawable/santiago_bernabeu"
+        android:src="@drawable/img_default"
         android:adjustViewBounds="true"
         android:layout_marginTop="10dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
