@@ -78,10 +78,18 @@ public class MensajesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         this.mensajes.addAll(nuevosMensajes);
         notifyDataSetChanged();
     }
+    public void agregarMensaje(Mensaje mensaje) {
+        mensajes.add(mensaje);
+        notifyItemInserted(mensajes.size() - 1);
+    }
 
     @Override
     public int getItemCount() {
         return mensajes.size();
+    }
+
+    public List<Mensaje> getMensajes() {
+        return mensajes;
     }
 
 }
