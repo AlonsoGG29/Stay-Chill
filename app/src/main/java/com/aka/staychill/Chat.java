@@ -1,6 +1,7 @@
 package com.aka.staychill;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -29,6 +30,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
 
 public class Chat extends AppCompatActivity {
     private RecyclerView recyclerMensajes;
@@ -40,6 +43,14 @@ public class Chat extends AppCompatActivity {
     private Gson gson = new Gson();
     private String conversacionId;
     private String contactoId;
+
+    private WebSocket webSocket;
+    private final OkHttpClient wsClient = new OkHttpClient();
+
+
+    private Handler handler = new Handler();
+    private Runnable pollingRunnable;
+    private static final long POLLING_INTERVAL = 5000; // 5 segundos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +82,19 @@ public class Chat extends AppCompatActivity {
         configurarRecyclerView();
         cargarMensajes();
         configurarEnvio();
+        iniciarPollingMensajes();
+        iniciarWebSocket();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        detenerPollingMensajes(); // Detener cuando la app está en segundo plano
+    }
+
+    protected void onResume() {
+        super.onResume();
+        iniciarPollingMensajes(); // Reanudar cuando vuelve a primer plano
     }
 
     private void verificarConversacionExistente() {
@@ -105,7 +129,8 @@ public class Chat extends AppCompatActivity {
                         if (jsonArray.length() > 0) {
                             conversacionId = jsonArray.getJSONObject(0).getString("id");
                             runOnUiThread(() -> {
-                                cargarMensajes(); // Recargar con la conversación existente
+                                cargarMensajes();
+                                iniciarPollingMensajes(); // <-- Añade esta línea
                             });
                         }
                         // Si no existe, no hacemos nada (se creará al enviar mensaje)
@@ -131,7 +156,7 @@ public class Chat extends AppCompatActivity {
         String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/mensajes?" +
                 "select=id,contenido,fecha,sender_id:usuarios(nombre,profile_image_url,foren_uid)" +
                 "&conversacion_id=eq." + conversacionId +
-                "&order=fecha.asc";
+                "&order=fecha.asc";;
 
         Request request = new Request.Builder()
                 .url(url)
@@ -161,6 +186,23 @@ public class Chat extends AppCompatActivity {
     private void actualizarMensajes(Mensaje[] mensajes) {
         runOnUiThread(() -> {
             if (!isDestroyed() && !isFinishing()) {
+                List<Mensaje> mensajesActuales = new ArrayList<>(adapter.getMensajes());
+
+                // Filtrar solo mensajes nuevos
+                List<Mensaje> nuevosMensajes = new ArrayList<>();
+                for (Mensaje nuevo : mensajes) {
+                    if (!mensajeExiste(mensajesActuales, nuevo)) {
+                        nuevosMensajes.add(nuevo);
+                    }
+                }
+
+                // Añadir nuevos mensajes
+                if (!nuevosMensajes.isEmpty()) {
+                    mensajesActuales.addAll(nuevosMensajes);
+                    adapter.setMensajes(mensajesActuales);
+                    recyclerMensajes.smoothScrollToPosition(adapter.getItemCount() - 1);
+                }
+
                 if (mensajes != null && mensajes.length > 0) {
                     adapter.setMensajes(Arrays.asList(mensajes));
                     recyclerMensajes.smoothScrollToPosition(adapter.getItemCount() - 1);
@@ -386,6 +428,123 @@ public class Chat extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void iniciarPollingMensajes() {
+        if (pollingRunnable == null) {
+            pollingRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (conversacionId != null && !isDestroyed()) {
+                        cargarMensajes();
+                        handler.postDelayed(this, POLLING_INTERVAL);
+                    }
+                }
+            };
+            handler.postDelayed(pollingRunnable, POLLING_INTERVAL);
+        }
+    }
+
+    private void detenerPollingMensajes() {
+        if (pollingRunnable != null) {
+            handler.removeCallbacks(pollingRunnable);
+            pollingRunnable = null;
+        }
+    }
+
+    private void iniciarWebSocket() {
+        String url = "wss://" + SupabaseConfig.getSupabaseUrl() +
+                "/realtime/v1/websocket";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .build();
+
+        webSocket = wsClient.newWebSocket(request, new WebSocketListener() {
+            @Override
+            public void onOpen(WebSocket webSocket, Response response) {
+                autenticarYsuscribir(webSocket);
+            }
+
+            @Override
+            public void onMessage(WebSocket webSocket, String text) {
+                procesarMensaje(text);
+            }
+
+            @Override
+            public void onClosed(WebSocket webSocket, int code, String reason) {
+                reconectar();
+            }
+        });
+    }
+
+    private void autenticarYsuscribir(WebSocket ws) {
+        // 1. Autenticar
+        String authMsg = String.format(
+                "{\"event\":\"access_token\",\"payload\":\"%s\",\"ref\":0}",
+                SupabaseConfig.getSupabaseKey()
+        );
+        ws.send(authMsg);
+
+        // Suscripción
+        String subMsg = "{\"event\":\"phx_join\",\"payload\":{" +
+                "\"config\":{\"broadcast\":{\"self\":false}," +
+                "\"postgres_changes\":[{" +
+                "\"event\":\"INSERT\"," +
+                "\"schema\":\"public\"," +
+                "\"table\":\"mensajes\"" +
+                "}]}},\"ref\":1,\"topic\":\"realtime:public:messages\"}";
+        ws.send(subMsg);
+    }
+
+
+    // 💡 Procesar nuevos mensajes
+    private void procesarMensaje(String json) {
+        try {
+            JSONObject root = new JSONObject(json);
+            JSONObject payload = root.getJSONObject("payload");
+
+            if (payload.has("data")) {
+                JSONObject data = payload.getJSONObject("data");
+                JSONObject record = data.getJSONObject("record");
+
+                // Verificar conversación correctamente
+                String conversacionMensaje = record.getString("conversacion_id");
+                if (conversacionMensaje.equals(conversacionId)) {
+                    Mensaje mensaje = gson.fromJson(record.toString(), Mensaje.class);
+
+                    runOnUiThread(() -> {
+                        adapter.agregarMensaje(mensaje);
+                        recyclerMensajes.smoothScrollToPosition(adapter.getItemCount() - 1);
+                    });
+                }
+            }
+        } catch (JSONException e) {
+            Log.e("WebSocket", "Error parsing message", e);
+        }
+    }
+
+    private void reconectar() {
+        new Handler().postDelayed(() -> iniciarWebSocket(), 5000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (webSocket != null) {
+            webSocket.close(1000, "Activity closed");
+        }
+        super.onDestroy();
+    }
+
+
+    private boolean mensajeExiste(List<Mensaje> mensajesActuales, Mensaje nuevoMensaje) {
+        for (Mensaje mensaje : mensajesActuales) {
+            if (mensaje.getId().equals(nuevoMensaje.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void mostrarError(String mensaje) {

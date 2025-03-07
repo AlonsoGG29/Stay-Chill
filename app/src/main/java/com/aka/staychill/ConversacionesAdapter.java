@@ -104,4 +104,5 @@ public class ConversacionesAdapter extends RecyclerView.Adapter<ConversacionesAd
         result.dispatchUpdatesTo(this);
     }
 
+
 }
