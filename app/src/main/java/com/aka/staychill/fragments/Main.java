@@ -39,6 +39,8 @@ import okhttp3.Response;
 public class Main extends Fragment {
 
     private RecyclerView recyclerView;
+    private SearchView searchView;
+    private List<Evento> listaCompletaEventos = new ArrayList<>();
 
     private EventosAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -61,6 +63,9 @@ public class Main extends Fragment {
         sessionManager = new SessionManager(getContext());
         client = new OkHttpClient.Builder().cache(null).build();
 
+        searchView = view.findViewById(R.id.searchView);
+
+
         // Configurar "pull-to-refresh" con limpieza de caché
         swipeRefreshLayout.setOnRefreshListener(() -> {
             // Limpiar caché de Glide antes de cargar eventos
@@ -81,6 +86,7 @@ public class Main extends Fragment {
         });
 
         cargarEventos();
+        configurarSearchView();
         return view;
     }
 
@@ -89,6 +95,38 @@ public class Main extends Fragment {
             Glide.get(getContext()).clearDiskCache();
             getActivity().runOnUiThread(() -> Glide.get(getContext()).clearMemory());
         }).start();
+    }
+
+    private void configurarSearchView() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filtrarEventos(newText.toLowerCase());
+                return true;
+            }
+        });
+    }
+
+    private void filtrarEventos(String texto) {
+        List<Evento> eventosFiltrados = new ArrayList<>();
+
+        if (texto.isEmpty()) {
+            eventosFiltrados.addAll(listaCompletaEventos);
+        } else {
+            for (Evento evento : listaCompletaEventos) {
+                // Busca en título, descripción y lugar (ajusta según tus campos)
+                if (evento.getNombre().toLowerCase().contains(texto) ||
+                        evento.getDescripcion().toLowerCase().contains(texto)) {
+                    eventosFiltrados.add(evento);
+                }
+            }
+        }
+        adapter.setEventos(eventosFiltrados);
     }
 
     private void cargarEventos() {
@@ -123,18 +161,16 @@ public class Main extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String json = response.body().string();
-                    // Configurar Gson con el deserializador personalizado para la clase Evento
                     Gson gson = new GsonBuilder()
                             .registerTypeAdapter(Evento.class, new EventoDeserializer(getContext()))
                             .create();
                     Evento[] eventosArray = gson.fromJson(json, Evento[].class);
-                    List<Evento> listaEventos = Arrays.asList(eventosArray);
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            adapter.setEventos(listaEventos);
-                            swipeRefreshLayout.setRefreshing(false);
-                        });
-                    }
+                    listaCompletaEventos = Arrays.asList(eventosArray); // Actualiza lista completa
+
+                    getActivity().runOnUiThread(() -> {
+                        adapter.setEventos(listaCompletaEventos); // Muestra todos inicialmente
+                        swipeRefreshLayout.setRefreshing(false);
+                    });
                 } else {
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
