@@ -42,10 +42,12 @@
             android:id="@+id/fotoPerfil"
             android:layout_width="150dp"
             android:layout_height="150dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="8dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/perfil"
+            android:src="@drawable/img_default"
             android:contentDescription="@string/perfil"
-            android:background="@null"
+            android:background="@drawable/foto_borde"
             android:scaleType="fitCenter" />
 
         <!-- Campo: Nombre -->

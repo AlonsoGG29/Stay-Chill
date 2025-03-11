@@ -3,7 +3,6 @@ package com.aka.staychill.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,14 +18,12 @@ import android.widget.Toast;
 import com.aka.staychill.CrearEvento;
 import com.aka.staychill.Evento;
 import com.aka.staychill.EventoClick;
-import com.aka.staychill.EventoDeserializer;
 import com.aka.staychill.EventosAdapter;
 import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
 import com.aka.staychill.SupabaseConfig;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -92,8 +89,9 @@ public class MisEventos extends Fragment {
         UUID userId = sessionManager.getUserId();
         if (userId == null) return;
 
-        String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/eventos?creador_id=eq." + userId;
-
+        String url = SupabaseConfig.getSupabaseUrl() +
+                "/rest/v1/eventos?creador_id=eq." + userId +
+                "&select=*,usuarios:creador_id(*)"; // Join con tabla usuarios
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
@@ -113,10 +111,9 @@ public class MisEventos extends Fragment {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
+                    assert response.body() != null;
                     String json = response.body().string();
-                    Gson gson = new GsonBuilder()
-                            .registerTypeAdapter(Evento.class, new EventoDeserializer(getContext()))
-                            .create();
+                    Gson gson = new Gson(); // Eliminar el registro del deserializador
 
                     Evento[] eventosArray = gson.fromJson(json, Evento[].class);
                     List<Evento> eventos = Arrays.asList(eventosArray);
@@ -124,6 +121,7 @@ public class MisEventos extends Fragment {
                     requireActivity().runOnUiThread(() -> {
                         adapter.setEventos(eventos);
                         noEventos.setVisibility(eventos.isEmpty() ? View.VISIBLE : View.GONE);
+                        recyclerView.setVisibility(eventos.isEmpty() ? View.GONE : View.VISIBLE); // Mejor consistencia
                         swipeRefreshLayout.setRefreshing(false);
                     });
                 } else {

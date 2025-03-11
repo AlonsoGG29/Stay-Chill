@@ -12,13 +12,12 @@
     <!-- Imagen superior -->
     <ImageView
         android:id="@+id/imagenEvento"
-        android:layout_width="650dp"
-        android:layout_height="400dp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:contentDescription="@string/imagen_evento"
-        android:src="@drawable/prueba"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true"
-        app:layout_constraintBottom_toBottomOf="@id/guiaLinea2"
+        android:src="@drawable/event_aprendizaje"
+        android:layout_marginTop="30dp"
+        android:scaleType="fitStart"
         app:layout_constraintEnd_toEndOf="@+id/eventoClick"
         app:layout_constraintStart_toStartOf="@+id/eventoClick"
         app:layout_constraintTop_toTopOf="@+id/eventoClick"
@@ -219,21 +218,46 @@
         android:id="@+id/perfilFoto"
         android:layout_width="140dp"
         android:layout_height="140dp"
+        android:background="@drawable/res_bordes_colores"
         android:layout_marginStart="16dp"
         android:contentDescription="@string/perfil"
-        android:src="@drawable/perfil"
+        android:src="@drawable/img_default"
+        android:padding="1dp"
         app:layout_constraintStart_toStartOf="@+id/eventoClick"
         app:layout_constraintTop_toTopOf="@+id/guiaLinea4" />
 
     <ImageView
         android:id="@+id/btn_vamos"
         android:layout_width="125dp"
-        android:layout_height="150dp"
+        android:layout_height="125dp"
         android:layout_marginEnd="55dp"
         android:contentDescription="@string/vamos"
         app:layout_constraintEnd_toEndOf="@+id/eventoClick"
-        android:src="@drawable/img_button_vamos"
+        android:src="@drawable/img_btn_vamos"
         app:layout_constraintTop_toTopOf="@+id/guiaLinea4"
         />
+    <!-- Botón para creador (eliminar) -->
+    <ImageView
+        android:id="@+id/btn_eliminar"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:src="@drawable/img_btn_eliminar"
+        android:contentDescription="@string/eliminar_evento"
+        app:layout_constraintEnd_toEndOf="@+id/eventoClick"
+        app:layout_constraintTop_toTopOf="@+id/guiaLinea4"
+        android:layout_marginEnd="55dp"
+        android:visibility="gone"/>
+
+    <!-- Botón para abandonar evento -->
+    <ImageView
+        android:id="@+id/btn_abandonar"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        app:layout_constraintEnd_toEndOf="@+id/eventoClick"
+        app:layout_constraintTop_toTopOf="@+id/guiaLinea4"
+        android:layout_marginEnd="55dp"
+        android:contentDescription="@string/abandonar_evento"
+        android:src="@drawable/img_btn_abandonar"
+        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

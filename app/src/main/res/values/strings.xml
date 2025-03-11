@@ -91,5 +91,8 @@
     <string name="repetir_contrasena">Repetir contraseña</string>
     <string name="imagen_de_la_app">Imagen de la app</string>
     <string name="stay_chill">Stay Chill</string>
+    <string name="eliminar_evento">Eliminar Evento</string>
+    <string name="abandonar_evento">Abandonar evento</string>
+    <string name="escribe_un_mensaje">Escribe un mensaje...</string>
 
 </resources>

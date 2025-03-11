@@ -1,4 +1,4 @@
-package com.aka.staychill;
+package com.aka.staychill; //Clean caraaaaaaaaaaa
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,45 +33,69 @@ import okhttp3.Response;
 
 public class Login extends AppCompatActivity {
 
+    // Constantes
     private static final String TAG = "LoginActivity";
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final String SUPABASE_AUTH_URL = SupabaseConfig.getSupabaseUrl() + "/auth/v1/";
 
+    // Variables
     private SessionManager sessionManager;
     private OkHttpClient client;
     private EditText emailField, passwordField;
 
+    // Ciclo de vida del Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        inicializarComponentes();
+        verificarSesionExistente();
+    }
+
+    // Configuración Inicial
+    private void inicializarComponentes() {
         sessionManager = new SessionManager(this);
         client = SupabaseConfig.getClient();
-
-        if (sessionManager.isLoggedIn()) {
-            validarTokenEnServidor();
-        }
-
         inicializarVistas();
     }
 
+    private void verificarSesionExistente() {
+        if (sessionManager.isLoggedIn()) {
+            validarTokenEnServidor();
+        }
+    }
+
+    // Configuración de Vistas
     private void inicializarVistas() {
         emailField = findViewById(R.id.email);
         passwordField = findViewById(R.id.password);
-        Button btnLogin = findViewById(R.id.btn_login);
-        TextView tvRegistro = findViewById(R.id.register_text);
 
+        configurarBotonLogin();
+        configurarTextoRegistro();
+    }
+
+    private void configurarBotonLogin() {
+        Button btnLogin = findViewById(R.id.btn_login);
         btnLogin.setOnClickListener(v -> validarYLogin());
+    }
+
+    private void configurarTextoRegistro() {
+        TextView tvRegistro = findViewById(R.id.register_text);
         estilizarTextoRegistro(tvRegistro);
     }
 
+    // Lógica de Autenticación
     private void validarYLogin() {
         String email = emailField.getText().toString().trim();
         String password = passwordField.getText().toString().trim();
 
         if (!validarCampos(email, password)) return;
 
+        realizarPeticionLogin(email, password);
+    }
+
+    private void realizarPeticionLogin(String email, String password) {
         RequestBody body = RequestBody.create(
                 crearJsonCredenciales(email, password),
                 JSON
@@ -86,26 +110,55 @@ public class Login extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                assert response.body() != null;
-                String responseBody = response.body().string();
-                if (response.isSuccessful()) {
-                    procesarRespuestaExitosa(responseBody);
-                } else {
-                    String errorMessage = obtenerMensajeError(responseBody, email);
-                    Log.e(TAG, "Error en login: " + response.code() + " - " + errorMessage);
-                    mostrarMensaje(errorMessage);
-
-                }
+                procesarRespuestaLogin(response);
             }
 
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.e(TAG, "Error de conexión: " + e.getMessage());
-                mostrarMensaje("Error de conexión: " + e.getMessage());
+                manejarErrorConexion(e);
             }
         });
     }
 
+    private void procesarRespuestaLogin(Response response) throws IOException {
+        assert response.body() != null;
+        String responseBody = response.body().string();
+        if (response.isSuccessful()) {
+            procesarRespuestaExitosa(responseBody);
+        } else {
+            manejarErrorServidor(responseBody);
+        }
+    }
+
+    // Manejo de Respuestas
+    private void procesarRespuestaExitosa(String responseBody) {
+        try {
+            JSONObject json = new JSONObject(responseBody);
+            String accessToken = json.getString("access_token");
+            String refreshToken = json.getString("refresh_token");
+            UUID userId = UUID.fromString(json.getJSONObject("user").getString("id"));
+
+            sessionManager.saveSession(accessToken, refreshToken, userId);
+            redirigirAMain();
+
+        } catch (JSONException | IllegalArgumentException e) {
+            Log.e(TAG, "Error procesando respuesta: " + e.getMessage());
+            mostrarMensaje("Error procesando respuesta del servidor");
+        }
+    }
+
+    private void manejarErrorServidor(String responseBody) {
+        String errorMessage = obtenerMensajeError(responseBody, emailField.getText().toString());
+        Log.e(TAG, "Error en login: " + errorMessage);
+        mostrarMensaje(errorMessage);
+    }
+
+    private void manejarErrorConexion(IOException e) {
+        Log.e(TAG, "Error de conexión: " + e.getMessage());
+        mostrarMensaje("Error de conexión: " + e.getMessage());
+    }
+
+    // Helpers de Autenticación
     private String crearJsonCredenciales(String email, String password) {
         try {
             return new JSONObject()
@@ -117,46 +170,23 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    private void procesarRespuestaExitosa(String responseBody) {
-        try {
-            JSONObject json = new JSONObject(responseBody);
-            String accessToken = json.getString("access_token");
-            String refreshToken = json.getString("refresh_token");
-            UUID userId = UUID.fromString(json.getJSONObject("user").getString("id"));
-
-            sessionManager.saveSession(accessToken, refreshToken, userId);
-            redirigirAMain();
-
-
-        } catch (JSONException | IllegalArgumentException e) {
-            Log.e(TAG, "Error procesando respuesta: " + e.getMessage());
-            mostrarMensaje("Error procesando respuesta del servidor");
-        }
-    }
-
     private String obtenerMensajeError(String responseBody, String email) {
         try {
             JSONObject errorJson = new JSONObject(responseBody);
-            String mensajeUsuario = "Error de autenticación"; // Mensajes por defecto
+            String mensajeUsuario = "Error de autenticación";
 
-
-
-            // Manejar estructura específica de Supabase
             if (errorJson.has("error_code")) {
                 String errorCode = errorJson.optString("error_code");
                 String errorMsg = errorJson.optString("msg");
 
                 switch (errorCode.toLowerCase()) {
                     case "user_not_found":
-                        mensajeUsuario = "com.aka.staychill.Usuario no registrado";
+                        mensajeUsuario = "Usuario no registrado";
                         break;
                     case "invalid_credentials":
-                        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                            mensajeUsuario = "Formato de email inválido";
-                        }
-                        else{
-                            mensajeUsuario = "Correo o contraseña incorrectos";
-                        }
+                        mensajeUsuario = validarFormatoEmail(email)
+                                ? "Correo o contraseña incorrectos"
+                                : "Formato de email inválido";
                         break;
                     case "email_not_confirmed":
                         mensajeUsuario = "Confirma tu email antes de iniciar sesión";
@@ -175,7 +205,11 @@ public class Login extends AppCompatActivity {
         }
     }
 
+    private boolean validarFormatoEmail(String email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
 
+    // Validación de Token
     private void validarTokenEnServidor() {
         Request request = new Request.Builder()
                 .url(SUPABASE_AUTH_URL + "user")
@@ -186,9 +220,8 @@ public class Login extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
-                if (response.isSuccessful()) {
-                    redirigirAMain();
-                } else {
+                if (!response.isSuccessful()) {
+                    mostrarMensaje("Tu sesión ha caducado");
                     sessionManager.logout();
                 }
             }
@@ -200,7 +233,7 @@ public class Login extends AppCompatActivity {
         });
     }
 
-
+    // Helpers de UI
     private boolean validarCampos(String email, String password) {
         if (email.isEmpty()) {
             mostrarMensaje("Ingresa tu correo electrónico");
@@ -247,6 +280,5 @@ public class Login extends AppCompatActivity {
     private void mostrarMensaje(String mensaje) {
         runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
     }
-
 
 }

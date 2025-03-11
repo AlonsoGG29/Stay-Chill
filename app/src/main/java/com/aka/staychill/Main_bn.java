@@ -63,18 +63,12 @@ public class Main_bn extends AppCompatActivity {
     private void configurarBadges(BottomNavigationView bottomNavigationView) {
         // Configura los badges para cada elemento
         BadgeDrawable badge = bottomNavigationView.getOrCreateBadge(R.id.home);
-        badge.setVisible(true);
-        badge.setNumber(5);
 
         badge = bottomNavigationView.getOrCreateBadge(R.id.eventos);
-        badge.setVisible(true);
-        badge.setNumber(2);
 
         badge = bottomNavigationView.getOrCreateBadge(R.id.mensaje);
-        badge.setVisible(true);
 
         badge = bottomNavigationView.getOrCreateBadge(R.id.opciones);
-        badge.setVisible(false); // Oculto inicialmente
     }
 
     private void configurarSeleccionNavegacion(BottomNavigationView bottomNavigationView) {

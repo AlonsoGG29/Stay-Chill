@@ -1,15 +1,13 @@
-package com.aka.staychill;
+package com.aka.staychill; //Clean Fernando
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,36 +32,90 @@ import okhttp3.Response;
 
 public class Signup extends AppCompatActivity {
 
-    private SessionManager sessionManager;
-    private EditText emailField, passwordField, confirmPasswordField, nameField;
+    // Constantes
+    private static final MediaType JSON = MediaType.parse("application/json");
+    private static final String AUTH_URL = SupabaseConfig.getSupabaseUrl() + "/auth/v1/";
+    private static final String REST_URL = SupabaseConfig.getSupabaseUrl() + "/rest/v1/";
 
+    // Variables
+    private EditText emailField, passwordField, confirmPasswordField, nameField;
+    private Button signup;
+    private TextView login;
+    private SessionManager sessionManager;
+
+    // Ciclo de vida de la Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
         sessionManager = new SessionManager(this);
-
-        if (sessionManager.isLoggedIn()) {
-            redirigirAMain();
-            return;
-        }
-
-        inicializarVistas();
+        verificarSesionExistente();
+        inicializarComponentes();
     }
 
+    // Configuración Inicial
+    private void verificarSesionExistente() {
+        if (sessionManager.isLoggedIn()) {
+            redirigirAMain();
+        }
+    }
+
+    private void inicializarComponentes() {
+        inicializarVistas();
+        configurarListeners();
+        estilizarTextoLogin();
+    }
+
+    // Configuración de Vistas
     private void inicializarVistas() {
         emailField = findViewById(R.id.email);
         passwordField = findViewById(R.id.password);
         confirmPasswordField = findViewById(R.id.password_repetir);
         nameField = findViewById(R.id.nombre);
-        Button btnSignup = findViewById(R.id.btn_signup);
-        TextView tvLogin = findViewById(R.id.inicio_text);
+        signup = findViewById(R.id.btn_signup);
+        login = findViewById(R.id.inicio_text);
 
-        btnSignup.setOnClickListener(v -> procesarRegistro());
-        estilizarTextoLogin(tvLogin);
+        configurarBotonRegistro();
+        estilizarTextoLogin();
     }
 
+    private void configurarBotonRegistro() {
+        Button btnSignup = findViewById(R.id.btn_signup);
+        btnSignup.setOnClickListener(v -> procesarRegistro());
+    }
+
+    private void configurarListeners() {
+        signup.setOnClickListener(v -> procesarRegistro());
+        login.setOnClickListener(v ->
+                startActivity(new Intent(Signup.this, Login.class)));
+    }
+
+    private void estilizarTextoLogin() {
+        TextView tvLogin = findViewById(R.id.inicio_text);
+        SpannableString spannable = new SpannableString("¿Ya tienes cuenta? Inicia sesión");
+        int inicio = spannable.toString().indexOf("Inicia sesión");
+
+        ClickableSpan clickSpan = new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                startActivity(new Intent(Signup.this, Login.class));
+            }
+
+            @Override
+            public void updateDrawState(@NonNull TextPaint ds) {
+                ds.setColor(getColor(android.R.color.white));
+                ds.setUnderlineText(false);
+                ds.setFakeBoldText(true);
+            }
+        };
+
+        spannable.setSpan(clickSpan, inicio, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tvLogin.setText(spannable);
+        tvLogin.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    // Lógica de Registro
     private void procesarRegistro() {
         String email = emailField.getText().toString().trim();
         String password = passwordField.getText().toString().trim();
@@ -72,13 +124,17 @@ public class Signup extends AppCompatActivity {
 
         if (!validarCampos(email, password, confirmPassword, name)) return;
 
+        realizarRegistroAuth(email, password, name);
+    }
+
+    private void realizarRegistroAuth(String email, String password, String name) {
         RequestBody body = RequestBody.create(
                 crearJsonRegistro(email, password, name),
-                MediaType.parse("application/json")
+                JSON
         );
 
         Request request = new Request.Builder()
-                .url(SupabaseConfig.getSupabaseUrl() + "/auth/v1/signup")
+                .url(AUTH_URL + "signup")
                 .post(body)
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                 .build();
@@ -89,14 +145,13 @@ public class Signup extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     procesarRegistroExitoso(response);
                 } else {
-                    String errorMessage = obtenerMensajeError(response);
-                    mostrarMensaje(errorMessage);
+                    manejarErrorRegistro(response);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                mostrarMensaje("Error de conexión: " + e.getMessage());
+                manejarErrorConexion(e);
             }
         });
     }
@@ -104,55 +159,38 @@ public class Signup extends AppCompatActivity {
     private void procesarRegistroExitoso(Response response) throws IOException {
         try {
             JSONObject json = new JSONObject(response.body().string());
-            String accessToken = json.getString("access_token");
-            String refreshToken = json.getString("refresh_token");
-            UUID userId = UUID.fromString(json.getJSONObject("user").getString("id"));
-
-            sessionManager.saveSession(accessToken, refreshToken, userId);
-            crearUsuarioEnBD(nameField.getText().toString().trim());
-
-        } catch (JSONException | IllegalArgumentException e) {
-            mostrarMensaje("Error procesando respuesta del servidor");
+            guardarSesionUsuario(json);
+            crearPerfilUsuario();
+        } catch (JSONException e) {
+            manejarErrorProcesamiento();
         }
     }
 
-    private void crearUsuarioEnBD(String nombre) {
+    private void guardarSesionUsuario(JSONObject json) throws JSONException {
+        String accessToken = json.getString("access_token");
+        String refreshToken = json.getString("refresh_token");
+        UUID userId = UUID.fromString(json.getJSONObject("user").getString("id"));
+        sessionManager.saveSession(accessToken, refreshToken, userId);
+    }
+
+    // Creación de Perfil
+    private void crearPerfilUsuario() {
         try {
-            JSONObject json = new JSONObject();
-            json.put("nombre", nombre);
-            json.put("foren_uid", sessionManager.getUserId().toString());
-
-            RequestBody body = RequestBody.create(
-                    json.toString(),
-                    MediaType.parse("application/json")
-            );
-
-            Request request = new Request.Builder()
-                    .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios")
-                    .post(body)
-                    .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                    .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
-                    .addHeader("Prefer", "return=representation")
-                    .build();
+            Request request = construirRequestPerfil();
 
             SupabaseConfig.getClient().newCall(request).enqueue(new Callback() {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) {
                     if (response.isSuccessful()) {
-                        mostrarMensaje("Registro exitoso!");
-                        redirigirAMain();
+                        manejarRegistroCompleto();
                     } else {
-                        eliminarUsuarioAuth();
-                        mostrarMensaje("Error creando perfil");
-                        sessionManager.logout();
+                        manejarErrorPerfil();
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    eliminarUsuarioAuth();
-                    mostrarMensaje("Error de conexión");
-                    sessionManager.logout();
+                    manejarErrorPerfil();
                 }
             });
 
@@ -161,15 +199,65 @@ public class Signup extends AppCompatActivity {
         }
     }
 
+    private Request construirRequestPerfil() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("nombre", nameField.getText().toString().trim());
+        json.put("foren_uid", sessionManager.getUserId().toString());
+
+        return new Request.Builder()
+                .url(REST_URL + "usuarios")
+                .post(RequestBody.create(json.toString(), JSON))
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
+                .addHeader("Prefer", "return=representation")
+                .build();
+    }
+
+    // Manejo de Errores
+    private void manejarErrorRegistro(Response response) throws IOException {
+        String errorMessage = obtenerMensajeError(response);
+        mostrarMensaje(errorMessage);
+    }
+
     private String obtenerMensajeError(Response response) throws IOException {
         try {
             JSONObject errorJson = new JSONObject(response.body().string());
-            return errorJson.optString("message", "Error en el registro");
+            String errorCode = errorJson.optString("error_code", "general_error");
+            String errorMsg = errorJson.optString("message", "Error en el registro");
+
+            switch (errorCode.toLowerCase()) {
+                case "user_already_exists":
+                    return "El usuario ya está registrado";
+                case "weak_password":
+                    return "La contraseña es demasiado débil";
+                case "email_not_validated":
+                    return "Verifica tu correo electrónico";
+                case "rate_limit_exceeded":
+                    return "Demasiados intentos. Intenta más tarde";
+                default:
+                    return "Error: " + errorMsg;
+            }
         } catch (JSONException e) {
-            return "Error " + response.code();
+            return "Error desconocido (" + response.code() + ")";
         }
     }
 
+    private void manejarErrorProcesamiento() {
+        mostrarMensaje("Error procesando respuesta del servidor");
+        sessionManager.logout();
+    }
+
+    private void manejarErrorConexion(IOException e) {
+        mostrarMensaje("Error de conexión: " + e.getMessage());
+    }
+
+    private void manejarErrorPerfil() {
+        eliminarUsuarioAuth();
+        mostrarMensaje("Error creando perfil de usuario");
+        sessionManager.logout();
+    }
+
+    // Validaciones
     private boolean validarCampos(String email, String password, String confirmPassword, String name) {
         if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || name.isEmpty()) {
             mostrarMensaje("Todos los campos son obligatorios");
@@ -194,6 +282,7 @@ public class Signup extends AppCompatActivity {
         return true;
     }
 
+    // Helpers
     private String crearJsonRegistro(String email, String password, String name) {
         try {
             return new JSONObject()
@@ -209,57 +298,42 @@ public class Signup extends AppCompatActivity {
         }
     }
 
-    private void estilizarTextoLogin(TextView textView) {
-        SpannableString spannable = new SpannableString("¿Ya tienes cuenta? Inicia sesión");
-        int inicio = spannable.toString().indexOf("Inicia sesión");
-
-        ClickableSpan clickSpan = new ClickableSpan() {
-            @Override
-            public void onClick(@NonNull View widget) {
-                startActivity(new Intent(Signup.this, Login.class));
-            }
-
-            @Override
-            public void updateDrawState(@NonNull TextPaint ds) {
-                ds.setColor(getColor(android.R.color.white));
-                ds.setUnderlineText(false);
-                ds.setFakeBoldText(true);
-            }
-        };
-
-        spannable.setSpan(clickSpan, inicio, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        textView.setText(spannable);
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
-    }
-
-    private void redirigirAMain() {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            startActivity(new Intent(this, Main_bn.class));
-            finish();
-        }, 500); // Retardo para ver el Toast
-    }
-
-
-
-    private void mostrarMensaje(String mensaje) {
-        runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
-    }
-
     private void eliminarUsuarioAuth() {
         Request request = new Request.Builder()
-                .url(SupabaseConfig.getSupabaseUrl() + "/auth/v1/admin/users/" + sessionManager.getUserId())
+                .url(AUTH_URL + "admin/users/" + sessionManager.getUserId())
                 .delete()
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                .addHeader("Authorization", "Bearer " + SupabaseConfig.getSupabaseKey())
+                .addHeader("Authorization", "Bearer " + SupabaseConfig.getSupabaseKey()) // Usar service role key
                 .build();
 
         SupabaseConfig.getClient().newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {}
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                if (!response.isSuccessful()) {
+                    Log.e("Signup", "Error eliminando usuario auth: " + response.code());
+                }
+            }
 
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {}
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("Signup", "Error de conexión al eliminar usuario", e);
+            }
         });
+    }
+
+    private void manejarRegistroCompleto() {
+        mostrarMensaje("¡Registro exitoso!");
+        redirigirAMain();
+    }
+
+    private void redirigirAMain() {
+        runOnUiThread(() -> {
+            startActivity(new Intent(this, Main_bn.class));
+            finish();
+        });
+    }
+
+    private void mostrarMensaje(String mensaje) {
+        runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
     }
 }

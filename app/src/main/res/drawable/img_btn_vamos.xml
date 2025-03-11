@@ -17,8 +17,8 @@
         android:fillColor="#000000"/>
   </group>
   <path
-      android:pathData="M20,9L99,9A9,9 0,0 1,108 18L108,43A9,9 0,0 1,99 52L20,52A9,9 0,0 1,11 43L11,18A9,9 0,0 1,20 9z"
-      android:strokeWidth="2"
+      android:strokeWidth="1"
+      android:pathData="M20,8.5L99,8.5A9.5,9.5 0,0 1,108.5 18L108.5,43A9.5,9.5 0,0 1,99 52.5L20,52.5A9.5,9.5 0,0 1,10.5 43L10.5,18A9.5,9.5 0,0 1,20 8.5z"
       android:fillColor="#00000000"
-      android:strokeColor="#D96014"/>
+      android:strokeColor="@color/red"/>
 </vector>

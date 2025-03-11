@@ -1,6 +1,7 @@
 package com.aka.staychill;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,31 +9,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import java.util.List;
 
-public class EventosAdapter  extends RecyclerView.Adapter<EventosAdapter .EventoViewHolder> {
-    private List<Evento> eventos;
-    private Context context;
+public class EventosAdapter extends RecyclerView.Adapter<EventosAdapter.EventoViewHolder> {
 
-    private OnItemClickListener mListener;
+    private List<Evento> eventos;
+    private final Context context;
+    private OnItemClickListener listener;
 
     public interface OnItemClickListener {
         void onItemClick(Evento evento);
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        mListener = listener;
-    }
-
-
-
-    public EventosAdapter (Context context, List<Evento> eventos) {
+    public EventosAdapter(Context context, List<Evento> eventos) {
         this.context = context;
         this.eventos = eventos;
     }
@@ -47,35 +43,13 @@ public class EventosAdapter  extends RecyclerView.Adapter<EventosAdapter .Evento
     @Override
     public void onBindViewHolder(@NonNull EventoViewHolder holder, int position) {
         Evento evento = eventos.get(position);
-        holder.tvNombreEvento.setText(evento.getNombre());
-        holder.tvTipoEvento.setText(evento.getTipoDeEvento());
+        holder.bind(evento);
 
-        // Imagen del evento
-        if(evento.getImagenDelEvento() != 0){
-            holder.ivEvento.setImageResource(evento.getImagenDelEvento());
-        } else {
-            holder.ivEvento.setImageResource(R.drawable.img_default);
-        }
-
-        // Foto de perfil con caché dinámica
-        String urlFotoPerfil = evento.getCreadorProfileImage();
-
-        if (urlFotoPerfil != null && !urlFotoPerfil.isEmpty()) {
-            // Agrega parámetro de tiempo para evitar caché
-            String urlConCacheBuster = urlFotoPerfil + "?v=" + System.currentTimeMillis();
-
-            Glide.with(context)
-                    .load(urlConCacheBuster)
-                    .placeholder(R.drawable.img_default)
-                    .error(R.drawable.img_default) // Imagen por defecto si hay error
-                    .circleCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Desactiva caché de disco
-                    .skipMemoryCache(true) // Desactiva caché en memoria
-                    .into(holder.ivPerfil);
-        } else {
-            holder.ivPerfil.setImageResource(R.drawable.img_default);
-        }
-
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onItemClick(evento);
+            }
+        });
     }
 
     @Override
@@ -84,27 +58,91 @@ public class EventosAdapter  extends RecyclerView.Adapter<EventosAdapter .Evento
     }
 
     public void setEventos(List<Evento> nuevosEventos) {
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new EventoDiffCallback(this.eventos, nuevosEventos));
         this.eventos = nuevosEventos;
-        notifyDataSetChanged();
+        result.dispatchUpdatesTo(this);
     }
 
-    public class EventoViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNombreEvento, tvTipoEvento;
-        ImageView ivEvento, ivPerfil;
+    private static class EventoDiffCallback extends DiffUtil.Callback {
+        private final List<Evento> oldList;
+        private final List<Evento> newList;
 
-        public EventoViewHolder(@NonNull View itemView) {
+        public EventoDiffCallback(List<Evento> oldList, List<Evento> newList) {
+            this.oldList = oldList;
+            this.newList = newList;
+        }
+
+        @Override
+        public int getOldListSize() { return oldList.size(); }
+
+        @Override
+        public int getNewListSize() { return newList.size(); }
+
+        @Override
+        public boolean areItemsTheSame(int oldPos, int newPos) {
+            return oldList.get(oldPos).getId().equals(newList.get(newPos).getId());
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldPos, int newPos) {
+            return oldList.get(oldPos).equals(newList.get(newPos));
+        }
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    // Clase ViewHolder optimizada
+    public static class EventoViewHolder extends RecyclerView.ViewHolder {
+        private final ImageView ivEvento, ivPerfil;
+        private final TextView tvNombre, tvTipo;
+
+        EventoViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvNombreEvento = itemView.findViewById(R.id.nombreUsr);
-            tvTipoEvento = itemView.findViewById(R.id.tipoDeEvento);
+            // Inicializar todas las vistas de una vez
             ivEvento = itemView.findViewById(R.id.img_evento);
-            ivPerfil = itemView.findViewById(R.id.imagen); // Suponiendo que este ImageView muestra la foto de perfil
+            ivPerfil = itemView.findViewById(R.id.imgPerfil);
+            tvNombre = itemView.findViewById(R.id.nombreUsr);
+            tvTipo = itemView.findViewById(R.id.tipoDeEvento);
+        }
 
-            itemView.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION && mListener != null) {
-                    mListener.onItemClick(eventos.get(position));
-                }
-            });
+        void bind(Evento evento) {
+            tvNombre.setText(evento.getNombreEvento());
+            tvTipo.setText(evento.getTipoDeEvento());
+            cargarImagenes(evento);
+        }
+
+        private void cargarImagenes(Evento evento) {
+            // Obtener contexto una sola vez
+            Context context = itemView.getContext();
+
+
+            // 1. Imagen del evento
+            int imagenResId = evento.getImagenDelEvento(context);
+            int colorRes = evento.getColorResId();
+            if (imagenResId != 0) {
+                Glide.with(context)
+                        .load(imagenResId)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .placeholder(R.drawable.img_default) // Muestra mientras carga
+                        .error(R.drawable.img_default) // Muestra si falla
+                        .into(ivEvento);
+            }
+            ivEvento.setBackgroundColor(ContextCompat.getColor(context, colorRes));
+
+            // 2. Foto de perfil
+            String urlPerfil = evento.getCreadorProfileImage();
+            if (urlPerfil != null && !urlPerfil.isEmpty()) {
+                Glide.with(context)
+                        .load(urlPerfil)
+                        .circleCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .placeholder(R.drawable.img_default) // Placeholder para perfil
+                        .into(ivPerfil);
+            }
+
         }
     }
 }
