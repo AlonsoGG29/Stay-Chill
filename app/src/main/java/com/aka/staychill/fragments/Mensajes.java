@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aka.staychill.BuscarUsuario;
@@ -52,6 +53,8 @@ public class Mensajes extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private ActivityResultLauncher<Intent> buscarUsuarioLauncher;
 
+    private TextView noEventos; // Añade esta variable
+
     @Override
     public void onResume() {
         super.onResume();
@@ -69,6 +72,8 @@ public class Mensajes extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+
         buscarUsuarioLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -82,6 +87,9 @@ public class Mensajes extends Fragment {
         swipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
         recyclerConversaciones = view.findViewById(R.id.recyclerConversacion);
         recyclerConversaciones.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new ConversacionesAdapter(new ArrayList<>(), this::abrirChat, requireContext());
+        recyclerConversaciones.setAdapter(adapter); // Adjuntar adaptador aquí
+        noEventos = view.findViewById(R.id.noEventos);
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
             clearGlideCache();
@@ -164,12 +172,17 @@ public class Mensajes extends Fragment {
 
     private void actualizarUI(List<Conversacion> nuevasConversaciones) {
         requireActivity().runOnUiThread(() -> {
-            if (adapter == null) {
-                adapter = new ConversacionesAdapter(nuevasConversaciones, this::abrirChat, requireContext());
-                recyclerConversaciones.setAdapter(adapter);
+            adapter.actualizarDatos(nuevasConversaciones);
+
+            // Controlar visibilidad
+            if (nuevasConversaciones.isEmpty()) {
+                noEventos.setVisibility(View.VISIBLE);
+                recyclerConversaciones.setVisibility(View.GONE);
             } else {
-                adapter.actualizarDatos(nuevasConversaciones);
+                noEventos.setVisibility(View.GONE);
+                recyclerConversaciones.setVisibility(View.VISIBLE);
             }
+
             swipeRefreshLayout.setRefreshing(false);
         });
     }

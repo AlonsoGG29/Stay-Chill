@@ -1,18 +1,23 @@
-# STAY CHILL
-<p align="center">
-  <img src="imagenes/StayChill.svg" alt="COLORES" />
-</p>
+<div align="center"><h1> STAY CHILL </h1></div>
 
-Enlace a Figma: https://www.figma.com/design/KyVoo7Z4Q3HpOeT7HOTeMz/Stay-Chill?node-id=0-1&p=f&t=3dMJvDozEKVYZmZe-0
+<div align="center">
+  <img src="imagenes/logo_stay_chill.svg" alt="Logo" />
+</div>
 
-Enlace a Trello : https://trello.com/b/efP3xoTZ/stay-chill
+---
+
+##  Enlaces de interés.
+
+- Figma: https://www.figma.com/design/KyVoo7Z4Q3HpOeT7HOTeMz/Stay-Chill?node-id=0-1&p=f&t=3dMJvDozEKVYZmZe-0
+
+- Trello : https://trello.com/b/efP3xoTZ/stay-chill
 
 
 ## Integrantes del proyecto:
 
-- Alonso Gómez - CM Cloud Master
-- Angel Castillo - DS Designer
-- Konrad Drobnik - SM Scrum Master
+- Angel Castillo - CM Cloud Master
+- Konrad Drobnik - DS Designer
+- Alonso Gómez - SM Scrum Master
 
 
 ## Descripción de la app:
@@ -22,7 +27,7 @@ La diferencia de otras apps para conocer gente (Tinder, Badoo, etc...) es que aq
 
 La app busca que la gente se conozca como antiguamente, en persona, y no escribiéndose por chat. De esa manera, se crean relaciones o amistades más fuertes y directas.
 
-
+---
 
 ## PANTALLAS
 

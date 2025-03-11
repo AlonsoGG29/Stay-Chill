@@ -3,10 +3,13 @@ package com.aka.staychill;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -51,6 +54,26 @@ public class MensajesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         vh.tvMensaje.setText(mensaje.getContenido());
 
+        // Solo cargar imagen en mensajes recibidos
+        if (getItemViewType(position) == TIPO_RECIBIDO) {
+            // Asegúrate que el ImageView existe en el layout recibido
+            if (vh.imgPerfil != null) {
+                Glide.with(vh.itemView.getContext())
+                        .load(mensaje.getSender().getFoto())
+                        .circleCrop()
+                        .placeholder(R.drawable.img_default)
+                        .into(vh.imgPerfil);
+            }
+        } else {
+            // Ocultar ImageView en mensajes enviados si existe
+            if (vh.imgPerfil != null) {
+                vh.imgPerfil.setVisibility(View.GONE);
+            }
+        }
+
+        vh.tvMensaje.setText(mensaje.getContenido());
+
+
         // Ejemplo: Mostrar hora del mensaje
         try {
             SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
@@ -62,15 +85,15 @@ public class MensajesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-
-
     static class MensajeViewHolder extends RecyclerView.ViewHolder {
         TextView tvMensaje, tvHora;
+        ImageView imgPerfil; // Nuevo
 
         MensajeViewHolder(View view) {
             super(view);
             tvMensaje = view.findViewById(R.id.tvMensaje);
             tvHora = view.findViewById(R.id.tvHora);
+            imgPerfil = view.findViewById(R.id.imgPerfilChat); // Nuevo
         }
     }
     public void setMensajes(List<Mensaje> nuevosMensajes) {

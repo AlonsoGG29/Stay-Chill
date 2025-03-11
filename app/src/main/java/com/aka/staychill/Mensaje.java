@@ -9,8 +9,6 @@ public class Mensaje {
     @SerializedName("conversacion_id")
     private String conversacionId;
 
-
-
     @SerializedName("sender_id")
     private Sender sender; // Usamos una clase anidada para el remitente
 
@@ -45,4 +43,6 @@ public class Mensaje {
     public String getConversacionId() {
         return conversacionId;
     }
+
+
 }

@@ -64,6 +64,7 @@ public class Conf_cuenta extends AppCompatActivity {
     private final Gson gson = new Gson();
     private ArrayAdapter<CharSequence> adapter;
     private SessionManager sessionManager;
+    private CargarImagenes cargarImagenes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,7 @@ public class Conf_cuenta extends AppCompatActivity {
         setContentView(R.layout.activity_conf_cuenta);
 
         sessionManager = new SessionManager(this);
+        cargarImagenes = CargarImagenes.getInstance(this);
         if (!verificarSesion()) return;
 
         inicializarComponentes();
@@ -182,10 +184,14 @@ public class Conf_cuenta extends AppCompatActivity {
                     !usuario.get("profile_image_url").isJsonNull() &&
                     !usuario.get("profile_image_url").getAsString().isEmpty()) {
 
-                Glide.with(this)
-                        .load(usuario.get("profile_image_url").getAsString() + "?t=" + System.currentTimeMillis())
-                        .circleCrop()
-                        .into(fotoPerfil);
+                // Reemplaza Glide con ImageManager
+                cargarImagenes.loadProfileImage(
+                        usuario.get("profile_image_url").getAsString(),
+                        fotoPerfil,
+                        Conf_cuenta.this
+                );
+            } else {
+                fotoPerfil.setImageResource(R.drawable.img_default);
             }
 
             inputNombre.setText(usuario.has("nombre") && !usuario.get("nombre").isJsonNull() ?
@@ -279,18 +285,14 @@ public class Conf_cuenta extends AppCompatActivity {
 
     private void procesarImagenRecortada(Uri imagenUri) {
         try {
-            Glide.with(this)
-                    .load(imagenUri)
-                    .circleCrop()
-                    .into(fotoPerfil);
+            cargarImagenes.loadProfileImage(
+                    imagenUri.toString(),
+                    fotoPerfil,
+                    Conf_cuenta.this
+            );
 
             imagenTempUri = imagenUri;
             hayCambiosImagen = true;
-            String cacheBusterUrl = imagenUri.toString() + "?t=" + System.currentTimeMillis();
-            Glide.with(this)
-                    .load(cacheBusterUrl)
-                    .circleCrop()
-                    .into(fotoPerfil);
         } catch (Exception e) {
             mostrarError("Error al cargar imagen");
         }
@@ -330,7 +332,22 @@ public class Conf_cuenta extends AppCompatActivity {
         try {
             String nuevaImagenUrl = hayCambiosImagen ? subirImagenPerfil() : null;
             actualizarPerfilUsuario(nuevaImagenUrl);
-            runOnUiThread(this::finalizarGuardadoExitoso);
+
+            runOnUiThread(() -> {
+                if (hayCambiosImagen) {
+                    // Actualizar versión de la imagen
+                    cargarImagenes.updateImageVersion("profile_" + userId.toString());
+
+                    // Recargar imagen inmediatamente si es necesario
+                    if (nuevaImagenUrl != null) {
+                        cargarImagenes.loadProfileImage(nuevaImagenUrl, fotoPerfil, Conf_cuenta.this);
+                    }
+                }
+
+                Toast.makeText(Conf_cuenta.this, "Perfil actualizado", Toast.LENGTH_SHORT).show();
+                hayCambiosImagen = false;
+                finish();
+            });
         } catch (Exception e) {
             mostrarError("Error: " + e.getMessage());
         }
@@ -356,7 +373,7 @@ public class Conf_cuenta extends AppCompatActivity {
                     .put(body)
                     .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                     .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
-                    .addHeader("Content-Type", "multipart/form-data")
+                    .addHeader("Cache-Control", "no-cache, max-age=0") // Nuevo: Deshabilitar caché en Supabase
                     .build();
 
             try (Response uploadResponse = client.newCall(uploadRequest).execute()) {

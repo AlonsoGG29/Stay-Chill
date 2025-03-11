@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,13 +17,11 @@ import android.widget.Toast;
 
 import com.aka.staychill.Evento;
 import com.aka.staychill.EventoClick;
-import com.aka.staychill.EventoDeserializer;
 import com.aka.staychill.EventosAdapter;
 import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
 import com.aka.staychill.SupabaseConfig;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,15 +71,7 @@ public class OtrosEventos extends Fragment {
     }
 
     private void setupRefreshLayout() {
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            cargarEventos();
-            // Ocultar el spinner después de 5 segundos máximo
-            new Handler().postDelayed(() -> {
-                if (swipeRefreshLayout.isRefreshing()) {
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-            }, 5000);
-        });
+        swipeRefreshLayout.setOnRefreshListener(this::cargarEventos); // Simplificado
     }
 
     private void cargarEventos() {
@@ -92,9 +81,9 @@ public class OtrosEventos extends Fragment {
             return;
         }
 
-        String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/eventos?" +
-                "select=*,asistentes_eventos!inner(usuario_id),usuarios!creador_id(nombre,apellido,pais,profile_image_url)" +
-                "&asistentes_eventos.usuario_id=eq." + userId.toString();
+        String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/eventos?"
+                + "select=*,usuarios!creador_id(*),asistentes_eventos!inner(usuario_id)"
+                + "&asistentes_eventos.usuario_id=eq." + userId;
 
         Request request = new Request.Builder()
                 .url(url)
@@ -127,13 +116,13 @@ public class OtrosEventos extends Fragment {
                 }
 
                 try {
+                    assert response.body() != null;
                     String json = response.body().string();
-                    Gson gson = new GsonBuilder()
-                            .registerTypeAdapter(Evento.class, new EventoDeserializer(getContext()))
-                            .create();
+                    Gson gson = new Gson(); // Sin deserializador
 
                     Evento[] eventosArray = gson.fromJson(json, Evento[].class);
                     List<Evento> eventos = Arrays.asList(eventosArray);
+
 
                     requireActivity().runOnUiThread(() -> {
                         if (eventos.isEmpty()) {
@@ -145,6 +134,7 @@ public class OtrosEventos extends Fragment {
                         }
                         adapter.setEventos(eventos);
                     });
+                    actualizarUI(eventos);
 
                 } catch (Exception e) {
                     requireActivity().runOnUiThread(() -> {
@@ -155,6 +145,15 @@ public class OtrosEventos extends Fragment {
             }
         });
     }
+
+    private void actualizarUI(List<Evento> eventos) {
+        requireActivity().runOnUiThread(() -> {
+            noEventos.setVisibility(eventos.isEmpty() ? View.VISIBLE : View.GONE);
+            recyclerView.setVisibility(eventos.isEmpty() ? View.GONE : View.VISIBLE);
+            adapter.setEventos(eventos);
+        });
+    }
+
 
     private void mostrarError(String mensaje) {
         Toast.makeText(getContext(), mensaje, Toast.LENGTH_LONG).show();

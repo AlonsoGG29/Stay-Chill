@@ -25,11 +25,13 @@
 
         <!-- Icono a la izquierda -->
         <ImageView
-            android:id="@+id/imagen"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/img_default"
-            android:layout_marginEnd="10dp"/>
+        android:id="@+id/imgPerfil"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/img_default"
+        android:background="@drawable/res_bordes_colores"
+        android:padding="4dp"
+        android:layout_marginEnd="10dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -67,6 +69,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:src="@drawable/img_default"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/imagen_del_evento"
         android:adjustViewBounds="true"
         android:layout_marginTop="10dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

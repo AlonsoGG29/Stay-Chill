@@ -1,8 +1,8 @@
-package com.aka.staychill.fragments;
-
+package com.aka.staychill.fragments; // Clean What can i say?
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,21 +14,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.aka.staychill.Evento;
 import com.aka.staychill.EventoClick;
-import com.aka.staychill.EventoDeserializer;
+
 import com.aka.staychill.EventosAdapter;
 import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
 import com.aka.staychill.SupabaseConfig;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -38,71 +37,59 @@ import okhttp3.Response;
 
 public class Main extends Fragment {
 
+    private static final String URL_EVENTOS = SupabaseConfig.getSupabaseUrl()
+            + "/rest/v1/eventos?select=*,usuarios!creador_id(*),asistentes_eventos(*)";
+
     private RecyclerView recyclerView;
     private SearchView searchView;
-    private List<Evento> listaCompletaEventos = new ArrayList<>();
-
-    private EventosAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private EventosAdapter adapter;
+    private List<Evento> listaCompletaEventos = new ArrayList<>();
     private OkHttpClient client;
     private SessionManager sessionManager;
-    // En Main.java:
-    private static final String URL_EVENTOS = SupabaseConfig.getSupabaseUrl()
-            + "/rest/v1/eventos?select=*,usuarios!creador_id(nombre,apellido,pais,profile_image_url)";
+
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
-        recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new EventosAdapter(getContext(), new ArrayList<>());
-        recyclerView.setAdapter(adapter);
-
-        sessionManager = new SessionManager(getContext());
-        client = new OkHttpClient.Builder().cache(null).build();
-
-        searchView = view.findViewById(R.id.searchView);
-
-
-        // Configurar "pull-to-refresh" con limpieza de caché
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            // Limpiar caché de Glide antes de cargar eventos
-            clearGlideCache();
-            cargarEventos();
-        });
-
-        adapter.setOnItemClickListener(evento -> {
-            // Crear Intent para abrir el Activity de detalle
-            Intent intent = new Intent(getActivity(), EventoClick.class);
-
-            // Pasar los datos del evento usando Gson
-            Gson gson = new Gson();
-            String eventoJson = gson.toJson(evento);
-            intent.putExtra("EVENTO_DATA", eventoJson);
-
-            startActivity(intent);
-        });
-
+        initializeViews(view);
+        setupHttpClient();
+        setupRecyclerView();
+        setupRefreshLayout();
+        setupSearchView();
+        setupItemClickListener();
         cargarEventos();
-        configurarSearchView();
         return view;
     }
 
-    private void clearGlideCache() {
-        new Thread(() -> {
-            Glide.get(getContext()).clearDiskCache();
-            getActivity().runOnUiThread(() -> Glide.get(getContext()).clearMemory());
-        }).start();
+    private void initializeViews(View view) {
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefresh);
+        recyclerView = view.findViewById(R.id.recyclerView);
+        searchView = view.findViewById(R.id.searchView);
+        sessionManager = new SessionManager(requireContext());
     }
 
-    private void configurarSearchView() {
+    private void setupHttpClient() {
+        client = new OkHttpClient.Builder().cache(null).build();
+    }
+
+    private void setupRecyclerView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new EventosAdapter(requireContext(), new ArrayList<>());
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void setupRefreshLayout() {
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            clearGlideCache();
+            cargarEventos();
+        });
+    }
+
+    private void setupSearchView() {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
+            public boolean onQueryTextSubmit(String query) { return false; }
 
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -112,74 +99,90 @@ public class Main extends Fragment {
         });
     }
 
-    private void filtrarEventos(String texto) {
-        List<Evento> eventosFiltrados = new ArrayList<>();
+    private void setupItemClickListener() {
+        adapter.setOnItemClickListener(evento -> {
+            Intent intent = new Intent(getActivity(), EventoClick.class);
+            intent.putExtra("EVENTO_DATA", new Gson().toJson(evento));
+            startActivity(intent);
+        });
+    }
 
-        if (texto.isEmpty()) {
-            eventosFiltrados.addAll(listaCompletaEventos);
-        } else {
-            for (Evento evento : listaCompletaEventos) {
-                // Busca en título, descripción y lugar (ajusta según tus campos)
-                if (evento.getNombre().toLowerCase().contains(texto) ||
-                        evento.getDescripcion().toLowerCase().contains(texto)) {
-                    eventosFiltrados.add(evento);
-                }
+    private void clearGlideCache() {
+        new Thread(() -> {
+            Glide.get(requireContext()).clearDiskCache();
+            runOnUiThread(() -> Glide.get(requireContext()).clearMemory());
+        }).start();
+    }
+
+    private void filtrarEventos(String texto) {
+        List<Evento> filtrados = new ArrayList<>();
+
+        for (Evento evento : listaCompletaEventos) {
+            if (evento.getNombreEvento().toLowerCase().contains(texto) ||
+                    evento.getTipoDeEvento().toLowerCase().contains(texto)) {
+                filtrados.add(evento);
             }
         }
-        adapter.setEventos(eventosFiltrados);
+        adapter.setEventos(texto.isEmpty() ? listaCompletaEventos : filtrados);
     }
 
     private void cargarEventos() {
-        Request.Builder requestBuilder = new Request.Builder()
-                .url(URL_EVENTOS)
-                // Si SupaBase requiere la key anónima, se agrega en la cabecera:
-                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                .addHeader("Cache-Control", "no-cache")
-                .addHeader("Pragma", "no-cache")
-                .addHeader("Expires", "0");
-
-        // Añadimos el token de acceso, obtenido de SessionManager
-        String accessToken = sessionManager.getAccessToken();
-        if (accessToken != null) {
-            requestBuilder.addHeader("Authorization", "Bearer " + accessToken);
-        }
-
-        Request request = requestBuilder.build();
+        Request request = buildRequest();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        swipeRefreshLayout.setRefreshing(false);
-                        Toast.makeText(getContext(), "Error al cargar eventos", Toast.LENGTH_SHORT).show();
-                    });
-                }
+                showError("Error al cargar eventos");
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    String json = response.body().string();
-                    Gson gson = new GsonBuilder()
-                            .registerTypeAdapter(Evento.class, new EventoDeserializer(getContext()))
-                            .create();
-                    Evento[] eventosArray = gson.fromJson(json, Evento[].class);
-                    listaCompletaEventos = Arrays.asList(eventosArray); // Actualiza lista completa
-
-                    getActivity().runOnUiThread(() -> {
-                        adapter.setEventos(listaCompletaEventos); // Muestra todos inicialmente
-                        swipeRefreshLayout.setRefreshing(false);
-                    });
+                    updateEventosList(response);
                 } else {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            swipeRefreshLayout.setRefreshing(false);
-                            Toast.makeText(getContext(), "Error en la respuesta del servidor", Toast.LENGTH_SHORT).show();
-                        });
-                    }
+                    showError("Error en la respuesta del servidor");
                 }
             }
         });
+    }
+
+    private Request buildRequest() {
+        Request.Builder builder = new Request.Builder()
+                .url(URL_EVENTOS)
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .addHeader("Cache-Control", "no-cache");
+
+        String token = sessionManager.getAccessToken();
+        if (token != null) {
+            builder.addHeader("Authorization", "Bearer " + token);
+        }
+        return builder.build();
+    }
+
+    private void updateEventosList(Response response) throws IOException {
+        String json = response.body().string();
+        Gson gson = new Gson(); // Usar Gson normal sin deserializador custom
+        Log.d("SupabaseDebug", "Respuesta JSON: " + json);
+
+        Evento[] eventos = gson.fromJson(json, Evento[].class);
+        listaCompletaEventos = new ArrayList<>(Arrays.asList(eventos));
+
+        runOnUiThread(() -> {
+            adapter.setEventos(listaCompletaEventos);
+            swipeRefreshLayout.setRefreshing(false);
+        });
+    }
+
+    private void showError(String mensaje) {
+        runOnUiThread(() -> {
+            swipeRefreshLayout.setRefreshing(false);
+            Toast.makeText(getContext(), mensaje, Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void runOnUiThread(Runnable action) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(action);
+        }
     }
 }
