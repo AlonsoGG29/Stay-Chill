@@ -94,5 +94,6 @@
     <string name="eliminar_evento">Eliminar Evento</string>
     <string name="abandonar_evento">Abandonar evento</string>
     <string name="escribe_un_mensaje">Escribe un mensaje...</string>
+    <string name="no_conversacion">No tienes conversaciones\n¡Inicia una nueva!</string>
 
 </resources>

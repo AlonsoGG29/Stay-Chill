@@ -26,8 +26,8 @@
         <!-- TextView y ImageButton se mantienen igual -->
         <ImageButton
             android:id="@+id/agregarEventos"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginBottom="10dp"
             android:contentDescription="@string/crear_evento"
             android:background="@android:color/transparent"
@@ -41,7 +41,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:text="@string/no_eventos_creado"
+            android:textAlignment="center"
+            android:text="@string/no_conversacion"
             android:layout_marginBottom="10dp"
             android:fontFamily="@font/lora_semibold"
             app:layout_constraintBottom_toTopOf="@id/agregarEventos"
