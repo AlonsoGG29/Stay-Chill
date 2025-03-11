@@ -1,6 +1,7 @@
 package com.aka.staychill.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -25,6 +26,7 @@ import com.aka.staychill.Conversacion;
 import com.aka.staychill.ConversacionesAdapter;
 import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
+import com.aka.staychill.Signup;
 import com.aka.staychill.SupabaseConfig;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
@@ -63,9 +65,7 @@ public class Mensajes extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_mensajes, container, false);
-        nuevoMensanje(view);
-        return view;
+        return inflater.inflate(R.layout.fragment_mensajes, container, false);
     }
 
     @Override
@@ -91,6 +91,15 @@ public class Mensajes extends Fragment {
         recyclerConversaciones.setAdapter(adapter); // Adjuntar adaptador aquí
         noEventos = view.findViewById(R.id.noEventos);
 
+        view.findViewById(R.id.mandarMensaje).setOnClickListener(v -> {
+            if (sessionManager.isLoggedIn()) {
+                Intent intent = new Intent(getActivity(), BuscarUsuario.class);
+                buscarUsuarioLauncher.launch(intent);
+            } else {
+                mostrarDialogoRegistro();
+            }
+        });
+
         swipeRefreshLayout.setOnRefreshListener(() -> {
             clearGlideCache();
             cargarConversaciones();
@@ -98,6 +107,11 @@ public class Mensajes extends Fragment {
     }
 
     private void cargarConversaciones() {
+        if (!sessionManager.isLoggedIn()) {
+            actualizarUI(new ArrayList<>());
+            return;
+        }
+
         String userId = sessionManager.getUserIdString();
         String token = sessionManager.getAccessToken();
 
@@ -174,8 +188,8 @@ public class Mensajes extends Fragment {
         requireActivity().runOnUiThread(() -> {
             adapter.actualizarDatos(nuevasConversaciones);
 
-            // Controlar visibilidad
             if (nuevasConversaciones.isEmpty()) {
+
                 noEventos.setVisibility(View.VISIBLE);
                 recyclerConversaciones.setVisibility(View.GONE);
             } else {
@@ -204,17 +218,25 @@ public class Mensajes extends Fragment {
     }
 
     private void mostrarError(String mensaje) {
+        if (!sessionManager.isLoggedIn()) return;
+
         requireActivity().runOnUiThread(() ->
                 Toast.makeText(requireContext(), mensaje, Toast.LENGTH_SHORT).show()
         );
         swipeRefreshLayout.setRefreshing(false);
     }
 
-    public void nuevoMensanje(View view) {
-        view.findViewById(R.id.agregarEventos).setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), BuscarUsuario.class);
-            buscarUsuarioLauncher.launch(intent); // Usar el launcher
-        });
+
+    private void mostrarDialogoRegistro() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Regístrate")
+                .setMessage("Para enviar mensajes debes estar registrado")
+                .setPositiveButton("Registrarse", (dialog, which) -> {
+                    // Redirigir a actividad de login
+                    startActivity(new Intent(getActivity(), Signup.class));
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
 
