@@ -1,7 +1,9 @@
 package com.aka.staychill;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,11 +16,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class Main_bn extends AppCompatActivity {
 
     private MenuItem prevMenuItem;
+    private ImageView notificacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_bn);
+
 
         // Configurar el adaptador para ViewPager
         configurarAdaptadorViewPager();
@@ -30,6 +34,22 @@ public class Main_bn extends AppCompatActivity {
 
         // Configurar listener de selección de navegación
         configurarSeleccionNavegacion(bottomNavigationView);
+
+        notificacion = findViewById(R.id.notif_esquina);
+        configurarNotificaciones();
+
+
+    }
+    private void configurarNotificaciones() {
+        notificacion.setOnClickListener(v -> mostrarDialogoDesarrollo());
+    }
+
+    private void mostrarDialogoDesarrollo() {
+        new AlertDialog.Builder(this)
+                .setTitle("En desarrollo")
+                .setMessage("Este apartado se está desarrollando, ¡disculpe la molestia! \uD83D\uDE4F")
+                .setPositiveButton("Aceptar", null)
+                .show();
     }
 
     private void configurarAdaptadorViewPager() {

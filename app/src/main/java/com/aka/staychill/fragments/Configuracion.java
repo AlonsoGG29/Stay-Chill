@@ -1,5 +1,6 @@
 package com.aka.staychill.fragments;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,11 +16,9 @@ import androidx.fragment.app.Fragment;
 
 import com.aka.staychill.CargarImagenes;
 import com.aka.staychill.Conf_cuenta;
-import com.aka.staychill.Conf_notificaciones;
-import com.aka.staychill.Conf_privacidad;
-import com.aka.staychill.Conf_reportar;
 import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
+import com.aka.staychill.Signup;
 import com.aka.staychill.SupabaseConfig;
 import com.aka.staychill.Usuario;
 import com.aka.staychill.Welcome;
@@ -67,6 +66,7 @@ public class Configuracion extends Fragment {
         return rootView;
     }
     private void cargarDatosUsuario() {
+        if (!sessionManager.isLoggedIn()) return;
         String accessToken = sessionManager.getAccessToken();
         String userId = obtenerUserIdDesdeToken(accessToken);
 
@@ -136,30 +136,36 @@ public class Configuracion extends Fragment {
 
     private void configurarListenersBotones(View rootView) {
         rootView.findViewById(R.id.conf_cuenta).setOnClickListener(v -> {
-            if (getActivity() != null) {
+            if (!sessionManager.isLoggedIn()) {
+                mostrarDialogoRegistro();
+            }else if (getActivity() != null) {
                 startActivity(new Intent(getActivity(), Conf_cuenta.class));
             }
         });
 
         rootView.findViewById(R.id.conf_privacidad).setOnClickListener(v -> {
             if (getActivity() != null) {
-                startActivity(new Intent(getActivity(), Conf_privacidad.class));
+                desarrollo();
+                //startActivity(new Intent(getActivity(), Conf_privacidad.class));
             }
         });
 
         rootView.findViewById(R.id.conf_notificaciones).setOnClickListener(v -> {
             if (getActivity() != null) {
-                startActivity(new Intent(getActivity(), Conf_notificaciones.class));
+                desarrollo();
+                //startActivity(new Intent(getActivity(), Conf_notificaciones.class));
             }
         });
 
         rootView.findViewById(R.id.conf_reportar).setOnClickListener(v -> {
             if (getActivity() != null) {
-                startActivity(new Intent(getActivity(), Conf_reportar.class));
+                desarrollo();
+                //startActivity(new Intent(getActivity(), Conf_reportar.class));
             }
         });
 
         rootView.findViewById(R.id.conf_cerrar).setOnClickListener(v -> {
+            if (!sessionManager.isLoggedIn()) {logoutLocal();}
             if (getActivity() != null) {
                 // Cerrar sesión y navegar a la actividad de bienvenida
                 cerrarSesion();
@@ -170,6 +176,7 @@ public class Configuracion extends Fragment {
     }
 
     private void cerrarSesion() {
+        if (!sessionManager.isLoggedIn()) return;
         String accessToken = sessionManager.getAccessToken();
         if (accessToken == null) {
             logoutLocal();
@@ -204,5 +211,24 @@ public class Configuracion extends Fragment {
             startActivity(new Intent(getActivity(), Welcome.class));
             requireActivity().finish();
         });
+    }
+    private void  mostrarDialogoRegistro() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Regístrate")
+                .setMessage("Para configurar tu perfil, debes estar registrado")
+                .setPositiveButton("Registrarse", (dialog, which) -> {
+                    // Redirigir a actividad de login
+                    startActivity(new Intent(getActivity(), Signup.class));
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void desarrollo() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("En desarollo")
+                .setMessage("Este apartado se está desarrrollando, ¡disculpe la molestia! \uD83D\uDE4F")
+                .setNegativeButton("Aceptar", null)
+                .show();
     }
 }

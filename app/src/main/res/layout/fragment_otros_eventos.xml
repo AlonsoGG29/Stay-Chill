@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_eventos_agregado"
-            android:textColor="@color/black"
+            android:textColor="@color/lightblack"
             android:fontFamily="@font/lora_semibold"
             app:layout_constraintBottom_toBottomOf="@id/fr_otros"
             app:layout_constraintEnd_toEndOf="@id/fr_otros"

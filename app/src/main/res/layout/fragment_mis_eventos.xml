@@ -40,7 +40,7 @@
             android:id="@+id/noEventos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
+            android:textColor="@color/lightblack"
             android:text="@string/no_eventos_creado"
             android:layout_marginBottom="10dp"
             android:fontFamily="@font/lora_semibold"
