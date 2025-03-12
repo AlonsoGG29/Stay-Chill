@@ -10,7 +10,7 @@ public class Mensaje {
     private String conversacionId;
 
     @SerializedName("sender_id")
-    private Sender sender; // Usamos una clase anidada para el remitente
+    private Sender sender; // 
 
     @SerializedName("contenido")
     private String contenido;

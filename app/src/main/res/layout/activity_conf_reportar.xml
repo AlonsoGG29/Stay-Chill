@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:id="@+id/activity_conf_reportar"
-    android:background="@android:color/white">
+    android:background="@color/white">
 
     <!-- Barra de encabezado con botón de retroceso -->
     <RelativeLayout

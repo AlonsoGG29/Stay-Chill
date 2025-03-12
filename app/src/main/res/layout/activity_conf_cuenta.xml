@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:id="@+id/activity_conf_cuenta"
     android:orientation="vertical"
-    android:background="@android:color/white"
+    android:background="@color/white"
     android:gravity="center_horizontal"
     android:padding="16dp">
 

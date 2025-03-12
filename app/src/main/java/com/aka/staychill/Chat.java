@@ -47,6 +47,8 @@ public class Chat extends AppCompatActivity {
     // === CONSTANTES ===
     private static final long POLLING_INTERVAL = 5000;
     private static final MediaType JSON_MEDIA_TYPE = MediaType.get("application/json");
+    private static final String WEBSOCKET_AUTH_MSG = "{\"event\":\"access_token\",\"payload\":\"%s\",\"ref\":0}";
+    private static final String WEBSOCKET_SUB_MSG = "{\"event\":\"phx_join\",\"payload\":{\"config\":{\"broadcast\":{\"self\":false},\"postgres_changes\":[{\"event\":\"INSERT\",\"schema\":\"public\",\"table\":\"mensajes\"}]}},\"ref\":1,\"topic\":\"realtime:public:messages\"}";
 
     // === VIEWS ===
     private RecyclerView recyclerMensajes;
@@ -55,11 +57,10 @@ public class Chat extends AppCompatActivity {
     private ImageView imgPerfil;
     private TextView tvNombre;
 
-
-
     // === COMPONENTES ===
     private MensajesAdapter adapter;
     private SessionManager sessionManager;
+    private CargarImagenes cargadorImagenes;
     private final OkHttpClient client = new OkHttpClient();
     private WebSocket webSocket;
     private Handler handler = new Handler();
@@ -108,13 +109,14 @@ public class Chat extends AppCompatActivity {
 
     private void inicializarComponentes() {
         sessionManager = new SessionManager(this);
+        cargadorImagenes = CargarImagenes.getInstance(this);
         conversacionId = getIntent().getStringExtra("conversacion_id");
         contactoId = getIntent().getStringExtra("contacto_id");
 
         recyclerMensajes = findViewById(R.id.recyclerMensajes);
         etMensaje = findViewById(R.id.etMensaje);
         btnEnviar = findViewById(R.id.btnEnviar);
-        imgPerfil = findViewById(R.id.imgPerfilChat); // Asegúrate que el ID coincida con tu XML
+        imgPerfil = findViewById(R.id.imgPerfilChat);
         tvNombre = findViewById(R.id.tvNombreChat);
     }
 
@@ -132,6 +134,8 @@ public class Chat extends AppCompatActivity {
 
     private void manejarFlujoInicial() {
         if (validarIdsIniciales()) return;
+
+        cargarDatosContacto();
 
         if (conversacionId == null) {
             verificarConversacionExistente();
@@ -156,10 +160,8 @@ public class Chat extends AppCompatActivity {
 
     private void verificarConversacionExistente() {
         List<String> participantes = obtenerParticipantesOrdenados();
-        String url = construirUrlVerificacionConversacion(participantes);
-
         Request request = new Request.Builder()
-                .url(url)
+                .url(construirUrlVerificacionConversacion(participantes))
                 .headers(obtenerHeadersAuth())
                 .build();
 
@@ -172,7 +174,6 @@ public class Chat extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    assert response.body() != null;
                     procesarRespuestaConversacion(response.body().string());
                 }
             }
@@ -212,10 +213,9 @@ public class Chat extends AppCompatActivity {
     }
 
     private void crearConversacionYEnviarMensaje(String contenido) {
-        List<String> participantes = obtenerParticipantesOrdenados();
-
         try {
             JSONObject body = new JSONObject();
+            List<String> participantes = obtenerParticipantesOrdenados();
             body.put("participante1", participantes.get(0));
             body.put("participante2", participantes.get(1));
             body.put("ultimo_mensaje", contenido);
@@ -236,7 +236,6 @@ public class Chat extends AppCompatActivity {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (response.isSuccessful()) {
-                        assert response.body() != null;
                         procesarNuevaConversacion(response.body().string(), contenido);
                     }
                 }
@@ -260,7 +259,6 @@ public class Chat extends AppCompatActivity {
 
     private void enviarMensajeExistente(String contenido) {
         try {
-            // 1. Crear el mensaje
             JSONObject mensajeBody = new JSONObject();
             mensajeBody.put("sender_id", sessionManager.getUserIdString());
             mensajeBody.put("contenido", contenido);
@@ -272,7 +270,6 @@ public class Chat extends AppCompatActivity {
                     .headers(obtenerHeadersAuth())
                     .build();
 
-            // 2. Actualizar la conversación
             JSONObject conversacionBody = new JSONObject();
             conversacionBody.put("ultimo_mensaje", contenido);
             conversacionBody.put("fecha", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(new Date()));
@@ -283,7 +280,6 @@ public class Chat extends AppCompatActivity {
                     .headers(obtenerHeadersAuth())
                     .build();
 
-            // Ejecutar ambas peticiones en paralelo
             client.newCall(mensajeRequest).enqueue(new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -293,7 +289,7 @@ public class Chat extends AppCompatActivity {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) {
                     if (response.isSuccessful()) {
-                        client.newCall(conversacionRequest).enqueue(new Callback() { // Encadenar actualización
+                        client.newCall(conversacionRequest).enqueue(new Callback() {
                             @Override
                             public void onResponse(@NonNull Call call, @NonNull Response response) {
                                 cargarMensajes();
@@ -318,18 +314,13 @@ public class Chat extends AppCompatActivity {
     // ########################################
 
     private void cargarMensajes() {
-        if (conversacionId == null) {
-            Log.e("Chat", "ID de conversación es nulo");
-            return;
-        }
+        if (conversacionId == null) return;
 
         HttpUrl url = Objects.requireNonNull(HttpUrl.parse(SupabaseConfig.getSupabaseUrl() + "/rest/v1/mensajes")).newBuilder()
                 .addQueryParameter("select", "id,contenido,fecha,conversacion_id,sender_id:usuarios(nombre,profile_image_url,foren_uid)")
                 .addQueryParameter("conversacion_id", "eq." + conversacionId)
                 .addQueryParameter("order", "fecha.asc")
                 .build();
-
-        Log.d("Chat", "Cargando mensajes desde: " + url);
 
         Request request = new Request.Builder()
                 .url(url)
@@ -339,110 +330,77 @@ public class Chat extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.e("Chat", "Error de red al cargar mensajes", e);
                 mostrarError("Error de conexión");
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    String json = response.body().string();
-                    Log.d("Chat", "Respuesta mensajes: " + json);
-
-                    try {
-                        List<Mensaje> nuevosMensajes = Arrays.asList(new Gson().fromJson(json, Mensaje[].class));
-
-                        runOnUiThread(() -> {
-                            // Actualizar datos del contacto desde el primer mensaje recibido
-                            for (Mensaje mensaje : nuevosMensajes) {
-                                if (!mensaje.getSender().getId().equals(sessionManager.getUserIdString())) {
-                                    cargarPerfilDesdeMensaje(mensaje.getSender());
-                                    break;
-                                }
-                            }
-
-                            adapter.setMensajes(nuevosMensajes);
-                            recyclerMensajes.smoothScrollToPosition(adapter.getItemCount() - 1);
-                        });
-
-                    } catch (Exception e) {
-                        Log.e("Chat", "Error parseando mensajes", e);
-                        mostrarError("Error procesando mensajes");
-                    }
-                } else {
-                    Log.e("Chat", "Respuesta no exitosa: " + response.code());
-                    mostrarError("Error al cargar mensajes");
+                    procesarMensajesRecibidos(response.body().string());
                 }
             }
         });
     }
 
-    private void cargarPerfilDesdeMensaje(Mensaje.Sender sender) {
-        runOnUiThread(() -> {
-            try {
-                Log.d("Chat", "Actualizando perfil desde mensaje: " + sender.getNombre());
-
-                // Actualizar nombre
-                tvNombre.setText(sender.getNombre());
-
-                // Actualizar imagen solo si hay URL
-                if (sender.getFoto() != null && !sender.getFoto().isEmpty()) {
-                    Glide.with(Chat.this)
-                            .load(sender.getFoto())
-                            .circleCrop()
-                            .placeholder(R.drawable.img_default)
-                            .error(R.drawable.img_default)
-                            .into(imgPerfil);
-                } else {
-                    imgPerfil.setImageResource(R.drawable.img_default);
-                }
-
-            } catch (Exception e) {
-                Log.e("Chat", "Error actualizando perfil", e);
-            }
-        });
-    }
-
-    // ########################################
-    // ##         ACTUALIZACIÓN UI           ##
-    // ########################################
-
-    private void actualizarListaMensajes(String respuesta) {
+    private void procesarMensajesRecibidos(String json) {
         try {
-            List<Mensaje> nuevosMensajes = Arrays.asList(new Gson().fromJson(respuesta, Mensaje[].class));
+            List<Mensaje> nuevosMensajes = Arrays.asList(new Gson().fromJson(json, Mensaje[].class));
             runOnUiThread(() -> {
-                List<Mensaje> mensajesActuales = adapter.getMensajes();
-                List<Mensaje> mensajesFiltrados = filtrarNuevosMensajes(mensajesActuales, nuevosMensajes);
-
-                if (!mensajesFiltrados.isEmpty()) {
-                    mensajesActuales.addAll(mensajesFiltrados);
-                    adapter.notifyDataSetChanged();
-                    recyclerMensajes.smoothScrollToPosition(adapter.getItemCount() - 1);
-                }
+                adapter.setMensajes(nuevosMensajes);
+                recyclerMensajes.smoothScrollToPosition(adapter.getItemCount() - 1);
             });
         } catch (Exception e) {
-            mostrarError("Error actualizando mensajes");
+            mostrarError("Error procesando mensajes");
         }
     }
 
-    private List<Mensaje> filtrarNuevosMensajes(List<Mensaje> existentes, List<Mensaje> nuevos) {
-        List<Mensaje> filtrados = new ArrayList<>();
-        for (Mensaje nuevo : nuevos) {
-            if (!existeMensaje(existentes, nuevo)) {
-                filtrados.add(nuevo);
+
+    private void cargarDatosContacto() {
+        if (contactoId == null) return;
+
+        HttpUrl url = HttpUrl.parse(SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios")
+                .newBuilder()
+                .addQueryParameter("foren_uid", "eq." + contactoId)
+                .addQueryParameter("select", "nombre,profile_image_url")
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .headers(obtenerHeadersAuth())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("Chat", "Error cargando contacto", e);
             }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    procesarDatosContacto(response.body().string());
+                }
+            }
+        });
+    }
+    private void procesarDatosContacto(String json) {
+        try {
+            JSONArray jsonArray = new JSONArray(json);
+            if (jsonArray.length() > 0) {
+                JSONObject contacto = jsonArray.getJSONObject(0);
+                String nombre = contacto.getString("nombre");
+                String fotoUrl = contacto.optString("profile_image_url", "");
+
+                runOnUiThread(() -> {
+                    tvNombre.setText(nombre);
+                    cargadorImagenes.loadProfileImage(fotoUrl, imgPerfil, Chat.this);
+                });
+            }
+        } catch (JSONException e) {
+            Log.e("Chat", "Error procesando contacto", e);
         }
-        return filtrados;
     }
 
-    private boolean existeMensaje(List<Mensaje> mensajes, Mensaje buscado) {
-        for (Mensaje m : mensajes) {
-            if (m.getId().equals(buscado.getId())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     // ########################################
     // ##         TIEMPO REAL (WS)           ##
@@ -450,13 +408,11 @@ public class Chat extends AppCompatActivity {
 
     private void iniciarConexionTiempoReal() {
         iniciarWebSocket();
-        iniciarPolling();
     }
 
     private void iniciarWebSocket() {
-        String url = "wss://" + SupabaseConfig.getSupabaseUrl() + "/realtime/v1/websocket";
         Request request = new Request.Builder()
-                .url(url)
+                .url("wss://" + SupabaseConfig.getSupabaseUrl() + "/realtime/v1/websocket")
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                 .build();
 
@@ -479,19 +435,8 @@ public class Chat extends AppCompatActivity {
     }
 
     private void autenticarWebSocket(WebSocket ws) {
-        String authMsg = String.format(
-                "{\"event\":\"access_token\",\"payload\":\"%s\",\"ref\":0}",
-                SupabaseConfig.getSupabaseKey()
-        );
-        ws.send(authMsg);
-
-        String subMsg = "{\"event\":\"phx_join\",\"payload\":{" +
-                "\"config\":{\"broadcast\":{\"self\":false}," +
-                "\"postgres_changes\":[{" +
-                "\"event\":\"INSERT\"," +
-                "\"schema\":\"public\"," +
-                "\"table\":\"mensajes\"}]}},\"ref\":1,\"topic\":\"realtime:public:messages\"}";
-        ws.send(subMsg);
+        ws.send(String.format(WEBSOCKET_AUTH_MSG, SupabaseConfig.getSupabaseKey()));
+        ws.send(WEBSOCKET_SUB_MSG);
     }
 
     private void procesarMensajeWebSocket(String mensaje) {
@@ -522,9 +467,7 @@ public class Chat extends AppCompatActivity {
     }
 
     private void cerrarWebSocket() {
-        if (webSocket != null) {
-            webSocket.close(1000, "Activity closed");
-        }
+        if (webSocket != null) webSocket.close(1000, "Activity closed");
     }
 
     // ########################################
