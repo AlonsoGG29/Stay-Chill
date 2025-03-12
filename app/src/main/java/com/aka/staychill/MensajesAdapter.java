@@ -52,11 +52,8 @@ public class MensajesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Mensaje mensaje = mensajes.get(position);
         MensajeViewHolder vh = (MensajeViewHolder) holder;
-        Context context = vh.itemView.getContext();
 
         vh.tvMensaje.setText(mensaje.getContenido());
-
-
 
         // Ejemplo: Mostrar hora del mensaje
         try {
