@@ -85,6 +85,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/escribe_un_mensaje"
+                android:textColor="@color/lightblack"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/btnEnviar"
                 app:layout_constraintStart_toStartOf="parent"

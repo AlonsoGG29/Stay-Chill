@@ -56,13 +56,6 @@ public class MensajesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         vh.tvMensaje.setText(mensaje.getContenido());
 
-        if (getItemViewType(position) == TIPO_RECIBIDO) {
-            CargarImagenes.getInstance(context)
-                    .loadProfileImage(mensaje.getSender().getFoto(), vh.imgPerfil, context);
-            vh.imgPerfil.setVisibility(View.VISIBLE);
-        }
-
-        vh.tvMensaje.setText(mensaje.getContenido());
 
 
         // Ejemplo: Mostrar hora del mensaje

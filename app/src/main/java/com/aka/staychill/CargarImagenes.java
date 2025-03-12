@@ -32,10 +32,20 @@ public class CargarImagenes {
     }
 
     public void loadProfileImage(String imageUrl, ImageView imageView, Context context) {
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            // Cargar imagen por defecto
+            Glide.with(context)
+                    .load(R.drawable.img_default)
+                    .apply(glideOptions.circleCrop())
+                    .into(imageView);
+            return;
+        }
         String cacheBusterUrl = getCacheBustedUrl(imageUrl, "profile_" + getUserId(context));
         Glide.with(context)
                 .load(cacheBusterUrl)
                 .apply(glideOptions.circleCrop())
+                .error(R.drawable.img_default)
+                .placeholder(R.drawable.img_default)
                 .into(imageView);
     }
 
