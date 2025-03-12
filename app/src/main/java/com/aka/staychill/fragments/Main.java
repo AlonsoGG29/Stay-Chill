@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -47,6 +48,7 @@ public class Main extends Fragment {
     private List<Evento> listaCompletaEventos = new ArrayList<>();
     private OkHttpClient client;
     private SessionManager sessionManager;
+    private TextView txtRegistroNecesario;
 
 
     @Override
@@ -67,6 +69,8 @@ public class Main extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         searchView = view.findViewById(R.id.searchView);
         sessionManager = new SessionManager(requireContext());
+        txtRegistroNecesario = view.findViewById(R.id.txtRegistroNecesario);
+
     }
 
     private void setupHttpClient() {
@@ -77,6 +81,7 @@ public class Main extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new EventosAdapter(requireContext(), new ArrayList<>());
         recyclerView.setAdapter(adapter);
+
     }
 
     private void setupRefreshLayout() {
@@ -127,6 +132,10 @@ public class Main extends Fragment {
     }
 
     private void cargarEventos() {
+        if (!sessionManager.isLoggedIn()) {
+            mostrarMensajeRegistro();
+            return;
+        }
         Request request = buildRequest();
 
         client.newCall(request).enqueue(new Callback() {
@@ -174,6 +183,7 @@ public class Main extends Fragment {
     }
 
     private void showError(String mensaje) {
+        if (!sessionManager.isLoggedIn()) return;
         runOnUiThread(() -> {
             swipeRefreshLayout.setRefreshing(false);
             Toast.makeText(getContext(), mensaje, Toast.LENGTH_SHORT).show();
@@ -185,4 +195,12 @@ public class Main extends Fragment {
             getActivity().runOnUiThread(action);
         }
     }
+    private void mostrarMensajeRegistro() {
+        getActivity().runOnUiThread(() -> {
+            recyclerView.setVisibility(View.GONE);
+            txtRegistroNecesario.setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(false);
+        });
+    }
+
 }

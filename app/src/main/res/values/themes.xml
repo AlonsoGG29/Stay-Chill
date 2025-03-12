@@ -8,4 +8,9 @@
     <style name="Theme.StayChill" parent="Base.Theme.StayChill">
         <item name="android:windowIsTranslucent">true</item>
     </style>
+
+    <style name="Theme.App.TransparentStatusBar" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
 </resources>

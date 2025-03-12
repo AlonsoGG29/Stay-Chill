@@ -4,22 +4,22 @@
     <!-- Elemento principal del menú -->
     <item
         android:id="@+id/home"
-        android:title="home"
+        android:title="Home"
         android:icon="@drawable/img_home"
         app:showAsAction="always" />
     <item
         android:id="@+id/eventos"
-        android:title="eventos"
+        android:title="Eventos"
         android:icon="@drawable/img_calendario"
         app:showAsAction="always" />
     <item
         android:id="@+id/mensaje"
-        android:title="mensajes"
+        android:title="Mensajes"
         android:icon="@drawable/img_mensaje"
         app:showAsAction="always" />
     <item
         android:id="@+id/opciones"
-        android:title="opciones"
+        android:title="Opciones"
         android:icon="@drawable/img_usuario"
         app:showAsAction="always" />
 

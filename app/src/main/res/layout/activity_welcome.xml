@@ -58,7 +58,7 @@
             android:layout_marginTop="60dp"
             android:fontFamily="@font/lora_semibolditalic"
             android:text="@string/bienvenido"
-            android:textColor="@color/white"
+            android:textColor="#FFFFFFFF"
             android:textSize="40sp"
             app:layout_constraintEnd_toEndOf="@id/cuadro"
             app:layout_constraintStart_toStartOf="@id/cuadro"

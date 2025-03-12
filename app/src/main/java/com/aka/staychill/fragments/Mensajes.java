@@ -72,8 +72,6 @@ public class Mensajes extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-
         buscarUsuarioLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -230,7 +228,7 @@ public class Mensajes extends Fragment {
     private void mostrarDialogoRegistro() {
         new AlertDialog.Builder(requireContext())
                 .setTitle("Regístrate")
-                .setMessage("Para enviar mensajes debes estar registrado")
+                .setMessage("Para enviar mensajes, debes estar registrado")
                 .setPositiveButton("Registrarse", (dialog, which) -> {
                     // Redirigir a actividad de login
                     startActivity(new Intent(getActivity(), Signup.class));

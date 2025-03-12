@@ -1,5 +1,6 @@
 package com.aka.staychill.fragments;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -11,7 +12,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +21,7 @@ import com.aka.staychill.EventoClick;
 import com.aka.staychill.EventosAdapter;
 import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
+import com.aka.staychill.Signup;
 import com.aka.staychill.SupabaseConfig;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
@@ -135,12 +136,25 @@ public class MisEventos extends Fragment {
     }
 
     private void setupAgregarEventosButton(View view) {
-        ImageButton agregarEventos = view.findViewById(R.id.agregarEventos);
-        agregarEventos.setOnClickListener(v -> navigateToCrearEvento());
+        view.findViewById(R.id.agregarEventos).setOnClickListener(v -> {
+            if (sessionManager.isLoggedIn()) {
+                Intent intent = new Intent(getActivity(), CrearEvento.class);
+                startActivity(intent);
+            } else {
+                mostrarDialogoRegistro();
+            }
+        });
     }
 
-    private void navigateToCrearEvento() {
-        Intent intent = new Intent(getActivity(), CrearEvento.class);
-        startActivity(intent);
+    private void mostrarDialogoRegistro() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Regístrate")
+                .setMessage("Para crear un evento, ¡tienes que registrarte!")
+                .setPositiveButton("Registrarse", (dialog, which) -> {
+                    // Redirigir a actividad de login
+                    startActivity(new Intent(getActivity(), Signup.class));
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 }
