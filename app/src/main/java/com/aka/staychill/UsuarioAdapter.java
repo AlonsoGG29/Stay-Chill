@@ -78,6 +78,9 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.ViewHold
             holder.imagenPerfil.setImageResource(R.drawable.img_default);
         }
     }
+    public List<Usuario> getUsuarios() {
+        return listaUsuarios;
+    }
 
     @Override
     public int getItemCount() {

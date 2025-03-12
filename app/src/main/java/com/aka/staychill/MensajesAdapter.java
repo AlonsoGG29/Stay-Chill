@@ -1,5 +1,6 @@
 package com.aka.staychill;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,24 +52,14 @@ public class MensajesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Mensaje mensaje = mensajes.get(position);
         MensajeViewHolder vh = (MensajeViewHolder) holder;
+        Context context = vh.itemView.getContext();
 
         vh.tvMensaje.setText(mensaje.getContenido());
 
-        // Solo cargar imagen en mensajes recibidos
         if (getItemViewType(position) == TIPO_RECIBIDO) {
-            // Asegúrate que el ImageView existe en el layout recibido
-            if (vh.imgPerfil != null) {
-                Glide.with(vh.itemView.getContext())
-                        .load(mensaje.getSender().getFoto())
-                        .circleCrop()
-                        .placeholder(R.drawable.img_default)
-                        .into(vh.imgPerfil);
-            }
-        } else {
-            // Ocultar ImageView en mensajes enviados si existe
-            if (vh.imgPerfil != null) {
-                vh.imgPerfil.setVisibility(View.GONE);
-            }
+            CargarImagenes.getInstance(context)
+                    .loadProfileImage(mensaje.getSender().getFoto(), vh.imgPerfil, context);
+            vh.imgPerfil.setVisibility(View.VISIBLE);
         }
 
         vh.tvMensaje.setText(mensaje.getContenido());

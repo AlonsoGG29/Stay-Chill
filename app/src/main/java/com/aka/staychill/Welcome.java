@@ -64,6 +64,7 @@ public class Welcome extends AppCompatActivity {
         inicializarVistas();
         configurarListeners();
         estilizarTextoRegistro();
+        estilizarTextoRegistro();
     }
 
     // Configuración de Vistas

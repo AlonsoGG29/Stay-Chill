@@ -107,7 +107,13 @@ public class Configuracion extends Fragment {
 
     private void actualizarUI(Usuario usuario) {
         // Actualizar nombre
-        nombreUsuario.setText(usuario.getNombre() + " " + usuario.getApellido());
+        if(usuario.getApellido() != null){
+            nombreUsuario.setText(usuario.getNombre() + " " + usuario.getApellido());
+        }
+        else{
+            nombreUsuario.setText(usuario.getNombre());
+        }
+
 
         // Actualizar imagen usando ImageManager
         if (usuario.getImagenPerfil() != null && !usuario.getImagenPerfil().isEmpty()) {
