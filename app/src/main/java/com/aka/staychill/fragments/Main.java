@@ -170,7 +170,7 @@ public class Main extends Fragment {
 
     private void updateEventosList(Response response) throws IOException {
         String json = response.body().string();
-        Gson gson = new Gson(); // Usar Gson normal sin deserializador custom
+        Gson gson = new Gson();
         Log.d("SupabaseDebug", "Respuesta JSON: " + json);
 
         Evento[] eventos = gson.fromJson(json, Evento[].class);
@@ -183,7 +183,9 @@ public class Main extends Fragment {
     }
 
     private void showError(String mensaje) {
+
         if (!sessionManager.isLoggedIn()) return;
+
         runOnUiThread(() -> {
             swipeRefreshLayout.setRefreshing(false);
             Toast.makeText(getContext(), mensaje, Toast.LENGTH_SHORT).show();

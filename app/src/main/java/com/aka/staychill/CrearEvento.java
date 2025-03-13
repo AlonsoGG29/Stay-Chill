@@ -15,18 +15,16 @@ import java.util.*;
 
 public class CrearEvento extends AppCompatActivity {
 
-    // Constantes
+
     private static final String DATE_API_FORMAT = "yyyy-MM-dd";
     private static final String TIME_API_FORMAT = "HH:mm:ss";
     private static final String DATE_UI_FORMAT = "dd/MM/yyyy";
     private static final String TIME_UI_FORMAT = "HH:mm";
 
-    // Vistas
     private EditText inputNombre, inputLocalizacion, inputDescripcion, inputFecha, inputHora;
     private ImageView inputImagen;
     private Spinner spinnerTipoDeEvento;
 
-    // Dependencias
     private SessionManager sessionManager;
     private final HashMap<String, Integer> imagenesPorTipo = new HashMap<>();
     private final SimpleDateFormat uiDateFormatter = new SimpleDateFormat(DATE_UI_FORMAT, Locale.getDefault());

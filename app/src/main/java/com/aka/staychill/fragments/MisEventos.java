@@ -57,7 +57,6 @@ public class MisEventos extends Fragment {
         setupAgregarEventosButton(view);
         setupRecyclerView();
 
-        // Configurar SwipeRefresh
         swipeRefreshLayout.setOnRefreshListener(() -> {
             clearGlideCache();
             loadUserEvents();
@@ -92,7 +91,7 @@ public class MisEventos extends Fragment {
 
         String url = SupabaseConfig.getSupabaseUrl() +
                 "/rest/v1/eventos?creador_id=eq." + userId +
-                "&select=*,usuarios:creador_id(*)"; // Join con tabla usuarios
+                "&select=*,usuarios:creador_id(*)";
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
@@ -114,7 +113,7 @@ public class MisEventos extends Fragment {
                 if (response.isSuccessful()) {
                     assert response.body() != null;
                     String json = response.body().string();
-                    Gson gson = new Gson(); // Eliminar el registro del deserializador
+                    Gson gson = new Gson();
 
                     Evento[] eventosArray = gson.fromJson(json, Evento[].class);
                     List<Evento> eventos = Arrays.asList(eventosArray);

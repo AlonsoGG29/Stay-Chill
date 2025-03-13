@@ -42,7 +42,6 @@ public class BuscarUsuario extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buscar_usuario);
 
-        // Inicializar vistas
         vistaReciclada = findViewById(R.id.recyclerView);
         buscador = findViewById(R.id.searchView);
         refrescarLayout = findViewById(R.id.swipeRefresh);
@@ -68,7 +67,7 @@ public class BuscarUsuario extends AppCompatActivity {
 
     private void abrirChat(String usuarioId) {
         Intent intent = new Intent(this, Chat.class);
-        intent.putExtra("contacto_id", usuarioId); // <- clave correcta
+        intent.putExtra("contacto_id", usuarioId);
         startActivity(intent);
     }
     private void configurarBuscador() {

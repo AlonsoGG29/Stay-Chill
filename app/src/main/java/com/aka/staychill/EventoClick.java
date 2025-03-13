@@ -84,7 +84,6 @@ public class EventoClick extends AppCompatActivity {
         Log.d("BotonesDebug", "User ID: " + userId);
         Log.d("BotonesDebug", "Creador ID: " + creadorId);
 
-        // Verificar nulos primero
         if (userId == null || creadorId == null) {
             btnUnirse.setVisibility(View.GONE);
             btnEliminar.setVisibility(View.GONE);
@@ -255,7 +254,7 @@ public class EventoClick extends AppCompatActivity {
         TextView hora = findViewById(R.id.horaEvento);
 
         try {
-            // Parsear fecha
+
             SimpleDateFormat parserFecha = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date fechaDate = parserFecha.parse(evento.getFechaStr());
             fecha.setText(dateFormatter.format(fechaDate));
@@ -264,7 +263,6 @@ public class EventoClick extends AppCompatActivity {
             fecha.setText(evento.getFechaStr());
         }
 
-        // Hora ya viene formateada desde Evento.getHoraStr()
         hora.setText(evento.getHoraStr());
     }
 

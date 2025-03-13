@@ -72,11 +72,11 @@ public class ConversacionesAdapter extends RecyclerView.Adapter<ConversacionesAd
             super(view);
             tvNombre = view.findViewById(R.id.nombreChat);
             tvMensaje = view.findViewById(R.id.mensajesChat);
-            ivFoto = view.findViewById(R.id.fotoPerfilChat); // Asegúrate de que este ID existe en tu XML
+            ivFoto = view.findViewById(R.id.fotoPerfilChat);
         }
     }
     public int getItemCount() {
-        return conversaciones.size(); // Devuelve el número de conversaciones
+        return conversaciones.size();
     }
     public void actualizarDatos(List<Conversacion> nuevasConversaciones) {
         DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {

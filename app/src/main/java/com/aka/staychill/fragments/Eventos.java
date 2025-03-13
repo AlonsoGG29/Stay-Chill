@@ -27,16 +27,12 @@ public class Eventos extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_eventos, container, false);
 
-        // Inicializar las referencias a los TextViews
         inicializarTextViews(view);
 
-        // Configurar ViewPager2 y TabLayout
         configurarViewPagerTabLayout(view);
 
-        // Obtener y ajustar la información del día actual
         actualizarDiaActual();
 
-        // Ajustar los días de la semana y los números
         actualizarDiasSemana();
 
         return view;
