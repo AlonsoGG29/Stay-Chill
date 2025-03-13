@@ -8,9 +8,7 @@ public class SupabaseConfig {
 
     private static OkHttpClient client;
 
-    private SupabaseConfig() {
-        // Evitar instanciación
-    }
+    private SupabaseConfig() {}
 
     public static OkHttpClient getClient() {
         if (client == null) {

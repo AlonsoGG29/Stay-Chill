@@ -13,7 +13,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 public class Evento {
-    // Mapeo directo de campos JSON
+
     @SerializedName("id")
     private Long id;
 
@@ -36,19 +36,17 @@ public class Evento {
     private String tipoDeEvento;
 
     @SerializedName("imagen_del_evento")
-    private String imagenNombre; // Nombre del recurso drawable
+    private String imagenNombre;
 
-    // Datos del creador desde JOIN
-    @SerializedName("creador_id") // ← Campo directo del evento
+    @SerializedName("creador_id")
     private UUID creadorId;
 
-    @SerializedName("usuarios") // ← JOIN con datos del usuario creador
+    @SerializedName("usuarios")
     private Creador creador;
 
-    @SerializedName("asistentes_eventos") // Mapea la relación con la tabla de asistentes
+    @SerializedName("asistentes_eventos")
     private List<Asistencia> asistencias = new ArrayList<>();
 
-    // Clase interna para el creador
     private static class Creador {
         @SerializedName("foren_uid")
         UUID id;
@@ -64,7 +62,7 @@ public class Evento {
 
         @SerializedName("pais")
         String pais;
-        // Setters para Creador
+
         public void setId(UUID id) { this.id = id; }
         public void setProfileImage(String profileImage) { this.profileImage = profileImage; }
         public void setNombre(String nombre) { this.nombre = nombre; }
@@ -77,9 +75,6 @@ public class Evento {
     }
 
 
-
-
-    // Setters principales
     public void setId(Long id) { this.id = id; }
     public void setNombreEvento(String nombreEvento) { this.nombreEvento = nombreEvento; }
     public void setLocalizacion(String localizacion) { this.localizacion = localizacion; }
@@ -90,7 +85,6 @@ public class Evento {
     public void setImagenNombre(String imagenNombre) { this.imagenNombre = imagenNombre; }
     public void setCreador(Creador creador) { this.creador = creador; }
 
-    // Setters específicos para Creador
     public void setCreadorId(UUID id) {
         if (creador == null) creador = new Creador();
         creador.setId(id);
@@ -108,30 +102,24 @@ public class Evento {
         return ids;
     }
 
-
-
-
-
-    // Getters para datos del creador
-
     public Long getId(){return id;}
     public String getNombreEvento() {return nombreEvento;}
     public String getLocalizacion(){return localizacion;}
     public String getDescripcion(){return descripcion;}
     public String getTipoDeEvento(){return tipoDeEvento;}
     public String getFechaStr(){return fechaStr;}
-    // En Evento.java, modifica el método getHoraStr():
+
     public String getHoraStr() {
         try {
-            // Primero parsea la hora original (HH:mm:ss)
+
             SimpleDateFormat originalFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
             Date horaDate = originalFormat.parse(horaStr);
 
-            // Luego formatea sin segundos
+
             SimpleDateFormat nuevoFormato = new SimpleDateFormat("HH:mm", Locale.getDefault());
             return nuevoFormato.format(horaDate);
         } catch (ParseException e) {
-            return horaStr; // Devuelve el string original si hay error
+            return horaStr;
         }
     }
     public int getImagenDelEvento(Context context) {
@@ -181,7 +169,7 @@ public class Evento {
             case "Motor y Aventura":
                 return R.color.motor_color;
             default:
-                return R.color.red; // Color para tipos no reconocidos
+                return R.color.red;
         }
     }
 

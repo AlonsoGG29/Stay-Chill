@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import java.util.UUID;
 
 public class SessionManager {
+
     private static final String PREFS_NAME = "staychill_prefs";
     private static final String KEY_ACCESS_TOKEN = "access_token";
     private static final String KEY_REFRESH_TOKEN = "refresh_token";
@@ -17,7 +18,6 @@ public class SessionManager {
         prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    // Mét0do mejorado para guardar todos los datos de sesión
     public void saveSession(String accessToken, String refreshToken, UUID userId) {
         prefs.edit()
                 .putString(KEY_ACCESS_TOKEN, accessToken)
@@ -47,7 +47,6 @@ public class SessionManager {
         }
     }
 
-    // Mét0do para obtener el ID de usuario como String (útil para algunas operaciones)
     @Nullable
     public String getUserIdString() {
         return prefs.getString(KEY_USER_ID, null);

@@ -23,16 +23,12 @@ public class Main_bn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_bn);
 
-
-        // Configurar el adaptador para ViewPager
         configurarAdaptadorViewPager();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        // Configurar badges
         configurarBadges(bottomNavigationView);
 
-        // Configurar listener de selección de navegación
         configurarSeleccionNavegacion(bottomNavigationView);
 
         notificacion = findViewById(R.id.notif_esquina);
@@ -81,7 +77,6 @@ public class Main_bn extends AppCompatActivity {
     }
 
     private void configurarBadges(BottomNavigationView bottomNavigationView) {
-        // Configura los badges para cada elemento
         BadgeDrawable badge = bottomNavigationView.getOrCreateBadge(R.id.home);
 
         badge = bottomNavigationView.getOrCreateBadge(R.id.eventos);
@@ -92,7 +87,7 @@ public class Main_bn extends AppCompatActivity {
     }
 
     private void configurarSeleccionNavegacion(BottomNavigationView bottomNavigationView) {
-        // Configurar listener de selección de navegación
+
         bottomNavigationView.setOnItemSelectedListener(item -> {
             manejarSeleccionNavegacion(item);
             return true;

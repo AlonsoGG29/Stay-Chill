@@ -1,4 +1,4 @@
-package com.aka.staychill; //Clean caraaaaaaaaaaa
+package com.aka.staychill;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,17 +33,14 @@ import okhttp3.Response;
 
 public class Login extends AppCompatActivity {
 
-    // Constantes
     private static final String TAG = "LoginActivity";
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final String SUPABASE_AUTH_URL = SupabaseConfig.getSupabaseUrl() + "/auth/v1/";
 
-    // Variables
     private SessionManager sessionManager;
     private OkHttpClient client;
     private EditText emailField, passwordField;
 
-    // Ciclo de vida del Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +50,6 @@ public class Login extends AppCompatActivity {
         verificarSesionExistente();
     }
 
-    // Configuración Inicial
     private void inicializarComponentes() {
         sessionManager = new SessionManager(this);
         client = SupabaseConfig.getClient();
@@ -66,7 +62,6 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    // Configuración de Vistas
     private void inicializarVistas() {
         emailField = findViewById(R.id.email);
         passwordField = findViewById(R.id.password);
@@ -85,7 +80,6 @@ public class Login extends AppCompatActivity {
         estilizarTextoRegistro(tvRegistro);
     }
 
-    // Lógica de Autenticación
     private void validarYLogin() {
         String email = emailField.getText().toString().trim();
         String password = passwordField.getText().toString().trim();
@@ -130,7 +124,6 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    // Manejo de Respuestas
     private void procesarRespuestaExitosa(String responseBody) {
         try {
             JSONObject json = new JSONObject(responseBody);
@@ -158,7 +151,6 @@ public class Login extends AppCompatActivity {
         mostrarMensaje("Error de conexión: " + e.getMessage());
     }
 
-    // Helpers de Autenticación
     private String crearJsonCredenciales(String email, String password) {
         try {
             return new JSONObject()
@@ -209,7 +201,6 @@ public class Login extends AppCompatActivity {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-    // Validación de Token
     private void validarTokenEnServidor() {
         Request request = new Request.Builder()
                 .url(SUPABASE_AUTH_URL + "user")
@@ -233,7 +224,6 @@ public class Login extends AppCompatActivity {
         });
     }
 
-    // Helpers de UI
     private boolean validarCampos(String email, String password) {
         if (email.isEmpty()) {
             mostrarMensaje("Ingresa tu correo electrónico");

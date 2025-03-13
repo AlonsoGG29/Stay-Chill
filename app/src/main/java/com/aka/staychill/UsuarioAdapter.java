@@ -16,10 +16,10 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.ViewHold
     private List<Usuario> listaUsuarios;
     private OnUsuarioClickListener listener;
 
-    // Constructor corregido
+
     public UsuarioAdapter(List<Usuario> listaUsuarios, OnUsuarioClickListener listener) {
         this.listaUsuarios = listaUsuarios;
-        this.listener = listener; // Inicializa el listener
+        this.listener = listener;
     }
 
     public interface OnUsuarioClickListener {
@@ -48,14 +48,12 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int posicion) {
         Usuario usuario = listaUsuarios.get(posicion);
 
-        // Cambiar de getUid() a getId() si corresponde
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onUsuarioClick(usuario.getId()); // Usar getter corregido
+                listener.onUsuarioClick(usuario.getId());
             }
         });
 
-        // Nombre completo
         String nombreCompleto = (usuario.getNombre() != null ? usuario.getNombre() : "")
                 + " "
                 + (usuario.getApellido() != null ? usuario.getApellido() : "");
@@ -67,7 +65,7 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.ViewHold
         });
 
 
-        // Imagen con Glide
+
         if (usuario.getImagenPerfil() != null && !usuario.getImagenPerfil().isEmpty()) {
             Glide.with(holder.itemView.getContext())
                     .load(usuario.getImagenPerfil())

@@ -1,4 +1,4 @@
-package com.aka.staychill; //Clean Fernando
+package com.aka.staychill;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,18 +32,15 @@ import okhttp3.Response;
 
 public class Signup extends AppCompatActivity {
 
-    // Constantes
     private static final MediaType JSON = MediaType.parse("application/json");
     private static final String AUTH_URL = SupabaseConfig.getSupabaseUrl() + "/auth/v1/";
     private static final String REST_URL = SupabaseConfig.getSupabaseUrl() + "/rest/v1/";
 
-    // Variables
     private EditText emailField, passwordField, confirmPasswordField, nameField;
     private Button signup;
     private TextView login;
     private SessionManager sessionManager;
 
-    // Ciclo de vida de la Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +51,6 @@ public class Signup extends AppCompatActivity {
         inicializarComponentes();
     }
 
-    // Configuración Inicial
     private void verificarSesionExistente() {
         if (sessionManager.isLoggedIn()) {
             redirigirAMain();
@@ -67,7 +63,6 @@ public class Signup extends AppCompatActivity {
         estilizarTextoLogin();
     }
 
-    // Configuración de Vistas
     private void inicializarVistas() {
         emailField = findViewById(R.id.email);
         passwordField = findViewById(R.id.password);
@@ -115,7 +110,6 @@ public class Signup extends AppCompatActivity {
         tvLogin.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    // Lógica de Registro
     private void procesarRegistro() {
         String email = emailField.getText().toString().trim();
         String password = passwordField.getText().toString().trim();
@@ -173,7 +167,6 @@ public class Signup extends AppCompatActivity {
         sessionManager.saveSession(accessToken, refreshToken, userId);
     }
 
-    // Creación de Perfil
     private void crearPerfilUsuario() {
         try {
             Request request = construirRequestPerfil();
@@ -257,7 +250,6 @@ public class Signup extends AppCompatActivity {
         sessionManager.logout();
     }
 
-    // Validaciones
     private boolean validarCampos(String email, String password, String confirmPassword, String name) {
         if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || name.isEmpty()) {
             mostrarMensaje("Todos los campos son obligatorios");
@@ -282,7 +274,6 @@ public class Signup extends AppCompatActivity {
         return true;
     }
 
-    // Helpers
     private String crearJsonRegistro(String email, String password, String name) {
         try {
             return new JSONObject()

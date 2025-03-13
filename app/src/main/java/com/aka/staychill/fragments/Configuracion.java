@@ -54,12 +54,12 @@ public class Configuracion extends Fragment {
         sessionManager = new SessionManager(requireContext());
         cargarImagenes = CargarImagenes.getInstance(requireContext());
         client = SupabaseConfig.getClient();
-        // Infla el diseño del fragmento
+
         View rootView = inflater.inflate(R.layout.fragment_configuracion, container, false);
         nombreUsuario = rootView.findViewById(R.id.nombrePerfil);
         imagenPerfil = rootView.findViewById(R.id.fotoPerfil);
 
-        // Configura los listeners de los botones
+
         configurarListenersBotones(rootView);
         cargarDatosUsuario();
 
@@ -106,7 +106,7 @@ public class Configuracion extends Fragment {
     }
 
     private void actualizarUI(Usuario usuario) {
-        // Actualizar nombre
+
         if(usuario.getApellido() != null){
             nombreUsuario.setText(usuario.getNombre() + " " + usuario.getApellido());
         }
@@ -115,7 +115,7 @@ public class Configuracion extends Fragment {
         }
 
 
-        // Actualizar imagen usando ImageManager
+
         if (usuario.getImagenPerfil() != null && !usuario.getImagenPerfil().isEmpty()) {
             cargarImagenes.loadProfileImage(
                     usuario.getImagenPerfil(),
@@ -173,10 +173,10 @@ public class Configuracion extends Fragment {
         rootView.findViewById(R.id.conf_cerrar).setOnClickListener(v -> {
             if (!sessionManager.isLoggedIn()) {logoutLocal();}
             if (getActivity() != null) {
-                // Cerrar sesión y navegar a la actividad de bienvenida
+
                 cerrarSesion();
                 startActivity(new Intent(getActivity(), Welcome.class));
-                getActivity().finish(); // Opcional: cerrar la actividad actual
+                getActivity().finish();
             }
         });
     }
@@ -223,7 +223,7 @@ public class Configuracion extends Fragment {
                 .setTitle("Regístrate")
                 .setMessage("Para configurar tu perfil, debes estar registrado")
                 .setPositiveButton("Registrarse", (dialog, which) -> {
-                    // Redirigir a actividad de login
+
                     startActivity(new Intent(getActivity(), Signup.class));
                 })
                 .setNegativeButton("Cancelar", null)

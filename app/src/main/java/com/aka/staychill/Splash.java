@@ -13,22 +13,20 @@ public class Splash extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // Inicializar la animación Lottie
         inicializarAnimacionLottie();
 
-        // Iniciar actividad después de la duración de la animación
         iniciarActividadPrincipal();
     }
 
     private void inicializarAnimacionLottie() {
         LottieAnimationView lottieAnimationView = findViewById(R.id.lottieAnimationView);
-        lottieAnimationView.playAnimation();  // Arranca la animación
+        lottieAnimationView.playAnimation();
     }
 
     private void iniciarActividadPrincipal() {
         new Handler().postDelayed(() -> {
             startActivity(new Intent(Splash.this, Welcome.class));
-            finish(); // Cierra la actividad Splash
-        }, 4000); // Cambio de actividad después de 4 segundos
+            finish();
+        }, 4000);
     }
 }

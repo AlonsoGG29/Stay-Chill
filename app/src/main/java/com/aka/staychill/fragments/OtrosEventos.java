@@ -71,7 +71,7 @@ public class OtrosEventos extends Fragment {
     }
 
     private void setupRefreshLayout() {
-        swipeRefreshLayout.setOnRefreshListener(this::cargarEventos); // Simplificado
+        swipeRefreshLayout.setOnRefreshListener(this::cargarEventos);
     }
 
     private void cargarEventos() {
@@ -121,7 +121,7 @@ public class OtrosEventos extends Fragment {
                 try {
                     assert response.body() != null;
                     String json = response.body().string();
-                    Gson gson = new Gson(); // Sin deserializador
+                    Gson gson = new Gson();
 
                     Evento[] eventosArray = gson.fromJson(json, Evento[].class);
                     List<Evento> eventos = Arrays.asList(eventosArray);
