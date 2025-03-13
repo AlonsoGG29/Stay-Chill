@@ -24,12 +24,11 @@ La app busca que la gente se conozca como antiguamente, en persona, y no escribi
 
 
 
-## Pantallas.
-
-Primera versión de las futuras pantallas que tendrá la app.
-
+## Pantallas
 
 ### Splash:
+
+Animación al entrar en la app.
 
 <p align="center">
   <img src="imagenes/pantalla_1_splash.jpg" alt="MAIN" />
