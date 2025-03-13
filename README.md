@@ -35,64 +35,58 @@ La app busca que la gente se conozca como antiguamente, en persona, y no escribi
 
 Animación al entrar en la app.
 
-<p align="center">
-  <img src="imagenes/pantalla_1_splash.jpg" alt="MAIN" />
-</p>
+<div align="center">
+   <img src="imagenes/pantalla_splash.jpg" width="300">
+</div>
 
 
 ### Login:
 
-<p align="center">
-  <img src="imagenes/pantalla_2_login.jpg" alt="MAIN" />
-</p>
+Pantalla donde el usuario puede i niciar sesión.
+
+<div align="center">
+   <img src="imagenes/pantalla_login.jpg" width="300">
+</div>
 
 
 ### Register:
 
+<div align="center">
+   <img src="imagenes/pantalla_signup.jpg" width="300">
+</div>
+
+
+
+### Main:
+
+Pantalla donde se muestras los eventos que van creando los usuarios.
+
 <p align="center">
-  <img src="imagenes/pantalla_3_register.jpg" alt="MAIN" />
+  <img src="imagenes/pantalla_main.jpg" alt="MAIN" />
+</p>
+
+### Evento:
+
+<p align="center">
+  <img src="imagenes/pantalla_evento.jpg" alt="EVENTOS" />
 </p>
 
 
-### Página principal:
+### Mensaje:
 
 <p align="center">
-  <img src="imagenes/pantalla_4_main.jpg" alt="MAIN" />
+  <img src="imagenes/pantalla_mensaje.jpg" alt="MENSAJES" />
 </p>
 
-- Busqueda en el menú principal
 <p align="center">
-  <img src="imagenes/pantalla_4b_busqueda.jpg" alt="MAIN" />
-</p>
-
-- Barra de navegación
-<p align="center">
-  <img src="imagenes/pantalla_4a_menunavigation.jpg" alt="MAIN" />
+  <img src="imagenes/pantalla_conversacion.jpg" alt="MENSAJES" />
 </p>
 
 
-### Página de eventos (casi finalizada):
+### Configuración:
 
 <p align="center">
-  <img src="imagenes/pantalla_4d_calendario.jpg" alt="EVENTOS" />
+  <img src="imagenes/pantalla_configuracion.jpg" alt="EVENTOS" />
 </p>
 
 
-### Página de mensajes (aun en desarrollo):
-
-<p align="center">
-  <img src="imagenes/mensajes.jpg" alt="MENSAJES" />
-</p>
-
-
-### Página de configuración:
-
-<p align="center">
-  <img src="imagenes/pantalla_5_fragmentopciones.jpg" alt="CONFIGURAR" />
-</p>
-
-### Apartado de cuenta:
-
-<p align="center">
-  <img src="imagenes/pantalla_5a_cuenta.jpg" alt="CONFIGURAR" />
-</p>
