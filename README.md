@@ -59,11 +59,15 @@ Pantalla donde se muestran los eventos que van creando los usuarios.
 
 ### Evento:
 
+Donde el usuario podrá ver sus eventos, tanto los que ha creado como los que se ha unido
+
 <div align="center">
   <img src="imagenes/pantalla_evento.jpg" width="300" />
 </div>
 
 ### Mensaje:
+
+El usuario podrá mandar mensajes a otros.
 
 <div align="center">
   <img src="imagenes/pantalla_mensaje.jpg" width="300" />
@@ -74,6 +78,8 @@ Pantalla donde se muestran los eventos que van creando los usuarios.
 </div>
 
 ### Configuración:
+
+Todo lo relacionado con la configuración del perfil.
 
 <div align="center">
   <img src="imagenes/pantalla_configuracion.jpg" width="300"  />
