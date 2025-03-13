@@ -76,5 +76,5 @@ Pantalla donde se muestran los eventos que van creando los usuarios.
 ### Configuración:
 
 <div align="center">
-  <img src="imagenes/pantalla_configuracion.jpg" alt="EVENTOS" />
+  <img src="imagenes/pantalla_configuracion.jpg" width="300"  />
 </div>
