@@ -1,4 +1,4 @@
-<div align="center"><h1> STAY CHILL </h1></div>
+<div align="center"><h1> Stay Chill </h1></div>
 
 <div align="center">
   <img src="imagenes/logo_stay_chill.svg" alt="Logo" />
