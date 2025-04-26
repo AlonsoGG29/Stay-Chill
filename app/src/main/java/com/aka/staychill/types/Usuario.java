@@ -1,4 +1,4 @@
-package com.aka.staychill;
+package com.aka.staychill.types;
 
 import com.google.gson.annotations.SerializedName;
 

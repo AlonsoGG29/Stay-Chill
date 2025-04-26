@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:padding="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginRight="2dp"
+    android:layout_marginLeft="2dp"
+    android:id="@+id/eventos"
+    android:background="@drawable/img_borde_rojo">
+
+
+    <!-- Sección del icono y el texto alineados horizontalmente -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/layout"
+        app:layout_constraintTop_toTopOf="@+id/eventos"
+        app:layout_constraintStart_toStartOf="@+id/eventos"
+        app:layout_constraintEnd_toEndOf="@+id/eventos"
+        android:gravity="center_vertical">
+
+        <!-- Icono a la izquierda -->
+
+        <ImageView
+            android:id="@+id/imagenPerfil"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/img_default"
+            android:layout_marginEnd="10dp"/>
+        <LinearLayout
+            android:id="@+id/informacionEvento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Texto principal y hora en horizontal -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/nombreUsr"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textColor="@color/black"/>
+
+                <TextView
+                    android:id="@+id/horaNotificacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/gray"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="4dp"/>
+            </LinearLayout>
+
+            <!-- Aquí podrías añadir más elementos si necesitas -->
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

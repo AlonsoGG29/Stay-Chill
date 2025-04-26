@@ -15,9 +15,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aka.staychill.Evento;
+import com.aka.staychill.types.Evento;
 import com.aka.staychill.EventoClick;
-import com.aka.staychill.EventosAdapter;
+import com.aka.staychill.adapters.EventosAdapter;
 import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
 import com.aka.staychill.SupabaseConfig;
@@ -80,7 +80,7 @@ public class OtrosEventos extends Fragment {
             return;
         }
         if (userId == null) {
-            mostrarError("com.aka.staychill.Usuario no autenticado");
+            mostrarError("com.aka.staychill.types.Usuario no autenticado");
             return;
         }
 

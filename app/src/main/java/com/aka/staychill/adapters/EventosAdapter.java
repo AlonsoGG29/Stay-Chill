@@ -1,4 +1,4 @@
-package com.aka.staychill;
+package com.aka.staychill.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.aka.staychill.types.Evento;
+import com.aka.staychill.R;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -34,7 +37,7 @@ public class EventosAdapter extends RecyclerView.Adapter<EventosAdapter.EventoVi
     @NonNull
     @Override
     public EventoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.eventos, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_eventos, parent, false);
         return new EventoViewHolder(view);
     }
 

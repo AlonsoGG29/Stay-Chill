@@ -1,7 +1,9 @@
 package com.aka.staychill;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
@@ -12,6 +14,8 @@ import androidx.viewpager.widget.ViewPager;
 import com.aka.staychill.ui.main.SectionsPagerAdapter;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
 
 public class Main_bn extends AppCompatActivity {
 
@@ -32,20 +36,30 @@ public class Main_bn extends AppCompatActivity {
         configurarSeleccionNavegacion(bottomNavigationView);
 
         notificacion = findViewById(R.id.notif_esquina);
-        configurarNotificaciones();
+        notificacion.setOnClickListener(view -> {configurarNotificaciones();});
+
+        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(token -> {
+            Log.d("FCM_TOKEN_MAIN", "Token válido: " + token);
+        });
+
+        FirebaseMessaging.getInstance().subscribeToTopic("all");
+
+        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e("FCM_TOKEN_MAIN", "Error al obtener token", task.getException());
+                return;
+            }
+            String token = task.getResult();
+            Log.d("FCM_TOKEN_MAIN", "Token actual: " + token);
+        });
 
 
     }
     private void configurarNotificaciones() {
-        notificacion.setOnClickListener(v -> mostrarDialogoDesarrollo());
-    }
-
-    private void mostrarDialogoDesarrollo() {
-        new AlertDialog.Builder(this)
-                .setTitle("En desarrollo")
-                .setMessage("Este apartado se está desarrollando, ¡disculpe la molestia! \uD83D\uDE4F")
-                .setPositiveButton("Aceptar", null)
-                .show();
+        Intent intent = new Intent(this, Notificaciones.class);
+        startActivity(intent);
     }
 
     private void configurarAdaptadorViewPager() {

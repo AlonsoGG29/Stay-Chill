@@ -12,12 +12,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.aka.staychill.adapters.UsuarioAdapter;
+import com.aka.staychill.types.Usuario;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,12 +57,21 @@ public class BuscarUsuario extends AppCompatActivity {
 
     private void configurarVistaReciclada() {
         vistaReciclada.setLayoutManager(new LinearLayoutManager(this));
-        adaptador = new UsuarioAdapter(new ArrayList<>(), new UsuarioAdapter.OnUsuarioClickListener() {
-            @Override
-            public void onUsuarioClick(String usuarioId) {
-                abrirChat(usuarioId);
-            }
-        });
+
+        // Obtén tu ID desde SessionManager
+        String miUsuarioId = String.valueOf(sessionManager.getUserId());
+
+        adaptador = new UsuarioAdapter(
+                new ArrayList<>(),
+                new UsuarioAdapter.OnUsuarioClickListener() {
+                    @Override
+                    public void onUsuarioClick(String usuarioId) {
+                        abrirChat(usuarioId);
+                    }
+                },
+                miUsuarioId // Envía tu ID al adaptador
+        );
+
         vistaReciclada.setAdapter(adaptador);
     }
 
@@ -110,19 +120,6 @@ public class BuscarUsuario extends AppCompatActivity {
                     nombreCodificado,
                     apellidoCodificado
             );
-            /*
-            *
-String url = String.format(
-                    "%s?or=(nombre.ilike.%s,apellido.ilike.%s)",
-                    urlSupabase,
-                    consultaCodificada,
-                    consultaCodificada
-            );
-            *
-            *
-            *
-            * */
-
 
             Request solicitud = new Request.Builder()
                     .url(url)

@@ -20,7 +20,7 @@ import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
 import com.aka.staychill.Signup;
 import com.aka.staychill.SupabaseConfig;
-import com.aka.staychill.Usuario;
+import com.aka.staychill.types.Usuario;
 import com.aka.staychill.Welcome;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;

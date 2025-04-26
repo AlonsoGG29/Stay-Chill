@@ -96,5 +96,6 @@
     <string name="escribe_un_mensaje">Escribe un mensaje…</string>
     <string name="no_conversacion">No tienes conversaciones\n¡Inicia una nueva!</string>
     <string name="registrate_ver_eventos">¡Regístrate para ver todos los eventos!</string>
+    <string name="no_notificaciones">Todo tranquilo por aquí...</string>
 
 </resources>
