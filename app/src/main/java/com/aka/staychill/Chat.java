@@ -14,7 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import com.aka.staychill.adapters.MensajesAdapter;
+import com.aka.staychill.types.Mensaje;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -45,7 +46,6 @@ import okhttp3.WebSocketListener;
 
 public class Chat extends AppCompatActivity {
     // === CONSTANTES ===
-    private static final long POLLING_INTERVAL = 5000;
     private static final MediaType JSON_MEDIA_TYPE = MediaType.get("application/json");
     private static final String WEBSOCKET_AUTH_MSG = "{\"event\":\"access_token\",\"payload\":\"%s\",\"ref\":0}";
     private static final String WEBSOCKET_SUB_MSG = "{\"event\":\"phx_join\",\"payload\":{\"config\":{\"broadcast\":{\"self\":false},\"postgres_changes\":[{\"event\":\"INSERT\",\"schema\":\"public\",\"table\":\"mensajes\"}]}},\"ref\":1,\"topic\":\"realtime:public:messages\"}";
@@ -63,12 +63,13 @@ public class Chat extends AppCompatActivity {
     private CargarImagenes cargadorImagenes;
     private final OkHttpClient client = new OkHttpClient();
     private WebSocket webSocket;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     // === ESTADO ===
     private String conversacionId;
     private String contactoId;
     private Runnable pollingRunnable;
+
 
     // ########################################
     // ##          CICLO DE VIDA             ##
@@ -85,21 +86,8 @@ public class Chat extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        detenerPolling();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        iniciarPolling();
-    }
-
-    @Override
     protected void onDestroy() {
         cerrarWebSocket();
-        detenerPolling();
         super.onDestroy();
     }
 
@@ -148,7 +136,9 @@ public class Chat extends AppCompatActivity {
 
     private boolean validarIdsIniciales() {
         if (conversacionId == null && contactoId == null) {
-            mostrarErrorYSalir("IDs inválidos");
+            // Crear una excepción manual para contener el contexto del error
+            Exception error = new Exception("Ambos IDs (conversación y contacto) son nulos");
+            mostrarError("Error de validación inicial", error); // ✅ Ahora sí compila
             return true;
         }
         return false;
@@ -168,12 +158,14 @@ public class Chat extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                mostrarError("Error de conexión");
+                mostrarError("Error de conexión", e);
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
+
+                    assert response.body() != null;
                     procesarRespuestaConversacion(response.body().string());
                 }
             }
@@ -185,13 +177,10 @@ public class Chat extends AppCompatActivity {
             JSONArray jsonArray = new JSONArray(respuesta);
             if (jsonArray.length() > 0) {
                 conversacionId = jsonArray.getJSONObject(0).getString("id");
-                runOnUiThread(() -> {
-                    cargarMensajes();
-                    iniciarPolling();
-                });
+                runOnUiThread(this::cargarMensajes);
             }
         } catch (JSONException e) {
-            mostrarError("Error procesando respuesta");
+            mostrarError("Error procesando respuesta", e);
         }
     }
 
@@ -230,18 +219,19 @@ public class Chat extends AppCompatActivity {
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    mostrarError("Error creando conversación");
+                    mostrarError("Error creando conversación", e);
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (response.isSuccessful()) {
+                        assert response.body() != null;
                         procesarNuevaConversacion(response.body().string(), contenido);
                     }
                 }
             });
         } catch (JSONException e) {
-            mostrarError("Error creando mensaje");
+            mostrarError("Error creando mensaje", e);
         }
     }
 
@@ -253,7 +243,7 @@ public class Chat extends AppCompatActivity {
                 enviarMensajeExistente(contenido);
             }
         } catch (JSONException e) {
-            mostrarError("Error procesando respuesta");
+            mostrarError("Error procesando respuesta", e);
         }
     }
 
@@ -283,40 +273,55 @@ public class Chat extends AppCompatActivity {
             client.newCall(mensajeRequest).enqueue(new Callback() {
                 @Override
                 public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    mostrarError("Error enviando mensaje");
+                    mostrarError("Error enviando mensaje", e);
                 }
 
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) {
                     if (response.isSuccessful()) {
-                        client.newCall(conversacionRequest).enqueue(new Callback() {
-                            @Override
-                            public void onResponse(@NonNull Call call, @NonNull Response response) {
-                                cargarMensajes();
-                            }
+                        crearNotificacionMensaje(contenido);
 
-                            @Override
-                            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                                Log.e("Chat", "Error actualizando conversación", e);
-                            }
-                        });
+                        actualizarConversacion(contenido); // Nuevo método unificado
+                        cargarMensajes(); // Actualizar lista local
                     }
                 }
             });
 
         } catch (JSONException e) {
-            mostrarError("Error creando mensaje");
+            mostrarError("Error creando mensaje", e);
         }
     }
+
+    private void actualizarConversacion(String contenido) {
+        try {
+            JSONObject conversacionBody = new JSONObject();
+            conversacionBody.put("ultimo_mensaje", contenido);
+            conversacionBody.put("fecha", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(new Date()));
+
+            Request request = new Request.Builder()
+                    .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/conversaciones?id=eq." + conversacionId)
+                    .patch(RequestBody.create(conversacionBody.toString(), JSON_MEDIA_TYPE))
+                    .headers(obtenerHeadersAuth())
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override public void onResponse(@NonNull Call call, @NonNull Response response) {}
+                @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.e("Chat", "Error actualizando conversación", e);
+                }
+            });
+        } catch (JSONException e) {
+            Log.e("Chat", "Error creando JSON conversación", e);
+        }
+    }
+
 
     // ########################################
     // ##        CARGA DE MENSAJES           ##
     // ########################################
 
     private void cargarMensajes() {
-        if (conversacionId == null) return;
-
-        HttpUrl url = Objects.requireNonNull(HttpUrl.parse(SupabaseConfig.getSupabaseUrl() + "/rest/v1/mensajes")).newBuilder()
+        HttpUrl url = getBaseUrlBuilder("mensajes")
                 .addQueryParameter("select", "id,contenido,fecha,conversacion_id,sender_id:usuarios(nombre,profile_image_url,foren_uid)")
                 .addQueryParameter("conversacion_id", "eq." + conversacionId)
                 .addQueryParameter("order", "fecha.asc")
@@ -324,18 +329,19 @@ public class Chat extends AppCompatActivity {
 
         Request request = new Request.Builder()
                 .url(url)
-                .headers(obtenerHeadersAuth())
+                .headers(getDefaultHeaders()) // Usar helper
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                mostrarError("Error de conexión");
+                mostrarError("Error de conexión", e);
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
+                    assert response.body() != null;
                     procesarMensajesRecibidos(response.body().string());
                 }
             }
@@ -350,7 +356,7 @@ public class Chat extends AppCompatActivity {
                 recyclerMensajes.smoothScrollToPosition(adapter.getItemCount() - 1);
             });
         } catch (Exception e) {
-            mostrarError("Error procesando mensajes");
+            mostrarError("Error procesando mensajes", e);
         }
     }
 
@@ -358,7 +364,7 @@ public class Chat extends AppCompatActivity {
     private void cargarDatosContacto() {
         if (contactoId == null) return;
 
-        HttpUrl url = HttpUrl.parse(SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios")
+        HttpUrl url = Objects.requireNonNull(HttpUrl.parse(SupabaseConfig.getSupabaseUrl() + "/rest/v1/usuarios"))
                 .newBuilder()
                 .addQueryParameter("foren_uid", "eq." + contactoId)
                 .addQueryParameter("select", "nombre,profile_image_url")
@@ -378,6 +384,7 @@ public class Chat extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
+                    assert response.body() != null;
                     procesarDatosContacto(response.body().string());
                 }
             }
@@ -439,22 +446,27 @@ public class Chat extends AppCompatActivity {
         ws.send(WEBSOCKET_SUB_MSG);
     }
 
+    // ✅ Reemplazar el código actual con:
     private void procesarMensajeWebSocket(String mensaje) {
         try {
             JSONObject obj = new JSONObject(mensaje);
-            JSONObject payload = obj.getJSONObject("payload");
+            if (obj.has("payload")) {
+                JSONObject payload = obj.getJSONObject("payload");
 
-            if (payload.has("data")) {
-                JSONObject data = payload.getJSONObject("data");
-                JSONObject record = data.getJSONObject("record");
+                // 🔥 Filtro adicional para asegurar mensajes válidos
+                if (payload.has("data") && payload.getJSONObject("data").has("record")) {
+                    JSONObject record = payload.getJSONObject("data").getJSONObject("record");
 
-                Mensaje nuevo = new Gson().fromJson(record.toString(), Mensaje.class);
-                if (nuevo.getConversacionId().equals(conversacionId)) {
-                    runOnUiThread(() -> {
-                        adapter.getMensajes().add(nuevo);
-                        adapter.notifyItemInserted(adapter.getItemCount() - 1);
-                        recyclerMensajes.smoothScrollToPosition(adapter.getItemCount() - 1);
-                    });
+                    Mensaje nuevo = new Gson().fromJson(record.toString(), Mensaje.class);
+                    if (nuevo.getConversacionId().equals(conversacionId)) {
+                        runOnUiThread(() -> {
+                            if (!adapter.getMensajes().contains(nuevo)) {
+                                adapter.getMensajes().add(nuevo);
+                                adapter.notifyItemInserted(adapter.getItemCount() - 1);
+                                recyclerMensajes.smoothScrollToPosition(adapter.getItemCount() - 1);
+                            }
+                        });
+                    }
                 }
             }
         } catch (JSONException e) {
@@ -468,32 +480,6 @@ public class Chat extends AppCompatActivity {
 
     private void cerrarWebSocket() {
         if (webSocket != null) webSocket.close(1000, "Activity closed");
-    }
-
-    // ########################################
-    // ##              POLLING               ##
-    // ########################################
-
-    private void iniciarPolling() {
-        if (pollingRunnable != null) return;
-
-        pollingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (!isDestroyed()) {
-                    cargarMensajes();
-                    handler.postDelayed(this, POLLING_INTERVAL);
-                }
-            }
-        };
-        handler.postDelayed(pollingRunnable, POLLING_INTERVAL);
-    }
-
-    private void detenerPolling() {
-        if (pollingRunnable != null) {
-            handler.removeCallbacks(pollingRunnable);
-            pollingRunnable = null;
-        }
     }
 
     // ########################################
@@ -523,14 +509,63 @@ public class Chat extends AppCompatActivity {
                 ",participante2.eq." + participantes.get(1) + ")";
     }
 
-    private void mostrarErrorYSalir(String mensaje) {
-        runOnUiThread(() -> {
-            Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
-            finish();
-        });
+
+    private void mostrarError(String contexto, Exception e) {
+        String mensaje = contexto + ": " + e.getMessage();
+        Log.e("ChatError", mensaje, e);
+        runOnUiThread(() ->
+                Toast.makeText(Chat.this, mensaje, Toast.LENGTH_LONG).show()
+        );
     }
 
-    private void mostrarError(String mensaje) {
-        runOnUiThread(() -> Toast.makeText(Chat.this, mensaje, Toast.LENGTH_SHORT).show());
+    private void crearNotificacionMensaje(String contenido) {
+        try {
+            JSONObject notificacionBody = new JSONObject();
+            notificacionBody.put("user_id", contactoId); // ID del destinatario
+            notificacionBody.put("sender_id", sessionManager.getUserIdString());
+            notificacionBody.put("mensaje", "Nuevo mensaje");
+            notificacionBody.put("tipo", "mensaje");
+            notificacionBody.put("relacion_id", conversacionId);
+
+            Request request = new Request.Builder()
+                    .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/notificaciones")
+                    .post(RequestBody.create(notificacionBody.toString(), JSON_MEDIA_TYPE))
+                    .headers(obtenerHeadersServicio()) // Usar headers de servicio
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.e("Notificacion", "Error creando notificación", e);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) {
+                    if (!response.isSuccessful()) {
+                        Log.e("Notificacion", "Código: " + response.code());
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            Log.e("Notificacion", "Error creando JSON", e);
+        }
+    }
+
+    private Headers obtenerHeadersServicio() {
+        return new Headers.Builder()
+                .add("apikey", SupabaseConfig.getSupabaseKey())
+                .add("Authorization", "Bearer " + sessionManager.getAccessToken())
+                .build();
+    }
+
+    private HttpUrl.Builder getBaseUrlBuilder(String tabla) {
+        return Objects.requireNonNull(HttpUrl.parse(SupabaseConfig.getSupabaseUrl() + "/rest/v1/" + tabla)).newBuilder();
+    }
+
+    private Headers getDefaultHeaders() {
+        return new Headers.Builder()
+                .add("apikey", SupabaseConfig.getSupabaseKey())
+                .add("Authorization", "Bearer " + sessionManager.getAccessToken())
+                .build();
     }
 }

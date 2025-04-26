@@ -84,5 +84,18 @@
     <string name="personas">personas</string>
     <string name="ejemp_titulo_evento">¡Encuentro cinéfilo!</string>
     <string name="ejem_nombre">Paco García</string>
+    <string name="vistas">vistas</string>
+    <string name="vamos">Vamos</string>
+    <string name="fondo">Fondo</string>
+    <string name="imagen_evento">Imagen evento</string>
+    <string name="repetir_contrasena">Repetir contraseña</string>
+    <string name="imagen_de_la_app">Imagen de la app</string>
+    <string name="stay_chill">Stay Chill</string>
+    <string name="eliminar_evento">Eliminar Evento</string>
+    <string name="abandonar_evento">Abandonar evento</string>
+    <string name="escribe_un_mensaje">Escribe un mensaje…</string>
+    <string name="no_conversacion">No tienes conversaciones\n¡Inicia una nueva!</string>
+    <string name="registrate_ver_eventos">¡Regístrate para ver todos los eventos!</string>
+    <string name="no_notificaciones">Todo tranquilo por aquí...</string>
 
 </resources>

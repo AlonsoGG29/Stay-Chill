@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.aka.staychill" >
+    package="com.aka.staychill">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:allowBackup="true"
@@ -18,11 +20,13 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.App.TransparentStatusBar"
-        tools:targetApi="31" >
+        tools:targetApi="31">
+        <activity
+            android:name=".Notificaciones"
+            android:exported="false" />
         <activity
             android:name=".Chat"
-        android:exported="false"/>
-
+            android:exported="false" />
         <activity
             android:name=".BuscarUsuario"
             android:exported="false" />
@@ -49,7 +53,7 @@
             android:exported="true" /> <!-- SplashActivity como la actividad principal -->
         <activity
             android:name=".Splash"
-            android:exported="true" >
+            android:exported="true">
 
             <!-- Configuración para que esta actividad sea la de inicio -->
             <intent-filter>
@@ -66,11 +70,19 @@
             android:exported="true" />
         <activity
             android:name=".Welcome"
-            android:exported="true" /> <!-- com.aka.staychill.Usuario pueda recortar su imagen -->
+            android:exported="true" />
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="unspecified"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <service
+            android:name=".FCMService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
+
 
 </manifest>

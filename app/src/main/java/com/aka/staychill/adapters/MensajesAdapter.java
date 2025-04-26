@@ -1,6 +1,5 @@
-package com.aka.staychill;
+package com.aka.staychill.adapters;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import com.aka.staychill.types.Mensaje;
+import com.aka.staychill.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,8 +33,8 @@ public class MensajesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         int layout = viewType == TIPO_ENVIADO
-                ? R.layout.mensaje_enviado
-                : R.layout.mensaje_recibido;
+                ? R.layout.item_mensaje_enviado
+                : R.layout.item_mensaje_recibido;
 
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(layout, parent, false);

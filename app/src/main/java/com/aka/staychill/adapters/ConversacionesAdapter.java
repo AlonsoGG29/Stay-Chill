@@ -1,4 +1,4 @@
-package com.aka.staychill;
+package com.aka.staychill.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.aka.staychill.types.Conversacion;
+import com.aka.staychill.R;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
@@ -37,7 +39,7 @@ public class ConversacionesAdapter extends RecyclerView.Adapter<ConversacionesAd
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.conversaciones, parent, false);
+                .inflate(R.layout.item_conversaciones, parent, false);
         return new ViewHolder(view);
     }
 

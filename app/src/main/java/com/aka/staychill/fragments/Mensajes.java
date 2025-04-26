@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +21,8 @@ import android.widget.Toast;
 
 import com.aka.staychill.BuscarUsuario;
 import com.aka.staychill.Chat;
-import com.aka.staychill.Conversacion;
-import com.aka.staychill.ConversacionesAdapter;
+import com.aka.staychill.types.Conversacion;
+import com.aka.staychill.adapters.ConversacionesAdapter;
 import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
 import com.aka.staychill.Signup;

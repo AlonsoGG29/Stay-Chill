@@ -1,7 +1,8 @@
-package com.aka.staychill;
+package com.aka.staychill.types;
 
 import android.content.Context;
 
+import com.aka.staychill.R;
 import com.google.gson.annotations.SerializedName;
 
 import java.text.ParseException;

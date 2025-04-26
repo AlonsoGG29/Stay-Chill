@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.aka.staychill.types.Evento;
 import com.google.gson.JsonObject;
 import okhttp3.*;
 import java.io.IOException;

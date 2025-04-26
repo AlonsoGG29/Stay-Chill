@@ -17,6 +17,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -132,6 +134,17 @@ public class Login extends AppCompatActivity {
             UUID userId = UUID.fromString(json.getJSONObject("user").getString("id"));
 
             sessionManager.saveSession(accessToken, refreshToken, userId);
+            FirebaseMessaging.getInstance().getToken()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            String token = task.getResult();
+                            Log.d("FCM_TOKEN", "Token generado: " + token); // Añade este log
+                            sessionManager.guardarFCMToken(token);
+                        } else {
+                            Log.e("FCM_TOKEN", "Error al obtener token", task.getException());
+                        }
+                    });
+
             redirigirAMain();
 
         } catch (JSONException | IllegalArgumentException e) {
@@ -270,5 +283,7 @@ public class Login extends AppCompatActivity {
     private void mostrarMensaje(String mensaje) {
         runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
     }
+
+
 
 }

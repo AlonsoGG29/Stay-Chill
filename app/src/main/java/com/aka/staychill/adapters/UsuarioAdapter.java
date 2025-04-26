@@ -1,4 +1,4 @@
-package com.aka.staychill;
+package com.aka.staychill.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,13 +8,38 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.aka.staychill.R;
+import com.aka.staychill.types.Usuario;
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.ViewHolder> {
     private List<Usuario> listaUsuarios;
     private OnUsuarioClickListener listener;
+    private String miUsuarioId; // Nuevo campo para almacenar tu ID
+
+    // Modifica el constructor para recibir tu ID
+    public UsuarioAdapter(List<Usuario> listaUsuarios,
+                          OnUsuarioClickListener listener,
+                          String miUsuarioId) {
+        this.listaUsuarios = listaUsuarios;
+        this.listener = listener;
+        this.miUsuarioId = miUsuarioId;
+    }
+
+    // Actualiza la lista filtrando tu usuario
+    public void actualizarLista(List<Usuario> nuevaLista) {
+        List<Usuario> listaFiltrada = new ArrayList<>();
+        for (Usuario usuario : nuevaLista) {
+            if (!usuario.getId().equals(miUsuarioId)) { // Usa getForen_uid()
+                listaFiltrada.add(usuario);
+            }
+        }
+        this.listaUsuarios = listaFiltrada;
+        notifyDataSetChanged();
+    }
 
 
     public UsuarioAdapter(List<Usuario> listaUsuarios, OnUsuarioClickListener listener) {
@@ -40,7 +65,7 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup padre, int tipoVista) {
         View vista = LayoutInflater.from(padre.getContext())
-                .inflate(R.layout.perfil, padre, false);
+                .inflate(R.layout.item_perfil, padre, false);
         return new ViewHolder(vista);
     }
 
@@ -85,8 +110,5 @@ public class UsuarioAdapter extends RecyclerView.Adapter<UsuarioAdapter.ViewHold
         return listaUsuarios.size();
     }
 
-    public void actualizarLista(List<Usuario> nuevaLista) {
-        listaUsuarios = nuevaLista;
-        notifyDataSetChanged();
-    }
+
 }
