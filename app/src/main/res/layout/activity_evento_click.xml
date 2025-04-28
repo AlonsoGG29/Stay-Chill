@@ -118,17 +118,9 @@
                 android:layout_gravity="center"
                 android:contentDescription="@string/personas"/>
 
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="25dp"
-                android:src="@drawable/usuario"
-                android:layout_gravity="start"
-                android:contentDescription="@string/personas"/>
-
             <!-- Texto en parte superior de la imagen -->
             <TextView
+                android:id="@+id/limitePersonasEvento"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/_0"
@@ -259,5 +251,20 @@
         android:contentDescription="@string/abandonar_evento"
         android:src="@drawable/img_btn_abandonar"
         android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/btn_ver_participantes"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:background="@drawable/img_background_btn_ver_participantes"
+        app:layout_constraintEnd_toEndOf="@+id/eventoClick"
+        app:layout_constraintBottom_toBottomOf="@id/cuadro"
+        android:layout_marginEnd="55dp"
+        android:contentDescription="@string/abandonar_evento"
+        android:src="@drawable/img_ver_participantes"
+        android:visibility="gone"
+        />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -39,6 +39,12 @@ public class Evento {
     @SerializedName("imagen_del_evento")
     private String imagenNombre;
 
+    @SerializedName("numero_actual_participantes")
+    private int numeroActualParticipantes;
+
+    @SerializedName("limite_de_participantes")
+    private int limiteParticipantes;
+
     @SerializedName("creador_id")
     private UUID creadorId;
 
@@ -84,6 +90,8 @@ public class Evento {
     public void setHoraStr(String horaStr) { this.horaStr = horaStr; }
     public void setTipoDeEvento(String tipoDeEvento) { this.tipoDeEvento = tipoDeEvento; }
     public void setImagenNombre(String imagenNombre) { this.imagenNombre = imagenNombre; }
+    public void setLimiteParticipantes(int limiteParticipantes) { this.limiteParticipantes = limiteParticipantes;}
+    public void setNumeroActualParticipantes(int numeroActualParticipantes){this.numeroActualParticipantes = numeroActualParticipantes;}
     public void setCreador(Creador creador) { this.creador = creador; }
 
     public void setCreadorId(UUID id) {
@@ -109,6 +117,8 @@ public class Evento {
     public String getDescripcion(){return descripcion;}
     public String getTipoDeEvento(){return tipoDeEvento;}
     public String getFechaStr(){return fechaStr;}
+    public int getLimitePersonas(){return limiteParticipantes;}
+    public int getNumeroActualParticipantes(){return numeroActualParticipantes;}
 
     public String getHoraStr() {
         try {

@@ -12,50 +12,23 @@ import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 public class Welcome extends AppCompatActivity {
-
-    private static final String SUPABASE_AUTH_URL = SupabaseConfig.getSupabaseUrl() + "/auth/v1/";
 
     private Button btnEntrar, btnIniciarSesion;
     private TextView registrarse;
-    private SessionManager sessionManager;
-    private OkHttpClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        inicializarComponentes();
-        verificarSesionExistente();
-
         inicializarVistas();
         configurarListeners();
         estilizarTextoRegistro();
-    }
-
-    private void inicializarComponentes() {
-        sessionManager = new SessionManager(this);
-        client = SupabaseConfig.getClient();
-    }
-
-    private void verificarSesionExistente() {
-        if (sessionManager.isLoggedIn()) {
-            validarTokenEnServidor();
-        }
     }
 
     private void inicializarVistas() {
@@ -66,34 +39,8 @@ public class Welcome extends AppCompatActivity {
 
     private void configurarListeners() {
         btnEntrar.setOnClickListener(v -> redirigirAMain());
-
         btnIniciarSesion.setOnClickListener(v ->
                 startActivity(new Intent(this, Login.class)));
-    }
-
-    private void validarTokenEnServidor() {
-        Request request = new Request.Builder()
-                .url(SUPABASE_AUTH_URL + "user")
-                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
-                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
-                if (!response.isSuccessful()) {
-                    sessionManager.logout();
-                } else {
-                    redirigirAMain();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(() ->
-                        Toast.makeText(Welcome.this, "Error de conexión", Toast.LENGTH_SHORT).show());
-            }
-        });
     }
 
     private void estilizarTextoRegistro() {
@@ -128,5 +75,4 @@ public class Welcome extends AppCompatActivity {
         startActivity(new Intent(this, Main_bn.class));
         finish();
     }
-
-}
+} 

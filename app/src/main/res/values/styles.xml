@@ -9,14 +9,10 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
-
-
     <style name="buscadorEstilo" parent="Widget.AppCompat.SearchView">
         <item name="android:textColor">@color/black</item>
         <item name="android:textColorHint">@color/black</item>
         <item name="queryBackground">@android:color/transparent</item>
         <item name="android:hint">@string/buscar</item>
     </style>
-
-
 </resources>

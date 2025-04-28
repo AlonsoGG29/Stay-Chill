@@ -11,4 +11,6 @@
     <color name="ligthgray">#FF474B4E</color>
     <color name="orange">#FFBF7154</color>
     <color name="rojooscuro">#A62E2E</color>
+    <color name="colorText">#121212</color>
+    <color name="colorTextHint">#c9c9c9</color>
 </resources>
