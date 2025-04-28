@@ -132,7 +132,7 @@ public class Conf_cuenta extends AppCompatActivity {
     private void configurarSpinner() {
         adapter = ArrayAdapter.createFromResource(this,
                 R.array.paises,
-                android.R.layout.simple_spinner_item);
+                R.layout.item_spinner);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         inputPais.setAdapter(adapter);
     }

@@ -18,6 +18,8 @@ import com.aka.staychill.types.Evento;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -41,9 +43,8 @@ public class EventoClick extends AppCompatActivity {
 
     private Evento evento;
     private SessionManager sessionManager;
-    private ImageView btnEliminar, btnAbandonar, btnUnirse;
+    private ImageView btnEliminar, btnAbandonar, btnUnirse, btnVerParticipantes;
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
-    private final SimpleDateFormat timeFormatter = new SimpleDateFormat(TIME_FORMAT, Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,21 +70,22 @@ public class EventoClick extends AppCompatActivity {
 
         configurarInterfaz();
     }
+
+    private void configurarInterfaz() {
+        configurarFondo();
+        inicializarVistas();
+        configurarBotonUnirse();
+        actualizarUI();
+    }
+
     private void configurarBotonUnirse() {
         btnUnirse = findViewById(R.id.btn_vamos);
         btnEliminar = findViewById(R.id.btn_eliminar);
         btnAbandonar = findViewById(R.id.btn_abandonar);
-
-        Log.d("BotonesDebug", "Botones inicializados: "
-                + (btnUnirse != null) + ", "
-                + (btnEliminar != null) + ", "
-                + (btnAbandonar != null));
+        btnVerParticipantes = findViewById(R.id.btn_ver_participantes);
 
         UUID userId = sessionManager.getUserId();
         UUID creadorId = evento.getCreadorId();
-
-        Log.d("BotonesDebug", "User ID: " + userId);
-        Log.d("BotonesDebug", "Creador ID: " + creadorId);
 
         if (userId == null || creadorId == null) {
             btnUnirse.setVisibility(View.GONE);
@@ -94,8 +96,6 @@ public class EventoClick extends AppCompatActivity {
 
         boolean esCreador = creadorId.equals(userId);
         boolean estaUnido = evento.getAsistentes().contains(userId);
-        Log.d("DEBUG", "User ID: " + userId);
-        Log.d("DEBUG", "Creador ID: " + evento.getCreadorDatos());
 
         if (esCreador) {
             configurarBotonCreador();
@@ -104,11 +104,26 @@ public class EventoClick extends AppCompatActivity {
         } else {
             configurarBotonNormal();
         }
+
+        // Deshabilitar botón si el evento está lleno
+        if (evento.getNumeroActualParticipantes() >= evento.getLimitePersonas()) {
+            btnUnirse.setEnabled(false);
+            btnUnirse.setAlpha(0.5f);
+        }
     }
+
     private void configurarBotonCreador() {
         btnEliminar.setVisibility(View.VISIBLE);
         btnUnirse.setVisibility(View.GONE);
         btnAbandonar.setVisibility(View.GONE);
+
+        btnVerParticipantes.setVisibility(View.VISIBLE);
+        btnVerParticipantes.setOnClickListener(v -> {
+            Intent intent = new Intent(EventoClick.this, VerParticipantes.class);
+
+            intent.putExtra("EVENT_ID", evento.getId().toString());
+            startActivity(intent);
+        });
 
         btnEliminar.setOnClickListener(v -> mostrarDialogoConfirmacionEliminar());
     }
@@ -129,10 +144,151 @@ public class EventoClick extends AppCompatActivity {
         btnUnirse.setOnClickListener(v -> manejarUnionEvento());
     }
 
+    private void actualizarUI() {
+        // Actualizar contador de participantes
+        TextView limiteParticipantes = findViewById(R.id.limitePersonasEvento);
+        limiteParticipantes.setText(
+                evento.getNumeroActualParticipantes() + "/" + evento.getLimitePersonas()
+        );
+
+        // Actualizar estado del botón
+        configurarBotonUnirse();
+    }
+
+    private void manejarUnionEvento() {
+        if (!sessionManager.isLoggedIn()) {
+            mostrarToast("Debes iniciar sesión");
+            return;
+        }
+
+        if (evento.getNumeroActualParticipantes() >= evento.getLimitePersonas()) {
+            mostrarToast("El evento está lleno");
+            return;
+        }
+
+        realizarPeticionUnion();
+    }
+
+    private void realizarPeticionUnion() {
+        OkHttpClient client = SupabaseConfig.getClient();
+        UUID userId = sessionManager.getUserId();
+
+        JsonObject jsonBody = new JsonObject();
+        jsonBody.addProperty("event_id", evento.getId());
+        jsonBody.addProperty("user_id", userId.toString());
+
+        Request request = new Request.Builder()
+                .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/rpc/unirse_a_evento")
+                .post(RequestBody.create(
+                        jsonBody.toString(),
+                        MediaType.get("application/json; charset=utf-8")
+                ))
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
+                .addHeader("Accept", "application/json")
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                runOnUiThread(() -> mostrarToast("Error de conexión"));
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String responseBody = response.body().string();
+                Log.d("API_RESPONSE", responseBody); // Log detallado
+                Log.d("DEBUG", "Evento ID = " + evento.getId()
+                        + ", actual = " + evento.getNumeroActualParticipantes()
+                        + ", límite = " + evento.getLimitePersonas());
+                Log.d("DEBUG", "Payload = " + jsonBody);
+
+
+                if (response.isSuccessful()) {
+                    try {
+                        JsonObject jsonResponse = new Gson().fromJson(responseBody, JsonObject.class);
+                        boolean updated = jsonResponse.get("updated").getAsBoolean();
+
+                        runOnUiThread(() -> {
+                            if (updated) {
+                                int newCount = jsonResponse.get("current_count").getAsInt();
+                                evento.setNumeroActualParticipantes(newCount);
+                                actualizarUI();
+                                mostrarToast("¡Unido al evento!");
+                            } else {
+                                String mensaje = jsonResponse.get("message").getAsString();
+                                mostrarToast(mensaje);
+                            }
+                        });
+                    } catch (Exception e) {
+                        Log.e("PARSE_ERROR", "Error parsing JSON: " + e.getMessage());
+                        runOnUiThread(() -> mostrarToast("Error procesando respuesta"));
+                    }
+                } else {
+                    Log.e("API_ERROR", "Code: " + response.code() + " Body: " + responseBody);
+                    runOnUiThread(() -> mostrarToast("Error del servidor"));
+                }
+            }
+        });
+    }
+
+    private void abandonarEvento() {
+        OkHttpClient client = SupabaseConfig.getClient();
+        JsonObject jsonBody = new JsonObject();
+        jsonBody.addProperty("event_id", evento.getId());
+        jsonBody.addProperty("user_id", sessionManager.getUserId().toString());
+
+        Request request = new Request.Builder()
+                .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/rpc/abandonar_evento")
+                .post(RequestBody.create(jsonBody.toString(), MediaType.get("application/json")))
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                runOnUiThread(() -> mostrarToast("Error de conexión"));
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String body = response.body().string();
+                if (response.isSuccessful()) {
+                    try {
+                        JsonObject res = new Gson().fromJson(body, JsonObject.class);
+                        boolean updated = res.get("updated").getAsBoolean();
+
+                        runOnUiThread(() -> {
+                            if (updated) {
+                                int newCount = res.get("current_count").getAsInt();
+                                evento.setNumeroActualParticipantes(newCount);
+                                actualizarUI();
+                                mostrarToast("Has abandonado el evento");
+                            } else {
+                                mostrarToast(res.has("message")
+                                        ? res.get("message").getAsString()
+                                        : "No estabas registrado en el evento");
+                            }
+                        });
+                    } catch (Exception e) {
+                        Log.e("PARSE_ERROR", "Error parsing JSON: " + e.getMessage());
+                        runOnUiThread(() -> mostrarToast("Error procesando respuesta"));
+                    }
+                } else {
+                    runOnUiThread(() -> mostrarToast("Error del servidor: " + response.code()));
+                }
+            }
+
+        });
+    }
+
     private void mostrarDialogoConfirmacionEliminar() {
         new AlertDialog.Builder(this)
                 .setTitle("Eliminar evento")
-                .setMessage("¿Estás seguro de que quieres eliminar este evento? Esta acción no se puede deshacer.")
+                .setMessage("¿Estás seguro de que quieres eliminar este evento?")
                 .setPositiveButton("Eliminar", (dialog, which) -> eliminarEvento())
                 .setNegativeButton("Cancelar", null)
                 .show();
@@ -167,40 +323,6 @@ public class EventoClick extends AppCompatActivity {
         });
     }
 
-    private void abandonarEvento() {
-        OkHttpClient client = SupabaseConfig.getClient();
-        String url = SupabaseConfig.getSupabaseUrl() + "/rest/v1/asistentes_eventos?" +
-                "usuario_id=eq." + sessionManager.getUserId() +
-                "&evento_id=eq." + evento.getId();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .delete()
-                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(() -> mostrarToast("Error de conexión"));
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
-                if (response.isSuccessful()) {
-                    runOnUiThread(() -> {
-                        mostrarToast("Has abandonado el evento");
-                        configurarBotonNormal();
-                    });
-                } else {
-                    runOnUiThread(() -> mostrarToast("Error al abandonar: " + response.code()));
-                }
-            }
-        });
-    }
-
-
     private boolean validarDatosIntent(Intent intent) {
         return intent != null && intent.hasExtra("EVENTO_DATA");
     }
@@ -212,12 +334,6 @@ public class EventoClick extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("EventoClick", "Error deserializando evento", e);
         }
-    }
-
-    private void configurarInterfaz() {
-        configurarFondo();
-        inicializarVistas();
-        configurarBotonUnirse();
     }
 
     private void configurarFondo() {
@@ -245,9 +361,7 @@ public class EventoClick extends AppCompatActivity {
                 evento.getCreadorApellido()));
 
         TextView ubicacion = findViewById(R.id.ubicacionEvento);
-        ubicacion.setText(String.format("%s, %s",
-                evento.getCreadorPais(),
-                evento.getLocalizacion()));
+        ubicacion.setText(String.format(evento.getLocalizacion()));
     }
 
     private void configurarFechas() {
@@ -255,7 +369,6 @@ public class EventoClick extends AppCompatActivity {
         TextView hora = findViewById(R.id.horaEvento);
 
         try {
-
             SimpleDateFormat parserFecha = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             Date fechaDate = parserFecha.parse(evento.getFechaStr());
             fecha.setText(dateFormatter.format(fechaDate));
@@ -297,64 +410,6 @@ public class EventoClick extends AppCompatActivity {
                     .placeholder(R.drawable.img_default)
                     .into(perfilFoto);
         }
-    }
-
-    private void manejarUnionEvento() {
-        if (!sessionManager.isLoggedIn()) {
-            mostrarToast("Debes iniciar sesión");
-            return;
-        }
-
-        realizarPeticionUnion();
-    }
-
-    private void realizarPeticionUnion() {
-        OkHttpClient client = SupabaseConfig.getClient();
-        RequestBody body = crearCuerpoPeticion();
-
-        Request request = new Request.Builder()
-                .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/asistentes_eventos")
-                .post(body)
-                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                runOnUiThread(() -> mostrarToast("Error de conexión"));
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
-                manejarRespuestaUnion(response);
-            }
-        });
-    }
-
-    private RequestBody crearCuerpoPeticion() {
-        return RequestBody.create(
-                String.format("{\"usuario_id\":\"%s\",\"evento_id\":%d}",
-                        sessionManager.getUserId().toString(),
-                        evento.getId()),
-                MediaType.get("application/json")
-        );
-    }
-
-    private void manejarRespuestaUnion(Response response) {
-        runOnUiThread(() -> {
-            if (response.isSuccessful()) {
-                mostrarToast("¡Te has unido al evento!");
-                actualizarBotonUnido(findViewById(R.id.btn_vamos));
-            } else {
-                mostrarToast("Error al unirse: " + response.code());
-            }
-        });
-    }
-
-    private void actualizarBotonUnido(ImageView boton) {
-        boton.setImageResource(R.drawable.img_btn_unido);
-        boton.setEnabled(false);
     }
 
     private void mostrarErrorYSalir(String mensaje) {
