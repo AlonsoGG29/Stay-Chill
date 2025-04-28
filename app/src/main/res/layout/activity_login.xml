@@ -106,7 +106,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/no_tiene_cuenta"
-            android:textColor="#FFFFFFFF"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:fontFamily="@font/lora_semibolditalic"
             android:gravity="center"
