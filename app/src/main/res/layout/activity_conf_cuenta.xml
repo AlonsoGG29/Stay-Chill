@@ -76,7 +76,8 @@
                 android:inputType="textPersonName"
                 android:minHeight="48dp"
                 android:padding="10dp"
-                android:textColor="#121212" />
+                android:textColorHint="@color/colorTextHint"
+                android:textColor="@color/colorText" />
         </LinearLayout>
 
         <!-- Campo: Apellido -->
@@ -105,7 +106,8 @@
                 android:inputType="textPersonName"
                 android:minHeight="48dp"
                 android:padding="10dp"
-                android:textColor="#121212" />
+                android:textColorHint="@color/colorTextHint"
+                android:textColor="@color/colorText" />
         </LinearLayout>
 
         <!-- Campo: Fecha de Nacimiento -->
@@ -133,7 +135,8 @@
                 android:inputType="date"
                 android:minHeight="48dp"
                 android:padding="10dp"
-                android:textColor="#121212" />
+                android:textColorHint="@color/colorTextHint"
+                android:textColor="@color/colorText" />
         </LinearLayout>
 
         <!-- Campo: País -->
