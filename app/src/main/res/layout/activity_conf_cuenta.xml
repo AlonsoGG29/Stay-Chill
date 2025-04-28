@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:id="@+id/activity_conf_cuenta"
     android:orientation="vertical"
-    android:background="@android:color/white"
+    android:background="@color/white"
     android:gravity="center_horizontal"
     android:padding="16dp">
 
@@ -42,10 +42,12 @@
             android:id="@+id/fotoPerfil"
             android:layout_width="150dp"
             android:layout_height="150dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="8dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/perfil"
+            android:src="@drawable/img_default"
             android:contentDescription="@string/perfil"
-            android:background="@null"
+            android:background="@drawable/foto_borde"
             android:scaleType="fitCenter" />
 
         <!-- Campo: Nombre -->
@@ -74,7 +76,8 @@
                 android:inputType="textPersonName"
                 android:minHeight="48dp"
                 android:padding="10dp"
-                android:textColor="@color/black" />
+                android:textColorHint="@color/colorTextHint"
+                android:textColor="@color/colorText" />
         </LinearLayout>
 
         <!-- Campo: Apellido -->
@@ -103,7 +106,8 @@
                 android:inputType="textPersonName"
                 android:minHeight="48dp"
                 android:padding="10dp"
-                android:textColor="@color/black" />
+                android:textColorHint="@color/colorTextHint"
+                android:textColor="@color/colorText" />
         </LinearLayout>
 
         <!-- Campo: Fecha de Nacimiento -->
@@ -131,7 +135,8 @@
                 android:inputType="date"
                 android:minHeight="48dp"
                 android:padding="10dp"
-                android:textColor="@color/black" />
+                android:textColorHint="@color/colorTextHint"
+                android:textColor="@color/colorText" />
         </LinearLayout>
 
         <!-- Campo: País -->
@@ -155,6 +160,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/input_background"
                 android:minHeight="48dp"
+                android:textColor="#121212"
                 android:padding="12dp" />
         </LinearLayout>
     </LinearLayout> <!-- Cierre correcto del LinearLayout -->
@@ -164,7 +170,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@drawable/boton_cuenta"
         android:text="@string/guardar"
-        android:textColor="@android:color/white"/>
+        style="@style/boton_entrar"/>
 </LinearLayout>
