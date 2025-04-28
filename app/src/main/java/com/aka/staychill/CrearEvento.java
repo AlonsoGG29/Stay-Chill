@@ -23,7 +23,7 @@ public class CrearEvento extends AppCompatActivity {
     private static final String DATE_UI_FORMAT = "dd/MM/yyyy";
     private static final String TIME_UI_FORMAT = "HH:mm";
 
-    private EditText inputNombre, inputLocalizacion, inputDescripcion, inputFecha, inputHora;
+    private EditText inputNombre, inputLocalizacion, inputDescripcion, inputFecha, inputHora, inputLimitePartipantes;
     private ImageView inputImagen;
     private Spinner spinnerTipoDeEvento;
 
@@ -76,6 +76,7 @@ public class CrearEvento extends AppCompatActivity {
         inputFecha = findViewById(R.id.inputFecha);
         inputHora = findViewById(R.id.inputHora);
         inputImagen = findViewById(R.id.eventoImagen);
+        inputLimitePartipantes = findViewById(R.id.inputLimiteParticipantes);
         spinnerTipoDeEvento = findViewById(R.id.spinnerTipoDeEvento);
     }
 
@@ -131,7 +132,7 @@ public class CrearEvento extends AppCompatActivity {
     private void configurarSpinner() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_spinner_item,
+                R.layout.item_spinner,
                 new ArrayList<>(imagenesPorTipo.keySet())
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -216,7 +217,9 @@ public class CrearEvento extends AppCompatActivity {
         evento.setFechaStr(new SimpleDateFormat(DATE_API_FORMAT).format(fecha));
         evento.setHoraStr(new SimpleDateFormat(TIME_API_FORMAT).format(hora));
         evento.setImagenNombre(obtenerNombreImagen());
+        evento.setLimiteParticipantes(Integer.parseInt(inputLimitePartipantes.getText().toString()));
         evento.setCreadorId(sessionManager.getUserId());
+        evento.setNumeroActualParticipantes(0);
         return evento;
     }
 
@@ -256,6 +259,8 @@ public class CrearEvento extends AppCompatActivity {
         payload.addProperty("tipo_de_evento", evento.getTipoDeEvento());
         payload.addProperty("imagen_del_evento", evento.getImagenDelEvento(this));
         payload.addProperty("creador_id", evento.getCreadorDatos().toString());
+        payload.addProperty("limite_de_participantes", evento.getLimitePersonas());
+        payload.addProperty("numero_actual_participantes", evento.getNumeroActualParticipantes());
 
         return RequestBody.create(payload.toString(), MediaType.get("application/json"));
     }
@@ -292,7 +297,8 @@ public class CrearEvento extends AppCompatActivity {
         if (inputNombre.getText().toString().trim().isEmpty() ||
                 inputLocalizacion.getText().toString().trim().isEmpty() ||
                 inputFecha.getText().toString().isEmpty() ||
-                inputHora.getText().toString().isEmpty()) {
+                inputHora.getText().toString().isEmpty() ||
+                inputLimitePartipantes.getText().toString().isEmpty()){
 
             mostrarError("Complete todos los campos obligatorios");
             return false;

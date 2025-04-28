@@ -96,6 +96,10 @@
     <string name="escribe_un_mensaje">Escribe un mensaje…</string>
     <string name="no_conversacion">No tienes conversaciones\n¡Inicia una nueva!</string>
     <string name="registrate_ver_eventos">¡Regístrate para ver todos los eventos!</string>
-    <string name="no_notificaciones">Todo tranquilo por aquí...</string>
+    <string name="no_notificaciones">Todo tranquilo por aquí…</string>
+    <string name="limite_de_participantes">Límite de personas</string>
+    <string name="ej_limite_participantes">Ej: 10</string>
+    <string name="participantes">Participantes</string>
+    <string name="no_participantes">De momento nadie se ha unido a tu evento...</string>
 
 </resources>
