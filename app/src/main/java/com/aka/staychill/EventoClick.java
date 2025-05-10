@@ -356,13 +356,18 @@ public class EventoClick extends AppCompatActivity {
 
     private void configurarDatosCreador() {
         TextView nombreOrganizador = findViewById(R.id.nombreOrganizador);
-        nombreOrganizador.setText(String.format("%s %s",
-                evento.getCreadorNombre(),
-                evento.getCreadorApellido()));
+        String nombreCompleto = String.format("%s %s", evento.getCreadorNombre(), evento.getCreadorApellido());
+        nombreOrganizador.setText(nombreCompleto);
 
-        TextView ubicacion = findViewById(R.id.ubicacionEvento);
-        ubicacion.setText(String.format(evento.getLocalizacion()));
+        // Al pulsar el nombre, redirigimos al Chat con este usuario
+        nombreOrganizador.setOnClickListener(v -> {
+            Intent chatIntent = new Intent(EventoClick.this, Chat.class);
+            // Asumiendo que Chat espera el ID con la key "contacto_id"
+            chatIntent.putExtra("contacto_id", evento.getCreadorId().toString());
+            startActivity(chatIntent);
+        });
     }
+
 
     private void configurarFechas() {
         TextView fecha = findViewById(R.id.fechaEvento);
