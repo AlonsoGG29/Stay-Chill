@@ -6,9 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-
-
     <!-- Titulo "Nombre" en la parte superior -->
     <TextView
         android:id="@+id/nombrePerfil"

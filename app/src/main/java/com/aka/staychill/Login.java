@@ -36,7 +36,7 @@ import okhttp3.Response;
 public class Login extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final MediaType JSON = MediaType.parse("application/json;charset=utf-8");
     private static final String SUPABASE_AUTH_URL = SupabaseConfig.getSupabaseUrl() + "/auth/v1/";
 
     private SessionManager sessionManager;
@@ -47,7 +47,6 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         inicializarComponentes();
         verificarSesionExistente();
     }
@@ -86,17 +85,14 @@ public class Login extends AppCompatActivity {
         String email = emailField.getText().toString().trim();
         String password = passwordField.getText().toString().trim();
 
-        if (!validarCampos(email, password)) return;
+        if (!validarCampos(email, password))
+            return;
 
         realizarPeticionLogin(email, password);
     }
 
     private void realizarPeticionLogin(String email, String password) {
-        RequestBody body = RequestBody.create(
-                crearJsonCredenciales(email, password),
-                JSON
-        );
-
+        RequestBody body = RequestBody.create(crearJsonCredenciales(email, password), JSON);
         Request request = new Request.Builder()
                 .url(SUPABASE_AUTH_URL + "token?grant_type=password")
                 .post(body)
@@ -134,12 +130,16 @@ public class Login extends AppCompatActivity {
             UUID userId = UUID.fromString(json.getJSONObject("user").getString("id"));
 
             sessionManager.saveSession(accessToken, refreshToken, userId);
+
+            // Solicitar y actualizar el token FCM después de la autenticación exitosa
             FirebaseMessaging.getInstance().getToken()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null) {
                             String token = task.getResult();
-                            Log.d("FCM_TOKEN", "Token generado: " + token); // Añade este log
+                            Log.d("FCM_TOKEN", "Token generado: " + token);
                             sessionManager.guardarFCMToken(token);
+                            // Si lo requieres, aquí puedes agregar una llamada para actualizar el token en tu servidor:
+                            // actualizarTokenServidor(token);
                         } else {
                             Log.e("FCM_TOKEN", "Error al obtener token", task.getException());
                         }
@@ -206,7 +206,7 @@ public class Login extends AppCompatActivity {
             return mensajeUsuario;
 
         } catch (JSONException e) {
-            return "Error inesperado. Intenta nuevamente";
+            return "Error inesperado. Inténtalo nuevamente";
         }
     }
 
@@ -283,7 +283,5 @@ public class Login extends AppCompatActivity {
     private void mostrarMensaje(String mensaje) {
         runOnUiThread(() -> Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show());
     }
-
-
 
 }

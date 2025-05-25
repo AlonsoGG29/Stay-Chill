@@ -17,6 +17,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -82,8 +84,7 @@ public class Signup extends AppCompatActivity {
 
     private void configurarListeners() {
         signup.setOnClickListener(v -> procesarRegistro());
-        login.setOnClickListener(v ->
-                startActivity(new Intent(Signup.this, Login.class)));
+        login.setOnClickListener(v -> startActivity(new Intent(Signup.this, Login.class)));
     }
 
     private void estilizarTextoLogin() {
@@ -116,17 +117,14 @@ public class Signup extends AppCompatActivity {
         String confirmPassword = confirmPasswordField.getText().toString().trim();
         String name = nameField.getText().toString().trim();
 
-        if (!validarCampos(email, password, confirmPassword, name)) return;
+        if (!validarCampos(email, password, confirmPassword, name))
+            return;
 
         realizarRegistroAuth(email, password, name);
     }
 
     private void realizarRegistroAuth(String email, String password, String name) {
-        RequestBody body = RequestBody.create(
-                crearJsonRegistro(email, password, name),
-                JSON
-        );
-
+        RequestBody body = RequestBody.create(crearJsonRegistro(email, password, name), JSON);
         Request request = new Request.Builder()
                 .url(AUTH_URL + "signup")
                 .post(body)
@@ -153,7 +151,24 @@ public class Signup extends AppCompatActivity {
     private void procesarRegistroExitoso(Response response) throws IOException {
         try {
             JSONObject json = new JSONObject(response.body().string());
+            // Guardar la sesión del usuario
             guardarSesionUsuario(json);
+
+            // Solicitar el token FCM y guardarlo en el SessionManager
+            FirebaseMessaging.getInstance().getToken()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            String token = task.getResult();
+                            Log.d("FCM_TOKEN_SIGNUP", "Token generado: " + token);
+                            sessionManager.guardarFCMToken(token);
+                            // Opcional: llamar a un método para actualizar el token en el backend
+                            // actualizarTokenServidor(token);
+                        } else {
+                            Log.e("FCM_TOKEN_SIGNUP", "Error al obtener token", task.getException());
+                        }
+                    });
+
+            // Crear el perfil del usuario en tu base de datos
             crearPerfilUsuario();
         } catch (JSONException e) {
             manejarErrorProcesamiento();
@@ -170,7 +185,6 @@ public class Signup extends AppCompatActivity {
     private void crearPerfilUsuario() {
         try {
             Request request = construirRequestPerfil();
-
             SupabaseConfig.getClient().newCall(request).enqueue(new Callback() {
                 @Override
                 public void onResponse(@NonNull Call call, @NonNull Response response) {
@@ -186,7 +200,6 @@ public class Signup extends AppCompatActivity {
                     manejarErrorPerfil();
                 }
             });
-
         } catch (JSONException e) {
             mostrarMensaje("Error construyendo datos del usuario");
         }
@@ -206,7 +219,7 @@ public class Signup extends AppCompatActivity {
                 .build();
     }
 
-    // Manejo de Errores
+    // Manejo de errores
     private void manejarErrorRegistro(Response response) throws IOException {
         String errorMessage = obtenerMensajeError(response);
         mostrarMensaje(errorMessage);
@@ -294,7 +307,7 @@ public class Signup extends AppCompatActivity {
                 .url(AUTH_URL + "admin/users/" + sessionManager.getUserId())
                 .delete()
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
-                .addHeader("Authorization", "Bearer " + SupabaseConfig.getSupabaseKey()) // Usar service role key
+                .addHeader("Authorization", "Bearer " + SupabaseConfig.getSupabaseKey()) // Usar service_role_key si es necesario
                 .build();
 
         SupabaseConfig.getClient().newCall(request).enqueue(new Callback() {

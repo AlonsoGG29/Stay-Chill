@@ -57,7 +57,7 @@ public class NotificacionesAdapter extends RecyclerView.Adapter<NotificacionesAd
                 : "Nueva notificación";
 
         // 2. Hora formateada
-        holder.tvHora.setText(notificacion.getHoraFormateada());
+        holder.tvHora.setText(notificacion.getFechaFormateada());
 
         // 3. Datos del usuario emisor (si existe)
         if (notificacion.getUsuarioEmisor() != null) {
