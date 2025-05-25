@@ -1,4 +1,4 @@
-package com.aka.staychill.fragments; // Clean What can i say?
+package com.aka.staychill.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;

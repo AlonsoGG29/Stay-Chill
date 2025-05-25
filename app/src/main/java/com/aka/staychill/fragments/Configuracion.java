@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.aka.staychill.CargarImagenes;
 import com.aka.staychill.Conf_cuenta;
+import com.aka.staychill.Conf_privacidad;
 import com.aka.staychill.R;
 import com.aka.staychill.SessionManager;
 import com.aka.staychill.Signup;
@@ -151,8 +152,7 @@ public class Configuracion extends Fragment {
 
         rootView.findViewById(R.id.conf_privacidad).setOnClickListener(v -> {
             if (getActivity() != null) {
-                desarrollo();
-                //startActivity(new Intent(getActivity(), Conf_privacidad.class));
+                startActivity(new Intent(getActivity(), Conf_privacidad.class));
             }
         });
 

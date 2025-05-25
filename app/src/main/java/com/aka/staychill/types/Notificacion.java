@@ -73,4 +73,11 @@ public class Notificacion {
         if (fechaCreacion == null) return "";
         return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(fechaCreacion);
     }
+
+    // Método para formatear la fecha completa: hora, minuto, día, mes y año
+    public String getFechaFormateada() {
+        if (fechaCreacion == null) return "";
+        return new SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault()).format(fechaCreacion);
+    }
+
 }

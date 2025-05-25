@@ -79,13 +79,14 @@ public class Notificaciones extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    private void cargarNotificaciones() {
+    private void cargarNotificaciones(){
         String userId = new SessionManager(this).getUserIdString();
 
         HttpUrl url = HttpUrl.parse(SupabaseConfig.getSupabaseUrl() + "/rest/v1/notificaciones")
                 .newBuilder()
                 .addQueryParameter("select", "*,usuarios!sender_id(nombre,profile_image_url)")
                 .addQueryParameter("user_id", "eq." + userId)
+                .addQueryParameter("order", "fecha_creacion.desc")
                 .build();
 
         Request request = new Request.Builder()
@@ -96,7 +97,7 @@ public class Notificaciones extends AppCompatActivity {
                         .build())
                 .build();
 
-        client.newCall(request).enqueue(new Callback() {
+        client.newCall(request).enqueue(new Callback(){
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 runOnUiThread(() -> Toast.makeText(Notificaciones.this,
@@ -105,7 +106,7 @@ public class Notificaciones extends AppCompatActivity {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful()){
                     List<Notificacion> notifs = parsearNotificaciones(response.body().string());
                     runOnUiThread(() -> actualizarUI(notifs));
                 }
