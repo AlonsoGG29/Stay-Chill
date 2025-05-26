@@ -101,5 +101,6 @@
     <string name="ej_limite_participantes">Ej: 10</string>
     <string name="participantes">Participantes</string>
     <string name="no_participantes">De momento nadie se ha unido a tu evento...</string>
+    <string name="todas_las_notificaciones">Todas las notificaciones</string>
 
 </resources>
