@@ -98,7 +98,7 @@
             android:layout_marginTop="75dp"
             android:fontFamily="@font/lora_semibolditalic"
             android:text="@string/no_tiene_cuenta"
-            android:textColor="@color/white"
+            android:textColor="#FFFFFFFF"
             android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="@+id/cuadro"
             app:layout_constraintStart_toStartOf="@+id/cuadro"
