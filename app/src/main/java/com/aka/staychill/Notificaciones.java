@@ -3,9 +3,11 @@ package com.aka.staychill;
 import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -205,37 +207,71 @@ public class Notificaciones extends AppCompatActivity {
         );
     }
 
-    // Método mejorado para mostrar notificaciones
     private void mostrarNotificacionLocal(Notificacion notificacion) {
+        // Leer preferencias del usuario
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean habilitarMensajes = prefs.getBoolean("notif_mensajes", true);
+        boolean habilitarEventos = prefs.getBoolean("notif_eventos", true);
+
+        // Revisar el tipo y, si está deshabilitado, no mostrar la notificación
+        String tipo = notificacion.getTipo(); // Se espera "mensaje" o "evento"
+        if ("mensaje".equals(tipo) && !habilitarMensajes) {
+            Log.d("Notificacion", "Notificación de mensaje deshabilitada por preferencia");
+            return;
+        }
+        if ("evento".equals(tipo) && !habilitarEventos) {
+            Log.d("Notificacion", "Notificación de evento deshabilitada por preferencia");
+            return;
+        }
+
+        // Asignar canal y contenido según el tipo
+        String channelId = "default_channel";
+        String channelName = "Notificaciones";
+        String contentTitle = "Notificación";
+        String contentText = notificacion.getMensaje();
+
+        if ("mensaje".equals(tipo)) {
+            channelId = "mensajes_channel";
+            channelName = "Mensajes";
+            // Si el emisor está disponible, se muestra su nombre
+            contentTitle = notificacion.getUsuarioEmisor() != null ?
+                    notificacion.getUsuarioEmisor().getNombre() : "Nuevo mensaje";
+        } else if ("evento".equals(tipo)) {
+            channelId = "eventos_channel";
+            channelName = "Eventos";
+            contentTitle = "Nuevo evento";
+            // Puedes modificar el cuerpo, por ejemplo:
+            contentText = "Evento: " + notificacion.getMensaje();
+        }
+
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (manager == null) return;
 
-        // Crear canal solo para Android 8+
-        NotificationChannel channel = new NotificationChannel(
-                "staychill_channel",
-                "Mensajes",
-                NotificationManager.IMPORTANCE_HIGH
-        );
-        channel.setDescription("Notificaciones de mensajes nuevos");
-        manager.createNotificationChannel(channel);
+        // Crear canal en Android 8.0+ según el tipo
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+            // Descripción personalizada según el tipo
+            String description = "Notificaciones " + ("mensaje".equals(tipo) ? "de mensajes nuevos" : "de eventos");
+            channel.setDescription(description);
+            manager.createNotificationChannel(channel);
+        }
 
-        // Construir notificación
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "staychill_channel")
+        // Construir la notificación
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.img_stay_chill)
-                .setContentTitle(notificacion.getUsuarioEmisor() != null ?
-                        notificacion.getUsuarioEmisor().getNombre() : "Nuevo mensaje")
-                .setContentText(notificacion.getMensaje())
+                .setContentTitle(contentTitle)
+                .setContentText(contentText)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
 
-        // Mostrar solo si tiene permiso (Android 13+) o en versiones anteriores
+        // Mostrar notificación (considerando permisos para Android 13+)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                         == PackageManager.PERMISSION_GRANTED) {
-
             manager.notify((int) System.currentTimeMillis(), builder.build());
         }
     }
+
 
     @Override
     protected void onDestroy() {

@@ -57,12 +57,12 @@
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
-          android:text="@string/mensajes"
+          android:text="@string/todas_las_notificaciones"
           android:textSize="16sp"
           android:textStyle="bold" />
 
       <com.google.android.material.switchmaterial.SwitchMaterial
-          android:id="@+id/switchMensajes"
+          android:id="@+id/switchTodas"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:contentDescription="@string/recibir_mensajes"
@@ -89,12 +89,12 @@
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
-          android:text="@string/activar_mensajes"
+          android:text="@string/mensajes"
           android:textSize="16sp"
           android:textStyle="bold" />
 
       <com.google.android.material.switchmaterial.SwitchMaterial
-          android:id="@+id/switchActualizacion"
+          android:id="@+id/switchMensajes"
           android:layout_width="wrap_content"
           android:contentDescription="@string/actualizaciones_app"
           android:layout_height="wrap_content"

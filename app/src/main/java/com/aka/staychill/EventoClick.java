@@ -179,16 +179,10 @@ public class EventoClick extends AppCompatActivity {
 
         Request request = new Request.Builder()
                 .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/rpc/unirse_a_evento")
-                .post(RequestBody.create(
-                        jsonBody.toString(),
-                        MediaType.get("application/json; charset=utf-8")
-                ))
+                .post(RequestBody.create(jsonBody.toString(), MediaType.get("application/json;charset=utf-8")))
                 .addHeader("apikey", SupabaseConfig.getSupabaseKey())
                 .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
-                .addHeader("Accept", "application/json")
-                .addHeader("Content-Type", "application/json")
                 .build();
-
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -199,13 +193,6 @@ public class EventoClick extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 String responseBody = response.body().string();
-                Log.d("API_RESPONSE", responseBody); // Log detallado
-                Log.d("DEBUG", "Evento ID = " + evento.getId()
-                        + ", actual = " + evento.getNumeroActualParticipantes()
-                        + ", límite = " + evento.getLimitePersonas());
-                Log.d("DEBUG", "Payload = " + jsonBody);
-
-
                 if (response.isSuccessful()) {
                     try {
                         JsonObject jsonResponse = new Gson().fromJson(responseBody, JsonObject.class);
@@ -217,6 +204,10 @@ public class EventoClick extends AppCompatActivity {
                                 evento.setNumeroActualParticipantes(newCount);
                                 actualizarUI();
                                 mostrarToast("¡Unido al evento!");
+
+                                // 📌 Insertar notificación en Supabase
+                                insertarNotificacion(userId, evento.getCreadorId(), "Se ha unido al evento", "evento", evento.getId());
+
                             } else {
                                 String mensaje = jsonResponse.get("message").getAsString();
                                 mostrarToast(mensaje);
@@ -234,11 +225,14 @@ public class EventoClick extends AppCompatActivity {
         });
     }
 
+
     private void abandonarEvento() {
         OkHttpClient client = SupabaseConfig.getClient();
+        UUID userId = sessionManager.getUserId();
+
         JsonObject jsonBody = new JsonObject();
         jsonBody.addProperty("event_id", evento.getId());
-        jsonBody.addProperty("user_id", sessionManager.getUserId().toString());
+        jsonBody.addProperty("user_id", userId.toString());
 
         Request request = new Request.Builder()
                 .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/rpc/abandonar_evento")
@@ -267,10 +261,12 @@ public class EventoClick extends AppCompatActivity {
                                 evento.setNumeroActualParticipantes(newCount);
                                 actualizarUI();
                                 mostrarToast("Has abandonado el evento");
+
+                                // 📌 Insertar notificación en Supabase
+                                insertarNotificacion(userId, evento.getCreadorId(), "Ha abandonado el evento", "evento", evento.getId());
+
                             } else {
-                                mostrarToast(res.has("message")
-                                        ? res.get("message").getAsString()
-                                        : "No estabas registrado en el evento");
+                                mostrarToast(res.has("message") ? res.get("message").getAsString() : "No estabas registrado en el evento");
                             }
                         });
                     } catch (Exception e) {
@@ -281,9 +277,9 @@ public class EventoClick extends AppCompatActivity {
                     runOnUiThread(() -> mostrarToast("Error del servidor: " + response.code()));
                 }
             }
-
         });
     }
+
 
     private void mostrarDialogoConfirmacionEliminar() {
         new AlertDialog.Builder(this)
@@ -296,6 +292,7 @@ public class EventoClick extends AppCompatActivity {
 
     private void eliminarEvento() {
         OkHttpClient client = SupabaseConfig.getClient();
+
         Request request = new Request.Builder()
                 .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/eventos?id=eq." + evento.getId())
                 .delete()
@@ -310,11 +307,16 @@ public class EventoClick extends AppCompatActivity {
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     runOnUiThread(() -> {
                         mostrarToast("Evento eliminado");
                         finish();
+
+                        // 📌 Insertar notificación para cada asistente
+                        for (UUID asistenteId : evento.getAsistentes()) {
+                            insertarNotificacion(evento.getCreadorId(), asistenteId, "El evento ha sido eliminado", "evento", evento.getId());
+                        }
                     });
                 } else {
                     runOnUiThread(() -> mostrarToast("Error al eliminar: " + response.code()));
@@ -322,6 +324,42 @@ public class EventoClick extends AppCompatActivity {
             }
         });
     }
+
+    private void insertarNotificacion(UUID senderId, UUID userId, String mensaje, String tipo, Long eventoId) {
+        OkHttpClient client = SupabaseConfig.getClient();
+
+        JsonObject jsonBody = new JsonObject();
+        jsonBody.addProperty("sender_id", senderId.toString());
+        jsonBody.addProperty("user_id", userId.toString());
+        jsonBody.addProperty("mensaje", mensaje);
+        jsonBody.addProperty("tipo", tipo);
+        jsonBody.addProperty("relacion_id", eventoId.toString());
+
+        Request request = new Request.Builder()
+                .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/notificaciones")
+                .post(RequestBody.create(jsonBody.toString(), MediaType.get("application/json")))
+                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("NOTIFICACION_ERROR", "Error al insertar notificación", e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    Log.e("NOTIFICACION_ERROR", "Error al insertar: " + response.code() + " " + response.body().string());
+                } else {
+                    Log.d("NOTIFICACION_OK", "Notificación insertada correctamente");
+                }
+            }
+        });
+    }
+
+
 
     private boolean validarDatosIntent(Intent intent) {
         return intent != null && intent.hasExtra("EVENTO_DATA");
