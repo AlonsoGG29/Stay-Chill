@@ -1,113 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:id="@+id/activity_conf_reportar"
-    android:background="@color/white">
+    android:fillViewport="true"
+    android:padding="16dp">
 
-    <!-- Barra de encabezado con botón de retroceso -->
-    <RelativeLayout
-        android:id="@+id/headerLayout"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/activity_conf_reportar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:background="@color/white">
 
-        <ImageView
-            android:id="@+id/btnBack"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/img_volver_fecha"
-            android:scaleType="centerInside"
-            android:layout_alignParentStart="true"
-            android:contentDescription="@string/volver"/>
+        <!-- Barra de encabezado con botón de retroceso -->
+        <RelativeLayout
+            android:id="@+id/headerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/img_volver_fecha"
+                android:scaleType="centerInside"
+                android:layout_alignParentStart="true"
+                android:contentDescription="@string/volver"/>
+
+            <TextView
+                android:id="@+id/txtTitulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/reportar_un_problema"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:layout_centerInParent="true"/>
+        </RelativeLayout>
+
+        <!-- Descripción del problema -->
         <TextView
-            android:id="@+id/txtTitulo"
+            android:id="@+id/descLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/reportar_un_problema"
-            android:textSize="20sp"
-            android:textStyle="bold"
+            android:text="@string/descripcion_del_problema"
+            android:textSize="16sp"
             android:textColor="@android:color/black"
-            android:layout_centerInParent="true"/>
-    </RelativeLayout>
+            app:layout_constraintTop_toBottomOf="@id/headerLayout"
+            app:layout_constraintStart_toStartOf="parent"/>
 
-    <!-- Descripción del problema -->
-    <TextView
-        android:id="@+id/descLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/descripcion_del_problema"
-        android:textSize="16sp"
-        android:textColor="@android:color/black"
-        app:layout_constraintTop_toBottomOf="@id/headerLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        />
+        <EditText
+            android:id="@+id/descInput"
+            android:layout_width="0dp"
+            android:layout_height="220dp"
+            android:layout_marginTop="10dp"
+            android:autofillHints="no"
+            android:background="@drawable/edittext_border"
+            android:padding="16dp"
+            android:hint="@string/escribe_aqui"
+            android:textSize="14sp"
+            android:gravity="top|start"
+            android:inputType="textMultiLine"
+            app:layout_constraintTop_toBottomOf="@id/descLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
-    <EditText
-        android:id="@+id/descInput"
-        android:layout_width="0dp"
-        android:layout_height="220dp"
-        android:layout_marginTop="10dp"
-        android:autofillHints="no"
-        android:background="@drawable/edittext_border"
-        android:padding="16dp"
-        android:hint="@string/escribe_aqui"
-        android:textSize="14sp"
-        android:gravity="top|start"
-        android:inputType="textMultiLine"
-        app:layout_constraintTop_toBottomOf="@id/descLabel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+        <!-- Imagen del problema -->
+        <TextView
+            android:id="@+id/imgLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/imagen_del_problema"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@id/descInput"
+            app:layout_constraintStart_toStartOf="parent"/>
 
-    <!-- Imagen del problema -->
-    <TextView
-        android:id="@+id/imgLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/imagen_del_problema"
-        android:textSize="16sp"
-        android:textColor="@android:color/black"
-        app:layout_constraintTop_toBottomOf="@id/descInput"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="20dp"
-        />
+        <ImageView
+            android:id="@+id/imgPlaceholder"
+            android:layout_width="0dp"
+            android:layout_height="220dp"
+            android:background="@drawable/edittext_border"
+            android:scaleType="centerInside"
+            android:layout_marginTop="10dp"
+            android:src="@android:drawable/ic_menu_camera"
+            android:contentDescription="@string/agregar_una_imagen"
+            android:clickable="true"
+            app:layout_constraintTop_toBottomOf="@id/imgLabel"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
-    <ImageView
-        android:id="@+id/imgPlaceholder"
-        android:layout_width="0dp"
-        android:layout_height="220dp"
-        android:background="@drawable/edittext_border"
-        android:focusable="true"
-        android:scaleType="centerInside"
-        android:layout_marginTop="10dp"
-        android:src="@android:drawable/ic_menu_camera"
-        android:contentDescription="@string/agregar_una_imagen"
-        android:clickable="true"
-        app:layout_constraintTop_toBottomOf="@id/imgLabel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+        <!-- Botón de Enviar -->
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/enviar"
+            android:backgroundTint="@android:color/holo_red_dark"
+            android:textColor="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/imgPlaceholder"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Botón de Enviar -->
-    <Button
-        android:id="@+id/submitButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/enviar"
-        android:backgroundTint="@android:color/holo_red_dark"
-        android:textColor="@android:color/white"
-        app:layout_constraintTop_toBottomOf="@id/imgPlaceholder"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
