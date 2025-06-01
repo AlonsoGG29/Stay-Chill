@@ -231,8 +231,8 @@ public class Conf_reportar extends AppCompatActivity {
     }
 
     // ---------------------------
-    // 2) Insertar registro en usuario_problemas
-    // ---------------------------
+// 2) Insertar registro en usuario_problemas (con user_id)
+// ---------------------------
     private void insertProblem(
             String description,
             String imageUrl,
@@ -241,8 +241,16 @@ public class Conf_reportar extends AppCompatActivity {
         String insertUrl = SupabaseConfig.getSupabaseUrl()
                 + "/rest/v1/usuario_problemas";
 
+        // Obtener el user_id del SessionManager
+        String userId = sessionManager.getUserIdString();
+        if (userId == null) {
+            callback.onError("Error: No se pudo obtener el user_id.");
+            return;
+        }
+
+        // Crear el objeto para la inserción
         List<ProblemRow> rows = new ArrayList<>();
-        rows.add(new ProblemRow(description, imageUrl));
+        rows.add(new ProblemRow(description, imageUrl, userId));
         String json = new Gson().toJson(rows);
 
         RequestBody body = RequestBody.create(
@@ -254,9 +262,7 @@ public class Conf_reportar extends AppCompatActivity {
                 .url(insertUrl)
                 .post(body)
                 .header("apikey", SupabaseConfig.getSupabaseKey())
-                .header("Authorization",
-                        "Bearer " + sessionManager.getAccessToken()
-                )
+                .header("Authorization", "Bearer " + sessionManager.getAccessToken())
                 .header("Content-Type", "application/json")
                 .build();
 
@@ -265,9 +271,9 @@ public class Conf_reportar extends AppCompatActivity {
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 callback.onError(e.getLocalizedMessage());
             }
+
             @Override
-            public void onResponse(@NonNull Call call,
-                                   @NonNull Response response)
+            public void onResponse(@NonNull Call call, @NonNull Response response)
                     throws IOException {
                 if (response.isSuccessful()) {
                     callback.onSuccess();
@@ -278,15 +284,19 @@ public class Conf_reportar extends AppCompatActivity {
         });
     }
 
-    // Modelo para Gson
+    // Modelo actualizado para incluir user_id
     private static class ProblemRow {
         String problema;
         String imagen_problema;
-        ProblemRow(String p, String img) {
-            this.problema      = p;
+        String user_id;
+
+        ProblemRow(String p, String img, String u) {
+            this.problema = p;
             this.imagen_problema = img;
+            this.user_id = u;
         }
     }
+
 
     // Callbacks
     private interface UploadCallback {
