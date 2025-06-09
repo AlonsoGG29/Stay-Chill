@@ -1,6 +1,6 @@
 <h1 align="center"> Stay Chill </h1>
 <p align="center">
-  <img src="imagenes/StayChill.svg" alt="Logo de Stay Chill" />
+  <img height="500vh" src="imagenes/logo_stay_chill.svg" alt="Logo de Stay Chill" />
 </p>
 
 Enlace a Figma: https://www.figma.com/design/KyVoo7Z4Q3HpOeT7HOTeMz/Stay-Chill?node-id=0-1&p=f&t=3dMJvDozEKVYZmZe-0
