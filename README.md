@@ -1,18 +1,20 @@
-# STAY CHILL
+<h1 align="center"> Stay Chill </h1>
 <p align="center">
-  <img src="imagenes/StayChill.svg" alt="COLORES" />
+  <img src="imagenes/StayChill.svg" alt="Logo de Stay Chill" />
 </p>
 
 Enlace a Figma: https://www.figma.com/design/KyVoo7Z4Q3HpOeT7HOTeMz/Stay-Chill?node-id=0-1&p=f&t=3dMJvDozEKVYZmZe-0
+(desuso)
 
 Enlace a Trello : https://trello.com/b/efP3xoTZ/stay-chill
+(desuso)
 
 
 ## Integrantes del proyecto:
 
-- Alonso Gómez - CM Cloud Master
-- Angel Castillo - DS Designer
-- Konrad Drobnik - SM Scrum Master
+- Angel Castillo - CM Cloud Master
+- Konrad Drobnik - DS Designer
+- Alonso Gómez - SM Scrum Master
 
 
 ## Descripción de la app:
@@ -31,63 +33,46 @@ La app busca que la gente se conozca como antiguamente, en persona, y no escribi
 Animación al entrar en la app.
 
 <p align="center">
-  <img src="imagenes/pantalla_1_splash.jpg" alt="MAIN" />
+  <img height="500vh" src="imagenes/pantalla_splash.jpg" alt="splash" />
 </p>
 
 
 ### Login:
 
 <p align="center">
-  <img src="imagenes/pantalla_2_login.jpg" alt="MAIN" />
+  <img height="500vh" src="imagenes/pantalla_login.jpg" alt="login" />
 </p>
 
 
 ### Register:
 
 <p align="center">
-  <img src="imagenes/pantalla_3_register.jpg" alt="MAIN" />
+  <img height="500vh" src="imagenes/pantalla_signup.jpg" alt="sign up" />
 </p>
 
 
 ### Página principal:
 
 <p align="center">
-  <img src="imagenes/pantalla_4_main.jpg" alt="MAIN" />
+  <img height="500vh" src="imagenes/pantalla_main.jpg" alt="main" />
 </p>
 
-- Busqueda en el menú principal
-<p align="center">
-  <img src="imagenes/pantalla_4b_busqueda.jpg" alt="MAIN" />
-</p>
+### Página de eventos:
 
-- Barra de navegación
 <p align="center">
-  <img src="imagenes/pantalla_4a_menunavigation.jpg" alt="MAIN" />
+  <img height="500vh" src="imagenes/pantalla_evento.jpg" alt="Eventos" />
 </p>
 
 
-### Página de eventos (casi finalizada):
+### Página de mensajes:
 
 <p align="center">
-  <img src="imagenes/pantalla_4d_calendario.jpg" alt="EVENTOS" />
-</p>
-
-
-### Página de mensajes (aun en desarrollo):
-
-<p align="center">
-  <img src="imagenes/mensajes.jpg" alt="MENSAJES" />
+  <img height="500vh" src="imagenes/pantalla_mensaje.jpg" alt="Mensajes" />
 </p>
 
 
 ### Página de configuración:
 
 <p align="center">
-  <img src="imagenes/pantalla_5_fragmentopciones.jpg" alt="CONFIGURAR" />
-</p>
-
-### Apartado de cuenta:
-
-<p align="center">
-  <img src="imagenes/pantalla_5a_cuenta.jpg" alt="CONFIGURAR" />
+  <img height="500vh" src="imagenes/pantalla_configuracion.jpg" alt="Configuraciones" />
 </p>
