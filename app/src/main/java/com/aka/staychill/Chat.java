@@ -96,7 +96,6 @@ public class Chat extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        cerrarWebSocket();
         stopPolling();
         super.onDestroy();
     }
@@ -141,7 +140,6 @@ public class Chat extends AppCompatActivity {
             cargarMensajes();
         }
 
-        iniciarConexionTiempoReal();
     }
 
     private boolean validarIdsIniciales() {
@@ -415,89 +413,8 @@ public class Chat extends AppCompatActivity {
     // ##         TIEMPO REAL (WS)           ##
     // ########################################
 
-    private void iniciarConexionTiempoReal() {
-        iniciarWebSocket();
-    }
-
-    private void iniciarWebSocket() {
-        // Convertimos https://... a wss://... y añadimos apikey en query
-        String base = SupabaseConfig.getSupabaseUrl(); // e.g. "https://xyz.supabase.co"
-        String wsUrl = base.replaceFirst("^https?://", "wss://")
-                + "/realtime/v1/websocket?apikey="
-                + SupabaseConfig.getSupabaseKey();
-
-        Request wsRequest = new Request.Builder()
-                .url(wsUrl)
-                .build();
-
-        webSocket = client.newWebSocket(wsRequest, new WebSocketListener() {
-            @Override public void onOpen(@NonNull WebSocket ws, @NonNull Response resp) {
-                Log.d("WS","Conexión abierta (101)");
-                autenticarWebSocket(ws);
-            }
-            @Override public void onMessage(@NonNull WebSocket ws, @NonNull String text) {
-                Log.d("WS","<<< "+text);
-                // Loguear phx_reply para verificar suscripción
-                if (text.contains("\"event\":\"phx_reply\"")) {
-                    Log.d("WS","→ phx_reply recibido");
-                }
-                procesarMensajeWebSocket(text);
-            }
-            @Override public void onFailure(@NonNull WebSocket ws, @NonNull Throwable t, @Nullable Response r) {
-                Log.e("WS","Fallo WS",t);
-                reconectarWebSocket();
-            }
-            @Override public void onClosed(@NonNull WebSocket ws, int code, @NonNull String reason) {
-                Log.d("WS","Cerrado WS: "+code+" / "+reason);
-                reconectarWebSocket();
-            }
-        });
-    }
 
 
-
-    private void autenticarWebSocket(WebSocket ws) {
-        // Aquí enviamos el JWT del usuario, no la anon key
-        String jwt = sessionManager.getAccessToken();
-        String authMsg = String.format(WEBSOCKET_AUTH_MSG, jwt);
-        Log.d("WS","Enviando AUTH con JWT: " + authMsg);
-        ws.send(authMsg);
-
-        Log.d("WS","Enviando SUBSCRIBE: " + WEBSOCKET_SUB_MSG);
-        ws.send(WEBSOCKET_SUB_MSG);
-    }
-
-    private void procesarMensajeWebSocket(String mensaje) {
-        try {
-            JSONObject obj = new JSONObject(mensaje);
-            if (obj.has("payload")) {
-                JSONObject payload = obj.getJSONObject("payload");
-                if (payload.has("data") && payload.getJSONObject("data").has("record")) {
-                    JSONObject record = payload.getJSONObject("data").getJSONObject("record");
-                    Mensaje nuevo = new Gson().fromJson(record.toString(), Mensaje.class);
-                    if (nuevo.getConversacionId().equals(conversacionId)) {
-                        runOnUiThread(() -> {
-                            if (!adapter.getMensajes().contains(nuevo)) {
-                                adapter.getMensajes().add(nuevo);
-                                adapter.notifyItemInserted(adapter.getItemCount() - 1);
-                                recyclerMensajes.smoothScrollToPosition(adapter.getItemCount() - 1);
-                            }
-                        });
-                    }
-                }
-            }
-        } catch (JSONException e) {
-            Log.e("WebSocket", "Error procesando mensaje", e);
-        }
-    }
-
-    private void reconectarWebSocket() {
-        handler.postDelayed(this::iniciarWebSocket, 5000);
-    }
-
-    private void cerrarWebSocket() {
-        if (webSocket != null) webSocket.close(1000, "Activity closed");
-    }
 
     // ########################################
     // ##         MÉTODOS AUXILIARES         ##
