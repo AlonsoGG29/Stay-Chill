@@ -4,93 +4,103 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import android.preference.PreferenceManager;
 
 import com.aka.staychill.types.Notificacion;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class FCMService extends FirebaseMessagingService {
     private static final String TAG = "FCMService";
+    private final Set<String> seenIds = new HashSet<>();
 
     @Override
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         Log.d(TAG, "Nuevo token recibido: " + token);
-        // Actualiza el token en el backend (por ejemplo, en Supabase) usando tu SessionManager.
         new SessionManager(this).guardarFCMToken(token);
     }
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         Log.d(TAG, "Mensaje recibido desde: " + remoteMessage.getFrom());
-        Log.d(TAG, "RemoteMessage data: " + remoteMessage.getData().toString());
-
         Map<String, String> data = remoteMessage.getData();
+        Log.d(TAG, "RemoteMessage data: " + data);
 
-        // Opción 1: Se recibió la clave "notificacion" (payload agrupado)
-        if (data.containsKey("notificacion")) {
-            String jsonNotificacion = data.get("notificacion");
-            Log.d(TAG, "Payload 'notificacion': " + jsonNotificacion);
-            try {
-                Notificacion notificacion = new Gson().fromJson(jsonNotificacion, Notificacion.class);
-                if (notificacion != null) {
-                    String emisor = (notificacion.getUsuarioEmisor() != null)
-                            ? notificacion.getUsuarioEmisor().getNombre()
-                            : "Usuario";
-                    Log.d(TAG, "Deserialización OK. Usuario Emisor: "
-                            + emisor + " | Mensaje: " + notificacion.getMensaje());
-                    mostrarNotificacion(notificacion);
-                } else {
-                    Log.e(TAG, "Error: Notificacion es null tras la deserialización.");
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error al deserializar la notificación: " + e.getMessage());
-            }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean global = prefs.getBoolean("notif_global", true);
+        boolean mensajes = prefs.getBoolean("notif_mensajes", true);
+        boolean eventos  = prefs.getBoolean("notif_eventos", true);
+
+        if (!global) {
+            Log.d(TAG, "Notificaciones globales desactivadas, ignorando.");
+            return;
         }
-        // Opción 2: No existe "notificacion", se utilizan "mensaje" y "tipo"
-        else if (data.containsKey("mensaje") && data.containsKey("tipo")) {
-            Log.d(TAG, "Construyendo Notificacion a partir de 'mensaje' y 'tipo'");
-            Notificacion notificacion = new Notificacion();
-            notificacion.setMensaje(data.get("mensaje"));
-            notificacion.setTipo(data.get("tipo"));
-            // Creamos un objeto Usuario para asignar el tipo al título
+        String tipo = data.get("tipo");
+        if ("mensaje".equals(tipo) && !mensajes) {
+            Log.d(TAG, "Notificaciones de mensajes desactivadas, ignorando.");
+            return;
+        }
+        if ("evento".equals(tipo) && !eventos) {
+            Log.d(TAG, "Notificaciones de eventos desactivadas, ignorando.");
+            return;
+        }
+
+        String id = data.get("notification_id");
+        if (id == null) {
+            id = remoteMessage.getMessageId();
+        }
+        if (id != null && !seenIds.add(id)) {
+            Log.d(TAG, "Duplicado detectado, ignorando ID=" + id);
+            return;
+        }
+
+        if (data.containsKey("notificacion")) {
+            try {
+                Notificacion noti = new Gson().fromJson(data.get("notificacion"), Notificacion.class);
+                mostrarNotificacion(noti);
+            } catch (Exception e) {
+                Log.e(TAG, "Error al deserializar 'notificacion': " + e.getMessage());
+            }
+        } else if (data.containsKey("mensaje") && data.containsKey("tipo")) {
+            Notificacion noti = new Notificacion();
+            noti.setMensaje(data.get("mensaje"));
+            noti.setTipo(data.get("tipo"));
             Notificacion.Usuario usuario = new Notificacion.Usuario();
             usuario.setNombre("Notificación de " + data.get("tipo"));
-            notificacion.setUsuarioEmisor(usuario);
-            mostrarNotificacion(notificacion);
+            noti.setUsuarioEmisor(usuario);
+            mostrarNotificacion(noti);
         } else {
-            Log.d(TAG, "El payload no tiene la información necesaria para construir una notificación.");
+            Log.d(TAG, "Payload sin info válida, no se muestra notificación.");
         }
     }
 
     private void mostrarNotificacion(Notificacion notificacion) {
-        Log.d(TAG, "Mostrando notificación...");
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         crearCanalNotificaciones(manager);
 
-        // Se define un PendingIntent que abre la actividad Notificaciones
         Intent intent = new Intent(this, Notificaciones.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                intent,
+                this, 0, intent,
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        // Definimos el título usando el nombre del usuario (en este ejemplo, incluye el tipo)
-        String title = (notificacion.getUsuarioEmisor() != null && notificacion.getUsuarioEmisor().getNombre() != null)
+        String title = notificacion.getUsuarioEmisor() != null && notificacion.getUsuarioEmisor().getNombre() != null
                 ? notificacion.getUsuarioEmisor().getNombre()
                 : "Notificación";
-        String content = (notificacion.getMensaje() != null) ? notificacion.getMensaje() : "";
+        String content = notificacion.getMensaje() != null ? notificacion.getMensaje() : "";
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "staychill_channel")
                 .setSmallIcon(R.drawable.img_stay_chill)
@@ -102,24 +112,23 @@ public class FCMService extends FirebaseMessagingService {
 
         if (manager != null) {
             int notificationId = (int) System.currentTimeMillis();
-            Log.d(TAG, "Notificación ID: " + notificationId);
             manager.notify(notificationId, builder.build());
-            Log.d(TAG, "Notificación enviada.");
+            Log.d(TAG, "Notificación enviada. ID interna: " + notificationId);
         } else {
-            Log.e(TAG, "Error: NotificationManager es null.");
+            Log.e(TAG, "NotificationManager es null.");
         }
     }
 
     private void crearCanalNotificaciones(NotificationManager manager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.d(TAG, "Creando canal de notificaciones...");
-            NotificationChannel channel = new NotificationChannel("staychill_channel", "Mensajes", NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("Notificaciones de mensajes nuevos");
+            NotificationChannel channel = new NotificationChannel(
+                    "staychill_channel",
+                    "Mensajes StayChill",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription("Notificaciones de mensajes y eventos");
             if (manager != null) {
                 manager.createNotificationChannel(channel);
-                Log.d(TAG, "Canal de notificaciones creado.");
-            } else {
-                Log.e(TAG, "NotificationManager es null al crear el canal.");
             }
         }
     }

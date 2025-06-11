@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,7 +49,15 @@ public class Chat extends AppCompatActivity {
     // === CONSTANTES ===
     private static final MediaType JSON_MEDIA_TYPE = MediaType.get("application/json");
     private static final String WEBSOCKET_AUTH_MSG = "{\"event\":\"access_token\",\"payload\":\"%s\",\"ref\":0}";
-    private static final String WEBSOCKET_SUB_MSG = "{\"event\":\"phx_join\",\"payload\":{\"config\":{\"broadcast\":{\"self\":false},\"postgres_changes\":[{\"event\":\"INSERT\",\"schema\":\"public\",\"table\":\"mensajes\"}]}},\"ref\":1,\"topic\":\"realtime:public:messages\"}";
+    private static final String WEBSOCKET_SUB_MSG =
+            "{\"event\":\"phx_join\",\"payload\":{" +
+                    "\"config\":{" +
+                    "\"broadcast\":{\"self\":true}," +
+                    "\"postgres_changes\":[{\"event\":\"INSERT\",\"schema\":\"public\",\"table\":\"mensajes\"}]" +
+                    "}" +
+                    "},\"ref\":1,\"topic\":\"realtime:public:mensajes\"}";
+    private static final long POLL_INTERVAL_MS = 3_000;
+
 
     // === VIEWS ===
     private RecyclerView recyclerMensajes;
@@ -64,12 +73,11 @@ public class Chat extends AppCompatActivity {
     private final OkHttpClient client = new OkHttpClient();
     private WebSocket webSocket;
     private final Handler handler = new Handler();
+    private Runnable pollingRunnable;
 
     // === ESTADO ===
     private String conversacionId;
     private String contactoId;
-    private Runnable pollingRunnable;
-
 
     // ########################################
     // ##          CICLO DE VIDA             ##
@@ -83,11 +91,13 @@ public class Chat extends AppCompatActivity {
         inicializarComponentes();
         configurarUI();
         manejarFlujoInicial();
+        iniciarPolling();
     }
 
     @Override
     protected void onDestroy() {
         cerrarWebSocket();
+        stopPolling();
         super.onDestroy();
     }
 
@@ -136,9 +146,8 @@ public class Chat extends AppCompatActivity {
 
     private boolean validarIdsIniciales() {
         if (conversacionId == null && contactoId == null) {
-            // Crear una excepción manual para contener el contexto del error
             Exception error = new Exception("Ambos IDs (conversación y contacto) son nulos");
-            mostrarError("Error de validación inicial", error); // ✅ Ahora sí compila
+            mostrarError("Error de validación inicial", error);
             return true;
         }
         return false;
@@ -156,15 +165,11 @@ public class Chat extends AppCompatActivity {
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 mostrarError("Error de conexión", e);
             }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+            @Override public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
-
                     assert response.body() != null;
                     procesarRespuestaConversacion(response.body().string());
                 }
@@ -217,13 +222,10 @@ public class Chat extends AppCompatActivity {
                     .build();
 
             client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     mostrarError("Error creando conversación", e);
                 }
-
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                @Override public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (response.isSuccessful()) {
                         assert response.body() != null;
                         procesarNuevaConversacion(response.body().string(), contenido);
@@ -260,29 +262,15 @@ public class Chat extends AppCompatActivity {
                     .headers(obtenerHeadersAuth())
                     .build();
 
-            JSONObject conversacionBody = new JSONObject();
-            conversacionBody.put("ultimo_mensaje", contenido);
-            conversacionBody.put("fecha", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(new Date()));
-
-            Request conversacionRequest = new Request.Builder()
-                    .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/conversaciones?id=eq." + conversacionId)
-                    .patch(RequestBody.create(conversacionBody.toString(), JSON_MEDIA_TYPE))
-                    .headers(obtenerHeadersAuth())
-                    .build();
-
             client.newCall(mensajeRequest).enqueue(new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     mostrarError("Error enviando mensaje", e);
                 }
-
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) {
+                @Override public void onResponse(@NonNull Call call, @NonNull Response response) {
                     if (response.isSuccessful()) {
                         crearNotificacionMensaje(contenido);
-
-                        actualizarConversacion(contenido); // Nuevo método unificado
-                        cargarMensajes(); // Actualizar lista local
+                        actualizarConversacion(contenido);
+                        cargarMensajes();
                     }
                 }
             });
@@ -315,6 +303,27 @@ public class Chat extends AppCompatActivity {
         }
     }
 
+    // ==========================
+    // === MÉTODOS DE POLLING ===
+    // ==========================
+
+    private void iniciarPolling() {
+        pollingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                cargarMensajes();  // vuelve a hacer fetch de mensajes
+                handler.postDelayed(this, POLL_INTERVAL_MS);
+            }
+        };
+        handler.postDelayed(pollingRunnable, POLL_INTERVAL_MS);
+    }
+
+    private void stopPolling() {
+        if (pollingRunnable != null) {
+            handler.removeCallbacks(pollingRunnable);
+        }
+    }
+
 
     // ########################################
     // ##        CARGA DE MENSAJES           ##
@@ -329,17 +338,14 @@ public class Chat extends AppCompatActivity {
 
         Request request = new Request.Builder()
                 .url(url)
-                .headers(getDefaultHeaders()) // Usar helper
+                .headers(getDefaultHeaders())
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 mostrarError("Error de conexión", e);
             }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+            @Override public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     assert response.body() != null;
                     procesarMensajesRecibidos(response.body().string());
@@ -360,7 +366,6 @@ public class Chat extends AppCompatActivity {
         }
     }
 
-
     private void cargarDatosContacto() {
         if (contactoId == null) return;
 
@@ -376,13 +381,10 @@ public class Chat extends AppCompatActivity {
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 Log.e("Chat", "Error cargando contacto", e);
             }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+            @Override public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     assert response.body() != null;
                     procesarDatosContacto(response.body().string());
@@ -390,6 +392,7 @@ public class Chat extends AppCompatActivity {
             }
         });
     }
+
     private void procesarDatosContacto(String json) {
         try {
             JSONArray jsonArray = new JSONArray(json);
@@ -408,7 +411,6 @@ public class Chat extends AppCompatActivity {
         }
     }
 
-
     // ########################################
     // ##         TIEMPO REAL (WS)           ##
     // ########################################
@@ -418,45 +420,60 @@ public class Chat extends AppCompatActivity {
     }
 
     private void iniciarWebSocket() {
-        Request request = new Request.Builder()
-                .url("wss://" + SupabaseConfig.getSupabaseUrl() + "/realtime/v1/websocket")
-                .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+        // Convertimos https://... a wss://... y añadimos apikey en query
+        String base = SupabaseConfig.getSupabaseUrl(); // e.g. "https://xyz.supabase.co"
+        String wsUrl = base.replaceFirst("^https?://", "wss://")
+                + "/realtime/v1/websocket?apikey="
+                + SupabaseConfig.getSupabaseKey();
+
+        Request wsRequest = new Request.Builder()
+                .url(wsUrl)
                 .build();
 
-        webSocket = client.newWebSocket(request, new WebSocketListener() {
-            @Override
-            public void onOpen(@NonNull WebSocket webSocket, @NonNull Response response) {
-                autenticarWebSocket(webSocket);
+        webSocket = client.newWebSocket(wsRequest, new WebSocketListener() {
+            @Override public void onOpen(@NonNull WebSocket ws, @NonNull Response resp) {
+                Log.d("WS","Conexión abierta (101)");
+                autenticarWebSocket(ws);
             }
-
-            @Override
-            public void onMessage(@NonNull WebSocket webSocket, @NonNull String text) {
+            @Override public void onMessage(@NonNull WebSocket ws, @NonNull String text) {
+                Log.d("WS","<<< "+text);
+                // Loguear phx_reply para verificar suscripción
+                if (text.contains("\"event\":\"phx_reply\"")) {
+                    Log.d("WS","→ phx_reply recibido");
+                }
                 procesarMensajeWebSocket(text);
             }
-
-            @Override
-            public void onClosed(@NonNull WebSocket webSocket, int code, @NonNull String reason) {
+            @Override public void onFailure(@NonNull WebSocket ws, @NonNull Throwable t, @Nullable Response r) {
+                Log.e("WS","Fallo WS",t);
+                reconectarWebSocket();
+            }
+            @Override public void onClosed(@NonNull WebSocket ws, int code, @NonNull String reason) {
+                Log.d("WS","Cerrado WS: "+code+" / "+reason);
                 reconectarWebSocket();
             }
         });
     }
 
+
+
     private void autenticarWebSocket(WebSocket ws) {
-        ws.send(String.format(WEBSOCKET_AUTH_MSG, SupabaseConfig.getSupabaseKey()));
+        // Aquí enviamos el JWT del usuario, no la anon key
+        String jwt = sessionManager.getAccessToken();
+        String authMsg = String.format(WEBSOCKET_AUTH_MSG, jwt);
+        Log.d("WS","Enviando AUTH con JWT: " + authMsg);
+        ws.send(authMsg);
+
+        Log.d("WS","Enviando SUBSCRIBE: " + WEBSOCKET_SUB_MSG);
         ws.send(WEBSOCKET_SUB_MSG);
     }
 
-    // ✅ Reemplazar el código actual con:
     private void procesarMensajeWebSocket(String mensaje) {
         try {
             JSONObject obj = new JSONObject(mensaje);
             if (obj.has("payload")) {
                 JSONObject payload = obj.getJSONObject("payload");
-
-                // 🔥 Filtro adicional para asegurar mensajes válidos
                 if (payload.has("data") && payload.getJSONObject("data").has("record")) {
                     JSONObject record = payload.getJSONObject("data").getJSONObject("record");
-
                     Mensaje nuevo = new Gson().fromJson(record.toString(), Mensaje.class);
                     if (nuevo.getConversacionId().equals(conversacionId)) {
                         runOnUiThread(() -> {
@@ -509,7 +526,6 @@ public class Chat extends AppCompatActivity {
                 ",participante2.eq." + participantes.get(1) + ")";
     }
 
-
     private void mostrarError(String contexto, Exception e) {
         String mensaje = contexto + ": " + e.getMessage();
         Log.e("ChatError", mensaje, e);
@@ -518,38 +534,59 @@ public class Chat extends AppCompatActivity {
         );
     }
 
+
     private void crearNotificacionMensaje(String contenido) {
         try {
             JSONObject notificacionBody = new JSONObject();
-            notificacionBody.put("user_id", contactoId); // ID del destinatario
+            notificacionBody.put("user_id", contactoId);
             notificacionBody.put("sender_id", sessionManager.getUserIdString());
             notificacionBody.put("mensaje", "Nuevo mensaje");
             notificacionBody.put("tipo", "mensaje");
             notificacionBody.put("relacion_id", conversacionId);
 
-            Request request = new Request.Builder()
+            Request insertReq = new Request.Builder()
                     .url(SupabaseConfig.getSupabaseUrl() + "/rest/v1/notificaciones")
                     .post(RequestBody.create(notificacionBody.toString(), JSON_MEDIA_TYPE))
-                    .headers(obtenerHeadersServicio()) // Usar headers de servicio
+                    .headers(obtenerHeadersServicio())
                     .build();
 
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                    Log.e("Notificacion", "Error creando notificación", e);
+            client.newCall(insertReq).enqueue(new Callback() {
+                @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.e("Notificacion","Error creando registro",e);
                 }
-
-                @Override
-                public void onResponse(@NonNull Call call, @NonNull Response response) {
+                @Override public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        Log.e("Notificacion", "Código: " + response.code());
+                        Log.e("Notificacion","Insert status: "+response.code());
+                        return;
                     }
+
+                    Request fnReq = new Request.Builder()
+                            .url(SupabaseConfig.getSupabaseUrl() + "/functions/v1/send_push_notification")
+                            .post(RequestBody.create(notificacionBody.toString(), JSON_MEDIA_TYPE))
+                            .addHeader("apikey", SupabaseConfig.getSupabaseKey())
+                            .addHeader("Authorization", "Bearer " + sessionManager.getAccessToken())
+                            .build();
+
+                    client.newCall(fnReq).enqueue(new Callback() {
+                        @Override public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                            Log.e("Notificacion","Error llamando Edge Function",e);
+                        }
+                        @Override public void onResponse(@NonNull Call call, @NonNull Response fnResp) throws IOException {
+                            if (!fnResp.isSuccessful()) {
+                                Log.e("Notificacion","Func status: "+fnResp.code()+" / "+fnResp.body().string());
+                            } else {
+                                Log.d("Notificacion","Edge Function invocada OK");
+                            }
+                        }
+                    });
                 }
             });
+
         } catch (JSONException e) {
-            Log.e("Notificacion", "Error creando JSON", e);
+            Log.e("Notificacion","JSON error",e);
         }
     }
+
 
     private Headers obtenerHeadersServicio() {
         return new Headers.Builder()

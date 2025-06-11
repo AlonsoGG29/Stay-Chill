@@ -55,8 +55,8 @@ public class Splash extends AppCompatActivity {
         }, SPLASH_DURATION_MS);
     }
 
+    //Comprueba si el usuario ha iniciado sesión anteriormente
     private void startValidation() {
-        // Si NO hay sesión, ya sabemos que no es válido
         if (!sessionManager.isLoggedIn()) {
             validationDone = true;
             tokenValid = false;
@@ -89,8 +89,9 @@ public class Splash extends AppCompatActivity {
         });
     }
 
+    //Espera a que termine de verificar la sesión y que haya terminado la animación
+
     private void maybeProceed() {
-        // Espera a que animación y validación hayan finalizado
         if (!animationDone || !validationDone) return;
 
         if (tokenValid) {
