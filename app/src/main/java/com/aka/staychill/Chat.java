@@ -1,5 +1,6 @@
 package com.aka.staychill;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -64,6 +65,7 @@ public class Chat extends AppCompatActivity {
     private EditText etMensaje;
     private ImageButton btnEnviar;
     private ImageView imgPerfil;
+    private ImageButton btnBack;
     private TextView tvNombre;
 
     // === COMPONENTES ===
@@ -113,9 +115,11 @@ public class Chat extends AppCompatActivity {
         recyclerMensajes = findViewById(R.id.recyclerMensajes);
         etMensaje = findViewById(R.id.etMensaje);
         btnEnviar = findViewById(R.id.btnEnviar);
+        btnBack = findViewById(R.id.btnBack);
         imgPerfil = findViewById(R.id.imgPerfilChat);
         tvNombre = findViewById(R.id.tvNombreChat);
     }
+
 
     private void configurarUI() {
         adapter = new MensajesAdapter(new ArrayList<>(), sessionManager.getUserIdString());
@@ -123,6 +127,7 @@ public class Chat extends AppCompatActivity {
         recyclerMensajes.setAdapter(adapter);
 
         btnEnviar.setOnClickListener(v -> manejarEnvioMensaje());
+        btnBack.setOnClickListener(v -> volverMenu());
     }
 
     // ########################################
@@ -522,4 +527,18 @@ public class Chat extends AppCompatActivity {
                 .add("Authorization", "Bearer " + sessionManager.getAccessToken())
                 .build();
     }
+
+    private void volverMenu() {
+        runOnUiThread(() -> {
+            Intent intent = new Intent(this, Main_bn.class);
+            intent.addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_SINGLE_TOP
+            );
+            intent.putExtra("start_tab", 3);
+            startActivity(intent);
+            finish();
+        });
+    }
+
 }

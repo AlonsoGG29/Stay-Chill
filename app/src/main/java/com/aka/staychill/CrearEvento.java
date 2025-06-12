@@ -2,6 +2,7 @@ package com.aka.staychill;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +27,7 @@ public class CrearEvento extends AppCompatActivity {
     private EditText inputNombre, inputLocalizacion, inputDescripcion, inputFecha, inputHora, inputLimitePartipantes;
     private ImageView inputImagen;
     private Spinner spinnerTipoDeEvento;
+    private ImageButton btnBack;
 
     private SessionManager sessionManager;
     private final HashMap<String, Integer> imagenesPorTipo = new HashMap<>();
@@ -78,11 +80,13 @@ public class CrearEvento extends AppCompatActivity {
         inputImagen = findViewById(R.id.eventoImagen);
         inputLimitePartipantes = findViewById(R.id.inputLimiteParticipantes);
         spinnerTipoDeEvento = findViewById(R.id.spinnerTipoDeEvento);
+        btnBack = findViewById(R.id.btnBack);
     }
 
     private void configurarPickers() {
         inputFecha.setOnClickListener(v -> mostrarDatePicker());
         inputHora.setOnClickListener(v -> mostrarTimePicker());
+        btnBack.setOnClickListener(v -> volverMenu());
     }
 
     private void configurarBotonCreacion() {
@@ -312,6 +316,18 @@ public class CrearEvento extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+    private void volverMenu() {
+        runOnUiThread(() -> {
+            Intent intent = new Intent(this, Main_bn.class);
+            intent.addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_SINGLE_TOP
+            );
+            intent.putExtra("start_tab", 2);
+            startActivity(intent);
+            finish();
+        });
     }
 
     private void mostrarError(String mensaje) {

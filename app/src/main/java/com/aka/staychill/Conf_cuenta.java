@@ -54,6 +54,7 @@ public class Conf_cuenta extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 100;
 
     private ImageButton fotoPerfil;
+    private ImageButton btnBack;
     private EditText inputNombre, inputApellido, inputFechaNacimiento;
     private Spinner inputPais;
     private Uri imagenTempUri = null;
@@ -96,11 +97,25 @@ public class Conf_cuenta extends AppCompatActivity {
         inputFechaNacimiento = findViewById(R.id.inputFechaNacimiento);
         inputPais = findViewById(R.id.inputPais);
 
-        findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        btnBack = findViewById(R.id.btnBack);
         findViewById(R.id.botoncuenta).setOnClickListener(v -> guardarCambios());
 
         configurarDatePicker();
         fotoPerfil.setOnClickListener(v -> manejarPermisosImagen());
+        btnBack.setOnClickListener(v -> volverMenu());
+    }
+
+    private void volverMenu() {
+        runOnUiThread(() -> {
+            Intent intent = new Intent(this, Main_bn.class);
+            intent.addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_SINGLE_TOP
+            );
+            intent.putExtra("start_tab", 4);
+            startActivity(intent);
+            finish();
+        });
     }
 
     private void configurarDatePicker() {

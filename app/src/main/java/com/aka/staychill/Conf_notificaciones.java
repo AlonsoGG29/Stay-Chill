@@ -1,5 +1,6 @@
 package com.aka.staychill;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -9,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.messaging.FirebaseMessaging;
 import android.util.Log;
-
+import android.widget.ImageButton;
 
 
 public class Conf_notificaciones extends AppCompatActivity {
@@ -17,6 +18,7 @@ public class Conf_notificaciones extends AppCompatActivity {
     private SwitchMaterial switchTodas;
     private SwitchMaterial switchMensajes;
     private SwitchMaterial switchEventos;
+    private ImageButton btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,7 @@ public class Conf_notificaciones extends AppCompatActivity {
         switchTodas    = findViewById(R.id.switchTodas);
         switchMensajes = findViewById(R.id.switchMensajes);
         switchEventos  = findViewById(R.id.switchEventos);
+        btnBack = findViewById(R.id.btnBack);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean globalEnabled = prefs.getBoolean("notif_global", true);
@@ -38,6 +41,18 @@ public class Conf_notificaciones extends AppCompatActivity {
         switchEventos.setChecked(globalEnabled && notifEventos);
         switchMensajes.setEnabled(globalEnabled);
         switchEventos.setEnabled(globalEnabled);
+
+        btnBack.setOnClickListener(v-> {runOnUiThread(() -> {
+            Intent intent = new Intent(this, Main_bn.class);
+            intent.addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_SINGLE_TOP
+            );
+            intent.putExtra("start_tab", 4);
+            startActivity(intent);
+            finish();
+        });
+        });
 
         // **Si estaba activado, nos suscribimos YA al arrancar**
         if (globalEnabled && notifMensajes) {
@@ -124,6 +139,18 @@ public class Conf_notificaciones extends AppCompatActivity {
                                 Log.e(TAG, "unsubscribeFromTopic eventos failed", task.getException());
                         });
             }
+        });
+    }
+    private void volverMenu() {
+        runOnUiThread(() -> {
+            Intent intent = new Intent(this, Main_bn.class);
+            intent.addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_SINGLE_TOP
+            );
+            intent.putExtra("start_tab", 4);
+            startActivity(intent);
+            finish();
         });
     }
 }

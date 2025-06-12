@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ActivityManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +56,7 @@ public class Notificaciones extends AppCompatActivity {
     private OkHttpClient       client;
     private List<Notificacion> notificaciones;
     private WebSocket          webSocket;
+    private ImageButton btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +69,7 @@ public class Notificaciones extends AppCompatActivity {
 
         recyclerView      = findViewById(R.id.recyclerNotificaciones);
         sinNotificaciones = findViewById(R.id.sinNotificaciones);
+        btnBack = findViewById(R.id.btnBack);
 
         // Solicitar permiso en Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
@@ -76,6 +80,8 @@ public class Notificaciones extends AppCompatActivity {
                     REQ_NOTIF
             );
         }
+
+        btnBack.setOnClickListener(v -> volverMenu());
 
         configurarRecyclerView();
         cargarNotificaciones();
@@ -206,6 +212,18 @@ public class Notificaciones extends AppCompatActivity {
                                            @NonNull String reason) {
                 Log.d(TAG, "WS cerrado: " + reason);
             }
+        });
+    }
+    private void volverMenu() {
+        runOnUiThread(() -> {
+            Intent intent = new Intent(this, Main_bn.class);
+            intent.addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_SINGLE_TOP
+            );
+            intent.putExtra("start_tab", 1);
+            startActivity(intent);
+            finish();
         });
     }
 }

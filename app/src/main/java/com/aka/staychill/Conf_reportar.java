@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResult;
@@ -41,6 +42,7 @@ public class Conf_reportar extends AppCompatActivity {
     private ImageView imgPlaceholder;
     private Button submitButton;
     private SessionManager sessionManager;
+    private ImageButton btnBack;
 
     // Nombre de tu bucket público
     private static final String STORAGE_BUCKET = "imagen-problema";
@@ -59,6 +61,8 @@ public class Conf_reportar extends AppCompatActivity {
         descInput      = findViewById(R.id.descInput);
         imgPlaceholder = findViewById(R.id.imgPlaceholder);
         submitButton   = findViewById(R.id.submitButton);
+        btnBack = findViewById(R.id.btnBack);
+
         sessionManager = new SessionManager(this);
 
         // Si no hay sesión válida, cerramos
@@ -81,6 +85,19 @@ public class Conf_reportar extends AppCompatActivity {
                     }
                 }
         );
+
+        btnBack.setOnClickListener( v -> {
+            runOnUiThread(() -> {
+                Intent intent = new Intent(this, Main_bn.class);
+                intent.addFlags(
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                );
+                intent.putExtra("start_tab", 4);
+                startActivity(intent);
+                finish();
+            });
+        });
 
         // 2) Click en el placeholder → pedir permiso o abrir galería
         imgPlaceholder.setOnClickListener(v -> {

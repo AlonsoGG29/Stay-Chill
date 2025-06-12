@@ -14,12 +14,13 @@
         android:background="@color/white"
         tools:context=".CrearEvento">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:contentDescription="@string/volver"
-            android:src="@drawable/img_volver_fecha"
+            android:src="@drawable/img_btn_volver"
+            android:background="@android:color/transparent"
             app:layout_constraintStart_toStartOf="@id/nuevoEvento"
             app:layout_constraintTop_toTopOf="@id/nuevoEvento" />
 

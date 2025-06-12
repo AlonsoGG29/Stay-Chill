@@ -8,6 +8,16 @@
     android:layout_height="match_parent"
     android:background="@color/black"
     tools:context=".EventoClick">
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:contentDescription="@string/volver"
+        android:src="@drawable/img_btn_volver"
+        android:background="@android:color/transparent"
+        app:layout_constraintTop_toTopOf="@+id/eventoClick"
+        app:layout_constraintStart_toStartOf="@+id/eventoClick"
+        />
 
     <!-- Imagen superior -->
     <ImageView

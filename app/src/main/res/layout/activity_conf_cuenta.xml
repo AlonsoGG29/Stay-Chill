@@ -13,13 +13,13 @@
         android:layout_height="wrap_content"
         android:padding="10dp">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:contentDescription="@string/volver"
-            android:src="@drawable/img_volver_fecha"
-            android:scaleType="centerInside"
+            android:src="@drawable/img_btn_volver"
+            android:background="@android:color/transparent"
             android:layout_alignParentStart="true" />
 
         <TextView

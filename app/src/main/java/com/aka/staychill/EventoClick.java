@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +45,7 @@ public class EventoClick extends AppCompatActivity {
     private Evento evento;
     private SessionManager sessionManager;
     private ImageView btnEliminar, btnAbandonar, btnUnirse, btnVerParticipantes;
+    private ImageButton btnBack;
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
 
     @Override
@@ -51,7 +53,9 @@ public class EventoClick extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_evento_click);
 
+        btnBack = findViewById(R.id.btnBack);
         sessionManager = new SessionManager(this);
+
         procesarIntent();
     }
 
@@ -76,6 +80,7 @@ public class EventoClick extends AppCompatActivity {
         inicializarVistas();
         configurarBotonUnirse();
         actualizarUI();
+        btnBack.setOnClickListener(v -> volverMenu());
     }
 
     private void configurarBotonUnirse() {
@@ -453,6 +458,19 @@ public class EventoClick extends AppCompatActivity {
                     .placeholder(R.drawable.img_default)
                     .into(perfilFoto);
         }
+    }
+
+    private void volverMenu() {
+        runOnUiThread(() -> {
+            Intent intent = new Intent(this, Main_bn.class);
+            intent.addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_SINGLE_TOP
+            );
+            intent.putExtra("start_tab", 1);
+            startActivity(intent);
+            finish();
+        });
     }
 
     private void mostrarErrorYSalir(String mensaje) {
