@@ -117,8 +117,6 @@ public class Configuracion extends Fragment {
             nombreUsuario.setText(usuario.getNombre());
         }
 
-
-
         if (usuario.getImagenPerfil() != null && !usuario.getImagenPerfil().isEmpty()) {
             cargarImagenes.loadProfileImage(
                     usuario.getImagenPerfil(),
@@ -147,41 +145,47 @@ public class Configuracion extends Fragment {
         rootView.findViewById(R.id.conf_cuenta).setOnClickListener(v -> {
             if (!sessionManager.isLoggedIn()) {
                 mostrarDialogoRegistro();
-            }else if (getActivity() != null) {
+            } else if (getActivity() != null) {
                 startActivity(new Intent(getActivity(), Conf_cuenta.class));
             }
         });
 
         rootView.findViewById(R.id.conf_privacidad).setOnClickListener(v -> {
-            if (getActivity() != null) {
+            if (!sessionManager.isLoggedIn()) {
+                mostrarDialogoRegistro();
+            } else if (getActivity() != null) {
                 startActivity(new Intent(getActivity(), Conf_privacidad.class));
             }
         });
 
         rootView.findViewById(R.id.conf_notificaciones).setOnClickListener(v -> {
-            if (getActivity() != null) {
-
+            if (!sessionManager.isLoggedIn()) {
+                mostrarDialogoRegistro();
+            } else if (getActivity() != null) {
                 startActivity(new Intent(getActivity(), Conf_notificaciones.class));
             }
         });
 
         rootView.findViewById(R.id.conf_reportar).setOnClickListener(v -> {
-            if (getActivity() != null) {
-
+            if (!sessionManager.isLoggedIn()) {
+                mostrarDialogoRegistro();
+            } else if (getActivity() != null) {
                 startActivity(new Intent(getActivity(), Conf_reportar.class));
             }
         });
 
         rootView.findViewById(R.id.conf_cerrar).setOnClickListener(v -> {
-            if (!sessionManager.isLoggedIn()) {logoutLocal();}
+            if (!sessionManager.isLoggedIn()) {
+                logoutLocal();
+            }
             if (getActivity() != null) {
-
                 cerrarSesion();
                 startActivity(new Intent(getActivity(), Welcome.class));
                 getActivity().finish();
             }
         });
     }
+
 
     private void cerrarSesion() {
         if (!sessionManager.isLoggedIn()) return;

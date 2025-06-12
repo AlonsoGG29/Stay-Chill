@@ -1,10 +1,12 @@
 package com.aka.staychill;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,6 +47,19 @@ public class Conf_privacidad extends AppCompatActivity {
 
         sessionManager = new SessionManager(this);
         Log.d(TAG, "Activity iniciada. SessionManager inicializado.");
+
+        findViewById(R.id.btnBack).setOnClickListener( v -> {
+            runOnUiThread(() -> {
+                Intent intent = new Intent(this, Main_bn.class);
+                intent.addFlags(
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                );
+                intent.putExtra("start_tab", 4);
+                startActivity(intent);
+                finish();
+            });
+        });
 
         // Opción: Cambiar correo.
         findViewById(R.id.opcionCambiarCorreo).setOnClickListener(v -> {

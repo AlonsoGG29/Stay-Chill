@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
@@ -32,6 +33,7 @@ public class VerParticipantes extends AppCompatActivity {
     private TextView txtSinParticipantes;
     private ParticipantesAdapter adapter;
     private String eventId;
+    private ImageButton btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,7 @@ public class VerParticipantes extends AppCompatActivity {
         eventId = getIntent().getStringExtra("EVENT_ID");
         recycler = findViewById(R.id.recyclerParticipantes);
         txtSinParticipantes = findViewById(R.id.sinParticipantes);
+        btnBack = findViewById(R.id.btnBack);
 
         recycler.setLayoutManager(new LinearLayoutManager(this));
         // Aquí se pasa el listener
@@ -62,6 +65,8 @@ public class VerParticipantes extends AppCompatActivity {
             startActivity(chatIntent);
         });
         recycler.setAdapter(adapter);
+
+        btnBack.setOnClickListener(v -> volverMenu());
 
 
         cargarParticipantes();
@@ -121,6 +126,18 @@ public class VerParticipantes extends AppCompatActivity {
                     );
                 }
             }
+        });
+    }
+    private void volverMenu() {
+        runOnUiThread(() -> {
+            Intent intent = new Intent(this, Main_bn.class);
+            intent.addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_SINGLE_TOP
+            );
+            intent.putExtra("start_tab", 1);
+            startActivity(intent);
+            finish();
         });
     }
 }
