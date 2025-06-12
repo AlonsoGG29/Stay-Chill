@@ -14,8 +14,8 @@ android {
         applicationId "com.aka.staychill"
         minSdk 28
         targetSdk 34
-        versionCode 8
-        versionName "0.8"
+        versionCode 9
+        versionName "0.9"
 
         // Configuración del runner para pruebas instrumentadas
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
